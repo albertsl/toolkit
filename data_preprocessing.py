@@ -1,7 +1,7 @@
 # df = Pandas DataFrame
 
 #Create a new column from conditions on other columns
-df['column_y'] = df[('column_x1' or 'column_x2') and 'column_x3']
+df['column_y'] = df[(df['column_x1'] | 'column_x2') & 'column_x3']
 df['column_y'] = df['column_y'].apply(bool)
 df['column_y'] = df['column_y'].apply(int)
 
