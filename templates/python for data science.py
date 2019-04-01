@@ -17,6 +17,11 @@ def main():
 	df.columns()
 
 	# 4 Check for Missing data
+	total_null = df.isnull().sum().sort_values(ascending=False)
+	percent = (df.isnull().sum()/df.isnull().count()).sort_values(ascending=False)
+	missing_data = pd.concat([total_null, percent], axis=1, keys=['Total', 'Percent'])
+	print ("Missing Data")
+	missing_data.tail()
 
 	# 5 Exploratory Data Analysis (EDA)
 	sns.pairplot(df)
