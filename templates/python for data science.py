@@ -84,7 +84,7 @@ def main():
 	cross_val_score(model, X, y, cv=5)
 	#StratifiedKFold
 	from sklearn.model_selection import StratifiedKFold
-    skf=StratifiedKFold(n_splits=5, random_state=101)
+	skf = StratifiedKFold(n_splits=5, random_state=101)
 	for train_index, val_index in skf.split(X, y):
 		X_train, X_val = X[train_index], X[val_index]
 		y_train, y_val = y[train_index], y[val_index]
