@@ -1,4 +1,8 @@
-# 1 Load packages
+#Albert Sanchez Lafuente 2/4/2019, Pineda de Mar, Spain
+#https://github.com/albertsl/
+#Structure of the template mostly based on the Appendix B of the book Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron (https://amzn.to/2WIfsmk)
+#Big thank you to Uxue Lazcano (https://github.com/uxuelazkano) for code on model comparison
+#Load packages
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -6,187 +10,240 @@ import seaborn as sns
 sns.set()
 
 def main():
-	# 2 Load data
-	file = 'data.csv'
-	df = pd.read_csv(file)
-	
-	# 3 Visualize data
+	#Load data
+	df = pd.read_csv('file.csv')
+	#If data is too big, take a sample of it
+	df = pd.read_csv('file.csv', nrows=50000)
+
+	#Visualize data
 	df.head()
 	df.describe()
 	df.info()
-	df.columns()
+	df.columns
 
-	# 4 Check for Missing data
+	#Exploratory Data Analysis (EDA)
+	sns.pairplot(df)
+	sns.distplot(df['column'])
+	sns.countplot(df['column'])
+	
+	#Fix or remove outliers
+
+	#Check for missing data
 	total_null = df.isnull().sum().sort_values(ascending=False)
 	percent = (df.isnull().sum()/df.isnull().count()).sort_values(ascending=False)
 	missing_data = pd.concat([total_null, percent], axis=1, keys=['Total', 'Percent'])
-	print ("Missing Data")
-	missing_data.tail()
 
-	# 5 Exploratory Data Analysis (EDA)
-	sns.pairplot(df)
-	sns.distplot(df['column'])
+	#Fill missing data or drop columns/rows
+	df.fillna()
+	df.drop('column_full_of_nans')
+	df.dropna(how='any')
+
+	#Correlation analysis
 	sns.heatmap(df.corr())
 
-	##########
-	# # General Data Science
-	##########
-	# # Third step: Preparing the data
-	# x = df[['column1','column2','column3','etc']] # The list of columns equals df.columns minus the column we want to predict and non numeric columns.
-	# y = df['column to predict']
-	# # Fourth step: Split data into a train / test dataset
-	# from sklearn.model_selection import train_test_split
-	# x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.4, random_state = 101)
+	#Feature selection: Drop attributes that provide no useful information for the task
 
-	##########
-	# # Linear Regression
-	##########
+	#Feature engineering. Create new features by transforming the data
+	#Discretize continuous features
+	#Decompose features (categorical, date/time, etc.)
+	#Add promising transformations of features (e.g., log(x), sqrt(x), x^2, etc.)
+	#Aggregate features into promising new features (x*y)
+	#Create a new column from conditions on other columns
+	df['column_y'] = df[(df['column_x1'] | 'column_x2') & 'column_x3']
+	df['column_y'] = df['column_y'].apply(bool)
+	df['column_y'] = df['column_y'].apply(int)
+	#Create a new True/False column according to the first letter on another column.
+	lEI = [0] * df.shape[0]
 
-	# # Fifth step: Train linear regression model
-	# from sklearn.linear_model import LinearRegression
-	# lm = LinearRegression()
-	# lm.fit(x_train,y_train)
-	# # Sixth step: Linear model interpretation
-	# lm.intercept_
-	# lm.coef_
-	# # Seven: Use the model to predict
-	# predictions = lm.predict(x_test)
-	# # Eight: Evaluate the accuracy of the model
-	# plt.scatter(y_test,predictions) #should have the shape of a line for a good predictions
-	# sns.distplot(y_test-predictions) #should be a normal distribution centered in 0
-	# from sklearn import metrics
-	# metrics.mean_absolute_error(y_test, predictions)
-	# metrics.mean_squared_error(y_test, predictions)
-	# np.sqrt(metrics.mean_squared_error(y_test, predictions))
-	# from sklearn.metrics import classification_report
-	# print(classification_report(y_test,predictions))
-	# from sklearn.metrics import confusion_matrix
-	# print(confusion_matrix(y_test,predictions))
+	for i, row in df.iterrows():
+		try:
+			l = df['room_list'].iloc[i].split(', ')
+		except:
+			#When the given row is empty
+			l = []
+		for element in l:
+			if element[0] == 'E' or element[0] == 'I':
+				lEI[i] = 1
 
-	##########
-	# # Logistic Regression
-	##########
+	df['EI'] = pd.Series(lEI)
 
-	# # Fifth step: Train logistic regression model
-	# from sklearn.linear_model import LogisticRegression
-	# logmodel = LogisticRegression()
-	# logmodel.fit(x_train,y_train)
-	# # Sixth step: Evaluate the model
-	# predictions = logmodel.predict(x_test)
-	# from sklearn.metrics import classification_report
-	# print(classification_report(y_test,predictions))
-	# from sklearn.metrics import confusion_matrix
-	# print(confusion_matrix(y_test,predictions))
+	#Scaling features
+	from sklearn.preprocessing import StandardScaler
+	scaler = StandardScaler()
+	scaler.fit(df)
+	df_norm = scaler.transform(df)
+	
+	#Define Validation method
+	#Train and validation set split
+	from sklearn.model_selection import train_test_split
+	X = df.drop('target_var', inplace=True, axis=1)
+	y = df['column to predict']
+	X_train, X_val, y_train, y_val = train_test_split(X, y, test_size = 0.4, random_state = 101)
+	#Cross validation
+	from sklearn.model_selection import cross_val_score
+	cross_val_score(model, X, y, cv=5)
+	#StratifiedKFold
+	from sklearn.model_selection import StratifiedKFold
+    skf=StratifiedKFold(n_splits=5, random_state=101)
+	for train_index, val_index in skf.split(X, y):
+		X_train, X_val = X[train_index], X[val_index]
+		y_train, y_val = y[train_index], y[val_index]
 
-	##########
-	# # KNN
-	##########
+	#Define Performance Metrics
+	#ROC AUC for classification tasks
+	from sklearn.metrics import roc_auc_score
+	from sklearn.metrics import roc_curve
+	roc_auc = roc_auc_score(y_val, model.predict(X_val))
+	fpr, tpr, thresholds = roc_curve(y_val, model.predict_proba(X_val)[:,1])
+	plt.figure()
+	plt.plot(fpr, tpr, label='Model (area = %0.2f)' % roc_auc)
+	plt.plot([0, 1], [0, 1],'r--')
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.xlabel('False Positive Rate')
+	plt.ylabel('True Positive Rate')
+	plt.title('Receiver operating characteristic')
+	plt.legend(loc="lower right")
+	plt.show()
+	#Confusion Matrix
+	from sklearn.metrics import confusion_matrix
+	confusion_matrix(y_val, y_pred)
+	#MAE, MSE, RMSE
+	from sklearn import metrics
+	metrics.mean_absolute_error(y_val, y_pred)
+	metrics.mean_squared_error(y_val, y_pred)
+	np.sqrt(metrics.mean_squared_error(y_val, y_pred))
+	#Classification report
+	from sklearn.metrics import classification_report
+	classification_report(y_val,y_pred)
 
-	# # Third step: Standarizing data
-	# from sklearn.preprocessing import StandardScaler
-	# scaler = StandardScaler()
-	# scaler.fit(df.drop('TARGET CLASS', axis = 1))
-	# scaled_features = scaler.transform(df.drop())
-	# df_feat = pd.DataFrame(scaled_features, columns = df.columns[:-1])
-	# # Fifth step: Train KNN model
-	# from sklearn.neighbors import KNeighborsClassifier
-	# knn = KNeighborsClassifier(n_neighbors = 1)
-	# knn.fit(x_train, y_train)
-	# # Sixth step: Evaluate the model
-	# predictions = knn.predict(x_test)
-	# from sklearn.metrics import classification_report
-	# print(classification_report(y_test,predictions))
-	# from sklearn.metrics import confusion_matrix
-	# print(confusion_matrix(y_test,predictions))
+    #Train many quick and dirty models from different categories(e.g., linear, naive Bayes, SVM, Random Forests, neural net, etc.) using standard parameters.
+	#########
+	# Linear Regression
+	#########
+	from sklearn.linear_model import LinearRegression
+	lr = LinearRegression()
+	lr.fit(X_train,y_train)
 
-	##########
-	# # Decision Tree
-	##########
+	#Linear model interpretation
+	lr.intercept_
+	lr.coef_
 
-	# # Fifth step: Train Decision Tree model
-	# from sklearn.tree import DecisionTreeClassifier
-	# dtree = DecisionTreeClassifier()
-	# dtree.fit(x_train, y_train)
-	# # Sixth step: Evaluate the model
-	# predictions = dtree.predict(x_test)
-	# from sklearn.metrics import classification_report
-	# print(classification_report(y_test,predictions))
-	# from sklearn.metrics import confusion_matrix
-	# print(confusion_matrix(y_test,predictions))
+	#Use model to predict
+	y_pred = lr.predict(X_val)
 
-	##########
-	# # Random Forests
-	##########
+	#Evaluate accuracy of the model
+	plt.scatter(y_val, y_pred) #should have the shape of a line for good predictions
+	sns.distplot(y_val - y_pred) #should be a normal distribution centered at 0
+	acc_lr = round(lr.score(X_val, y_val) * 100, 2)
 
-	# # Fifth step: Train Random Forests model
-	# from sklearn.ensemble import RandomForestClassifier
-	# rfc = RandomForestClassifier(n_estimators=200)
-	# rfc.fit(x_train, y_train)
-	# # Sixth step: Evaluate the model
-	# predictions = rfc.predict(x_test)
-	# from sklearn.metrics import classification_report
-	# print(classification_report(y_test,predictions))
-	# from sklearn.metrics import confusion_matrix
-	# print(confusion_matrix(y_test,predictions))
+	#########
+	# Logistic Regression
+	#########
+	from sklearn.linear_model import LogisticRegression
+	logmodel = LogisticRegression()
+	logmodel.fit(X_train,y_train)
 
-	##########
-	# # Support Vector Machine (SVM)
-	##########
+	#Use model to predict
+	y_pred = logmodel.predict(X_val)
+	
+	#Evaluate accuracy of the model
+	acc_log = round(logmodel.score(X_val, y_val) * 100, 2)
 
-	# # Fifth step: Train SVM model
-	# from sklearn.svm import SVC
-	# model = SVC()
-	# model.fit(x_train, y_train)
-	# # If it's not working well, refine parameters
-	# from sklearn.grid_search import GridSearchCV
-	# param_grid = {'C':[0.1,1,10,100,1000], 'gamma':[1,0.1,0.01,0.001,0.0001]}
-	# grid = GridSearchCV(SVC(), param_grid, verbose = 3)
-	# grid.best_params_
-	# grid.best_estimator_
-	# model.fit(x_train, y_train) #Add new found parameters
-	# # Sixth step: Evaluate the model
-	# predictions = rfc.predict(x_test)
-	# from sklearn.metrics import classification_report
-	# print(classification_report(y_test,predictions))
-	# from sklearn.metrics import confusion_matrix
-	# print(confusion_matrix(y_test,predictions))
+	#########
+	# KNN
+	#########
+	from sklearn.neighbors import KNeighborsClassifier
+	knn = KNeighborsClassifier(n_neighbors = 5)
+	knn.fit(X_train, y_train)
 
-	##########
-	# # K-Means Clustering
-	##########
+	#Use model to predict
+	y_pred = knn.predict(X_val)
+	
+	#Evaluate accuracy of the model
+	acc_knn = round(knn.score(X_val, y_val) * 100, 2)
 
-	# # First step: Train model
-	# from sklearn.cluster import KMeans
-	# kmeans = KMeans(n_clusters=K) #Choose K
-	# kmeans.fit(data)
-	# # Second step: Evaluate the model
-	# kmeans.cluster_centers_
-	# kmeans.labels_
+	#########
+	# Decision Tree
+	#########
+	from sklearn.tree import DecisionTreeClassifier
+	dtree = DecisionTreeClassifier()
+	dtree.fit(X_train, y_train)
 
+	#Use model to predict
+	y_pred = dtree.predict(X_val)
+	
+	#Evaluate accuracy of the model
+	acc_dtree = round(dtree.score(X_val, y_val) * 100, 2)
 
+	#########
+	# Random Forest
+	#########
+	from sklearn.ensemble import RandomForestClassifier
+	rfc = RandomForestClassifier(n_estimators=200, random_state=101)
+	rfc.fit(X_train, y_train)
 
-# df = Pandas DataFrame
+	from sklearn.ensemble import RandomForestRegressor
+	rfr = RandomForestRegressor(n_estimators=200, random_state=101)
+	rfr.fit(X_train, y_train)
 
-#Create a new column from conditions on other columns
-df['column_y'] = df[(df['column_x1'] | 'column_x2') & 'column_x3']
-df['column_y'] = df['column_y'].apply(bool)
-df['column_y'] = df['column_y'].apply(int)
+	#Use model to predict
+	y_pred = rfr.predict(X_val)
+	
+	#Evaluate accuracy of the model
+	acc_rf = round(rfr.score(X_val, y_val) * 100, 2)
 
-#Create a new True/False column according to the first letter on another column.
-lEI = [0] * df.shape[0]
+	#########
+	# Support Vector Machine (SVM)
+	#########
+	from sklearn.svm import SVC
+	model = SVC()
+	model.fit(X_train, y_train)
 
-for i, row in df.iterrows():
-    try:
-        l = df['room_list'].iloc[i].split(', ')
-    except:
-        #When the given row is empty
-        l = []
-    for element in l:
-        if element[0] =='E' or element[0] == 'I':
-            lEI[i] = 1
+	#Use model to predict
+	y_pred = model.predict(X_val)
+	
+	#Evaluate accuracy of the model
+	acc_svm = round(model.score(X_val, y_val) * 100, 2)
 
-df['EI'] = pd.Series(lEI)
+	#########
+	# K-Means Clustering
+	#########
+	#Train model
+	from sklearn.cluster import KMeans
+	kmeans = KMeans(n_clusters=K) #Choose K
+	kmeans.fit(df)
+	#Evaluate the model
+	kmeans.cluster_centers_
+	kmeans.labels_
 
+    #Measure and compare their performance
+	models = pd.DataFrame({
+    'Model': ['Linear Regression', 'Support Vector Machine', 'KNN', 'Logistic Regression', 
+              'Random Forest'],
+    'Score': [acc_lr, acc_svm, acc_knn, acc_log, 
+              acc_rf]})
+	models.sort_values(by='Score', ascending=False)
+    #Analyze the most significant variables for each algorithm.
+	#Analyze the types of errors the models make.
+	#What data would a human have used to avoid these errors?
+	#Have a quick round of feature selection and engineering.
+	#Have one or two more quick iterations of the five previous steps.
+	#Short-list the top three to five most promising models, preferring models that make different types of errors.
+
+	#Fine-tune the hyperparameters using cross-validation
+	#Treat your data transformation choices as hyperparameters, especially when you are not sure about them (e.g., should I replace missing values with zero or with the median value? Or just drop the rows?)
+	#Unless there are very few hyperparameter values to explore, prefer random search over grid search. If training is very long, you may prefer a Bayesian optimization approach
+	from sklearn.grid_search import GridSearchCV
+	param_grid = {'C':[0.1,1,10,100,1000], 'gamma':[1,0.1,0.01,0.001,0.0001]}
+	grid = GridSearchCV(model, param_grid, verbose = 3)
+	model.fit(X_train, y_train)
+	grid.best_params_
+	grid.best_estimator_
+	
+	#Try Ensemble methods. Combining your best models will often perform better than running them individually
+
+	#Once you are confident about your final model, measure its performance on the test set to estimate the generalization error
 
 if __name__ == "__main__":
 	main()
