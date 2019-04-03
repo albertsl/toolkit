@@ -20,6 +20,8 @@ def main():
 	df.describe()
 	df.info()
 	df.columns
+	#For a categorical dataset we want to see how many instances of each category there are
+	df['categorical_var'].value_counts()
 
 	#Exploratory Data Analysis (EDA)
 	sns.pairplot(df)
@@ -27,11 +29,20 @@ def main():
 	sns.countplot(df['column'])
 	
 	#Fix or remove outliers
+	plt.boxplot(df['feature1'])
+	plt.boxplot(df['feature2'])
 
 	#Check for missing data
-	total_null = df.isnull().sum().sort_values(ascending=False)
-	percent = (df.isnull().sum()/df.isnull().count()).sort_values(ascending=False)
+	total_null = df.isna().sum().sort_values(ascending=False)
+	percent = (df.isna().sum()/df.isna().count()).sort_values(ascending=False)
 	missing_data = pd.concat([total_null, percent], axis=1, keys=['Total', 'Percent'])
+	#Generate new features with missing data
+	df['feature1_nan'] = df['feature1'].isna()
+	df['feature2_nan'] = df['feature2'].isna()
+
+	#Check for duplicated data
+	df.duplicated().value_counts()
+	df['duplicated'] = df.duplicated() #Create a new feature
 
 	#Fill missing data or drop columns/rows
 	df.fillna()
