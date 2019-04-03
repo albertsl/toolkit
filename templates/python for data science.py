@@ -223,6 +223,20 @@ def main():
 	#Evaluate accuracy of the model
 	acc_rf = round(rfr.score(X_val, y_val) * 100, 2)
 
+	#Evaluate feature importance
+	importances = rfr.feature_importances_
+	std = np.std([importances for tree in random_forest.estimators_], axis=0)
+	indices = np.argsort(importances)[::-1]
+
+	feature_importances = pd.DataFrame(random_forest.feature_importances_, index = X_train.columns, columns=['importance']).sort_values('importance', ascending=False)
+
+	plt.figure()
+	plt.title("Feature importances")
+	plt.bar(range(X_train.shape[1]), importances[indices], yerr=std[indices], align="center")
+	plt.xticks(range(X_train.shape[1]), indices)
+	plt.xlim([-1, X_train.shape[1]])
+	plt.show()
+
 	#########
 	# Support Vector Machine (SVM)
 	#########
