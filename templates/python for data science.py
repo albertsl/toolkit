@@ -78,7 +78,7 @@ def main():
     df['position_norm_X'] = df['position_X'] / df['position_module']
     df['position_norm_Y'] = df['position_Y'] / df['position_module']
     df['position_norm_Z'] = df['position_Z'] / df['position_module']
-	df['position_over_velocity'] = data['position_module'] / data['velocity_module']
+	df['position_over_velocity'] = df['position_module'] / df['velocity_module']
 	#Create a new column from conditions on other columns
 	df['column_y'] = df[(df['column_x1'] | 'column_x2') & 'column_x3']
 	df['column_y'] = df['column_y'].apply(bool)
