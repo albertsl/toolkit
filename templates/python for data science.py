@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from tqdm import tqdm
 sns.set()
 
 def main():
@@ -62,7 +63,7 @@ def main():
 	#For time series data
 	from astropy.stats import median_absolute_deviation
 	from statsmodels.robust.scale import mad
-	for column in df.columns:
+	for column in tqdm(df.columns):
 		df[column + '_mean'] = df.groupby(['series_id'])[column].mean()
 		df[column + '_median'] = df.groupby(['series_id'])[column].median()
 		df[column + '_max'] = df.groupby(['series_id'])[column].max()
