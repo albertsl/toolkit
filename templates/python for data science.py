@@ -241,10 +241,10 @@ def main():
 
 	#Evaluate feature importance
 	importances = rfr.feature_importances_
-	std = np.std([importances for tree in random_forest.estimators_], axis=0)
+	std = np.std([importances for tree in rfr.estimators_], axis=0)
 	indices = np.argsort(importances)[::-1]
 
-	feature_importances = pd.DataFrame(random_forest.feature_importances_, index = X_train.columns, columns=['importance']).sort_values('importance', ascending=False)
+	feature_importances = pd.DataFrame(rfr.feature_importances_, index = X_train.columns, columns=['importance']).sort_values('importance', ascending=False)
 
 	plt.figure()
 	plt.title("Feature importances")
