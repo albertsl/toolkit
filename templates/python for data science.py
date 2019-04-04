@@ -50,7 +50,7 @@ def main():
 	df.dropna(how='any')
 
 	#Correlation analysis
-	sns.heatmap(df.corr())
+	sns.heatmap(df.corr(), annot=True, fmt='.2f')
 
 	#Feature selection: Drop attributes that provide no useful information for the task
 
