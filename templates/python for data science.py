@@ -54,9 +54,14 @@ def main():
 	sns.heatmap(df.corr(), annot=True, fmt='.2f')
 
 	#Encode categorical variables
+	#Encoding for target variable
 	from sklearn.preprocessing import LabelEncoder
 	le = LabelEncoder()
 	df['categorical_var'] = le.fit_transform(df['categorical_var'])
+	#One hot encoding for categorical information
+	from sklearn.preprocessing import OneHotEncoder
+	enc = OneHotEncoder()
+	df['var_to_encode'] = enc.fit_transform(df['var_to_encode'])
 
 	#Feature selection: Drop attributes that provide no useful information for the task
 
