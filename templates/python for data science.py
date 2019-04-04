@@ -62,7 +62,7 @@ def main():
 	#For time series data
 	from astropy.stats import median_absolute_deviation
 	from statsmodels.robust.scale import mad
-	for column in data.columns:
+	for column in df.columns:
 		df[column + '_mean'] = df.groupby(['series_id'])[column].mean()
 		df[column + '_median'] = df.groupby(['series_id'])[column].median()
 		df[column + '_max'] = df.groupby(['series_id'])[column].max()
@@ -70,7 +70,7 @@ def main():
 		df[column + '_std'] = df.groupby(['series_id'])[column].std()
 		df[column + '_range'] = df[column + '_max'] - df[column + '_min']
 		df[column + '_max_over_Min'] = df[column + '_max'] / df[column + '_min']
-		df[column + 'median_abs_dev'] = data.groupby(['series_id'])[column].mad()
+		df[column + 'median_abs_dev'] = df.groupby(['series_id'])[column].mad()
 	#For speed/movement data, add vectorial features. Try many different combinations
 	df['position_norm'] = df['position_X'] ** 2 + df['position_Y'] ** 2 + df['position_Z'] ** 2
     df['position_module'] = df['position_norm'] ** 0.5
