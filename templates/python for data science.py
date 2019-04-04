@@ -103,6 +103,8 @@ def main():
 	scaler = StandardScaler()
 	scaler.fit(df)
 	df_norm = scaler.transform(df)
+
+	#Apply all the same transformations to the test set
 	
 	#Define Validation method
 	#Train and validation set split
