@@ -102,7 +102,7 @@ def main():
 	from sklearn.preprocessing import StandardScaler
 	scaler = StandardScaler()
 	scaler.fit(df)
-	df_norm = scaler.transform(df)
+	df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
 
 	#Apply all the same transformations to the test set
 	
