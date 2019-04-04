@@ -53,6 +53,11 @@ def main():
 	#Correlation analysis
 	sns.heatmap(df.corr(), annot=True, fmt='.2f')
 
+	#Encode categorical variables
+	from sklearn.preprocessing import LabelEncoder
+	le = LabelEncoder()
+	df['categorical_var'] = le.fit_transform(df['categorical_var'])
+
 	#Feature selection: Drop attributes that provide no useful information for the task
 
 	#Feature engineering. Create new features by transforming the data
