@@ -70,18 +70,6 @@ def main():
 	#Decompose features (categorical, date/time, etc.)
 	#Add promising transformations of features (e.g., log(x), sqrt(x), x^2, etc.)
 	#Aggregate features into promising new features (x*y)
-	#For time series data
-	from astropy.stats import median_absolute_deviation
-	from statsmodels.robust.scale import mad
-	for column in tqdm(df.columns):
-		df[column + '_mean'] = df.groupby(['series_id'])[column].mean()
-		df[column + '_median'] = df.groupby(['series_id'])[column].median()
-		df[column + '_max'] = df.groupby(['series_id'])[column].max()
-		df[column + '_min'] = df.groupby(['series_id'])[column].min()
-		df[column + '_std'] = df.groupby(['series_id'])[column].std()
-		df[column + '_range'] = df[column + '_max'] - df[column + '_min']
-		df[column + '_max_over_Min'] = df[column + '_max'] / df[column + '_min']
-		df[column + 'median_abs_dev'] = df.groupby(['series_id'])[column].mad()
 	#For speed/movement data, add vectorial features. Try many different combinations
 	df['position_norm'] = df['position_X'] ** 2 + df['position_Y'] ** 2 + df['position_Z'] ** 2
     df['position_module'] = df['position_norm'] ** 0.5
@@ -89,6 +77,21 @@ def main():
     df['position_norm_Y'] = df['position_Y'] / df['position_module']
     df['position_norm_Z'] = df['position_Z'] / df['position_module']
 	df['position_over_velocity'] = df['position_module'] / df['velocity_module']
+	#For time series data
+	from astropy.stats import median_absolute_deviation
+	from statsmodels.robust.scale import mad
+
+	df_tmp = pd.DataFrame()
+	for column in tqdm(df.columns):
+		df_tmp[column + '_mean'] = df.groupby(['series_id'])[column].mean()
+		df_tmp[column + '_median'] = df.groupby(['series_id'])[column].median()
+		df_tmp[column + '_max'] = df.groupby(['series_id'])[column].max()
+		df_tmp[column + '_min'] = df.groupby(['series_id'])[column].min()
+		df_tmp[column + '_std'] = df.groupby(['series_id'])[column].std()
+		df_tmp[column + '_range'] = df_tmp[column + '_max'] - df_tmp[column + '_min']
+		df_tmp[column + '_max_over_Min'] = df_tmp[column + '_max'] / df_tmp[column + '_min']
+		df_tmp[column + 'median_abs_dev'] = df.groupby(['series_id'])[column].mad()
+	df = df_tmp.copy()
 	#Create a new column from conditions on other columns
 	df['column_y'] = df[(df['column_x1'] | 'column_x2') & 'column_x3']
 	df['column_y'] = df['column_y'].apply(bool)
