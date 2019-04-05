@@ -124,7 +124,7 @@ def main():
 	from sklearn.model_selection import train_test_split
 	X = df.drop('target_var', inplace=True, axis=1)
 	y = df['column to predict']
-	X_train, X_val, y_train, y_val = train_test_split(X, y, test_size = 0.4, random_state = 101)
+	X_train, X_val, y_train, y_val = train_test_split(X, y, test_size = 0.4, stratify = y.values, random_state = 101)
 	#Cross validation
 	from sklearn.model_selection import cross_val_score
 	cross_val_score(model, X, y, cv=5)
