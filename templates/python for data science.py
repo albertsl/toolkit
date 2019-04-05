@@ -297,7 +297,7 @@ def main():
 	from sklearn.model_selection import GridSearchCV
 	param_grid = {'C':[0.1,1,10,100,1000], 'gamma':[1,0.1,0.01,0.001,0.0001]}
 	grid = GridSearchCV(model, param_grid, verbose = 3)
-	model.fit(X_train, y_train)
+	grid.fit(X_train, y_train)
 	grid.best_params_
 	grid.best_estimator_
 	
