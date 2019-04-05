@@ -294,7 +294,7 @@ def main():
 	#Fine-tune the hyperparameters using cross-validation
 	#Treat your data transformation choices as hyperparameters, especially when you are not sure about them (e.g., should I replace missing values with zero or with the median value? Or just drop the rows?)
 	#Unless there are very few hyperparameter values to explore, prefer random search over grid search. If training is very long, you may prefer a Bayesian optimization approach
-	from sklearn.grid_search import GridSearchCV
+	from sklearn.model_selection import GridSearchCV
 	param_grid = {'C':[0.1,1,10,100,1000], 'gamma':[1,0.1,0.01,0.001,0.0001]}
 	grid = GridSearchCV(model, param_grid, verbose = 3)
 	model.fit(X_train, y_train)
