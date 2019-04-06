@@ -72,10 +72,10 @@ def main():
 	#Aggregate features into promising new features (x*y)
 	#For speed/movement data, add vectorial features. Try many different combinations
 	df['position_norm'] = df['position_X'] ** 2 + df['position_Y'] ** 2 + df['position_Z'] ** 2
-    df['position_module'] = df['position_norm'] ** 0.5
-    df['position_norm_X'] = df['position_X'] / df['position_module']
-    df['position_norm_Y'] = df['position_Y'] / df['position_module']
-    df['position_norm_Z'] = df['position_Z'] / df['position_module']
+	df['position_module'] = df['position_norm'] ** 0.5
+	df['position_norm_X'] = df['position_X'] / df['position_module']
+	df['position_norm_Y'] = df['position_Y'] / df['position_module']
+	df['position_norm_Z'] = df['position_Z'] / df['position_module']
 	df['position_over_velocity'] = df['position_module'] / df['velocity_module']
 	#For time series data
 	from astropy.stats import median_absolute_deviation
