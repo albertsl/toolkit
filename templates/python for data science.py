@@ -91,6 +91,11 @@ def main():
 		df_tmp[column + '_range'] = df_tmp[column + '_max'] - df_tmp[column + '_min']
 		df_tmp[column + '_max_over_Min'] = df_tmp[column + '_max'] / df_tmp[column + '_min']
 		df_tmp[column + 'median_abs_dev'] = df.groupby(['series_id'])[column].mad()
+		df_tmp[column + '_mean_abs_chg'] = df.groupby(['series_id'])[column].apply(lambda x: np.mean(np.abs(np.diff(x))))
+		df_tmp[column + '_mean_change_of_abs_change'] = df.groupby('series_id')[column].apply(lambda x: np.mean(np.diff(np.abs(np.diff(x)))))
+		df_tmp[column + '_abs_max'] = df.groupby(['series_id'])[column].apply(lambda x: np.max(np.abs(x)))
+		df_tmp[column + '_abs_min'] = df.groupby(['series_id'])[column].apply(lambda x: np.min(np.abs(x)))
+		df_tmp[column + '_abs_avg'] = (df_tmp[column + '_abs_min'] + df_tmp[column + '_abs_max'])/2
 	df = df_tmp.copy()
 	#Create a new column from conditions on other columns
 	df['column_y'] = df[(df['column_x1'] | 'column_x2') & 'column_x3']
