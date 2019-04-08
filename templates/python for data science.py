@@ -72,10 +72,10 @@ def main():
 	#Aggregate features into promising new features (x*y)
 	#For speed/movement data, add vectorial features. Try many different combinations
 	df['position_norm'] = df['position_X'] ** 2 + df['position_Y'] ** 2 + df['position_Z'] ** 2
-    df['position_module'] = df['position_norm'] ** 0.5
-    df['position_norm_X'] = df['position_X'] / df['position_module']
-    df['position_norm_Y'] = df['position_Y'] / df['position_module']
-    df['position_norm_Z'] = df['position_Z'] / df['position_module']
+	df['position_module'] = df['position_norm'] ** 0.5
+	df['position_norm_X'] = df['position_X'] / df['position_module']
+	df['position_norm_Y'] = df['position_Y'] / df['position_module']
+	df['position_norm_Z'] = df['position_Z'] / df['position_module']
 	df['position_over_velocity'] = df['position_module'] / df['velocity_module']
 	#For time series data
 	from astropy.stats import median_absolute_deviation
@@ -163,7 +163,7 @@ def main():
 	from sklearn.metrics import classification_report
 	print(classification_report(y_val,y_pred))
 
-    #Train many quick and dirty models from different categories(e.g., linear, naive Bayes, SVM, Random Forests, neural net, etc.) using standard parameters.
+	#Train many quick and dirty models from different categories(e.g., linear, naive Bayes, SVM, Random Forests, neural net, etc.) using standard parameters.
 	#########
 	# Linear Regression
 	#########
@@ -277,14 +277,14 @@ def main():
 	kmeans.cluster_centers_
 	kmeans.labels_
 
-    #Measure and compare their performance
+	#Measure and compare their performance
 	models = pd.DataFrame({
-    'Model': ['Linear Regression', 'Support Vector Machine', 'KNN', 'Logistic Regression', 
-              'Random Forest'],
-    'Score': [acc_lr, acc_svm, acc_knn, acc_log, 
-              acc_rf]})
+	'Model': ['Linear Regression', 'Support Vector Machine', 'KNN', 'Logistic Regression', 
+			  'Random Forest'],
+	'Score': [acc_lr, acc_svm, acc_knn, acc_log, 
+			  acc_rf]})
 	models.sort_values(by='Score', ascending=False)
-    #Analyze the most significant variables for each algorithm.
+	#Analyze the most significant variables for each algorithm.
 	#Analyze the types of errors the models make.
 	#What data would a human have used to avoid these errors?
 	#Have a quick round of feature selection and engineering.
