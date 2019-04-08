@@ -161,7 +161,7 @@ def main():
 	np.sqrt(metrics.mean_squared_error(y_val, y_pred))
 	#Classification report
 	from sklearn.metrics import classification_report
-	classification_report(y_val,y_pred)
+	print(classification_report(y_val,y_pred))
 
     #Train many quick and dirty models from different categories(e.g., linear, naive Bayes, SVM, Random Forests, neural net, etc.) using standard parameters.
 	#########
