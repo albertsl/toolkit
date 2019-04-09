@@ -300,6 +300,42 @@ def main():
 	y_pred = gbm.predict(X_val, num_iteration=gbm.best_iteration)
 
 	#########
+	# XGBoost
+	#########
+	import xgboost as xgb
+
+	params = {'objective': 'multi:softmax',  # Specify multiclass classification
+			'num_class': 9,  # Number of possible output classes
+			'tree_method': 'hist',  # Use gpu_hist for GPU accelerated algorithm.
+			'eta': 0.1,
+			'max_depth': 6,
+			'silent': 1,
+			'gamma': 0,
+			'eval_metric': "merror",
+			'min_child_weight': 3,
+			'max_delta_step': 1,
+			'subsample': 0.9,
+			'colsample_bytree': 0.4,
+			'colsample_bylevel': 0.6,
+			'colsample_bynode': 0.5,
+			'lambda': 0,
+			'alpha': 0,
+			'seed': 0}
+
+	xgtrain = xgb.DMatrix(X_train, label=y_train)
+	xgval = xgb.DMatrix(X_val, label=y_val)
+	xgtest = xgb.DMatrix(X_test)
+
+	num_rounds = 500
+	#gpu_res = {}  # Store accuracy result
+	#tmp = time.time()
+	# Train model
+	xgbst = xgb.train(params, xgtrain, num_rounds, evals=[
+                (xgval, 'test')], evals_result=gpu_res)
+
+	y_pred = xgbst.predict(xgtest)
+
+	#########
 	# Support Vector Machine (SVM)
 	#########
 	from sklearn.svm import SVC
