@@ -258,6 +258,7 @@ def main():
 	indices = np.argsort(importances)[::-1]
 
 	feature_importances = pd.DataFrame(rfr.feature_importances_, index = X_train.columns, columns=['importance']).sort_values('importance', ascending=False)
+	feature_importances.sort_values('importance', ascending=False)
 
 	plt.figure()
 	plt.title("Feature importances")
