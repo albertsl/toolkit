@@ -3,6 +3,8 @@
 #Structure of the template mostly based on the Appendix B of the book Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron (https://amzn.to/2WIfsmk)
 #Big thank you to Uxue Lazcano (https://github.com/uxuelazkano) for code on model comparison
 #Load packages
+from sklearn.metrics import mean_squared_error
+import lightgbm as lgb
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -65,8 +67,6 @@ def main():
 	df['var_to_encode'] = enc.fit_transform(df['var_to_encode'])
 	#Use pandas get_dummies for categories encoded as strings
 	pd.get_dummies(df, columns=['col1','col2'])
-
-
 
 	#Feature selection: Drop attributes that provide no useful information for the task
 
@@ -265,6 +265,36 @@ def main():
 	plt.xticks(range(X_train.shape[1]), indices)
 	plt.xlim([-1, X_train.shape[1]])
 	plt.show()
+
+	#########
+	# lightGBM (LGBM)
+	#########
+	import lightgbm as lgb
+	# create dataset for lightgbm
+	lgb_train = lgb.Dataset(X_train, y_train)
+	lgb_eval = lgb.Dataset(X_val, y_val, reference=lgb_train)
+
+	# specify your configurations as a dict
+	params = {
+		'boosting_type': 'gbdt',
+		'objective': 'regression',
+		'metric': {'l2', 'l1'},
+		'num_leaves': 31,
+		'learning_rate': 0.05,
+		'feature_fraction': 0.9,
+		'bagging_fraction': 0.8,
+		'bagging_freq': 5,
+		'verbose': 0
+	}
+
+	# train
+	gbm = lgb.train(params, lgb_train, num_boost_round=20, valid_sets=lgb_eval, early_stopping_rounds=5)
+
+	# save model to file
+	gbm.save_model('model.txt')
+
+	# predict
+	y_pred = gbm.predict(X_val, num_iteration=gbm.best_iteration)
 
 	#########
 	# Support Vector Machine (SVM)
