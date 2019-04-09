@@ -327,8 +327,7 @@ def main():
 	xgtest = xgb.DMatrix(X_test)
 
 	num_rounds = 500
-	#gpu_res = {}  # Store accuracy result
-	#tmp = time.time()
+	gpu_res = {}  # Store accuracy result
 	# Train model
 	xgbst = xgb.train(params, xgtrain, num_rounds, evals=[
                 (xgval, 'test')], evals_result=gpu_res)
