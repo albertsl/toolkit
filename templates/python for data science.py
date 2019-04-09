@@ -59,9 +59,14 @@ def main():
 	le = LabelEncoder()
 	df['categorical_var'] = le.fit_transform(df['categorical_var'])
 	#One hot encoding for categorical information
+	#Use sklearn's OneHotEncoder for categories encoded as possitive real numbers
 	from sklearn.preprocessing import OneHotEncoder
 	enc = OneHotEncoder()
 	df['var_to_encode'] = enc.fit_transform(df['var_to_encode'])
+	#Use pandas get_dummies for categories encoded as strings
+	pd.get_dummies(df, columns=['col1','col2'])
+
+
 
 	#Feature selection: Drop attributes that provide no useful information for the task
 
