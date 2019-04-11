@@ -4,7 +4,6 @@
 #Big thank you to Uxue Lazcano (https://github.com/uxuelazkano) for code on model comparison
 #Load packages
 from sklearn.metrics import mean_squared_error
-import lightgbm as lgb
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
