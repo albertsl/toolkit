@@ -160,6 +160,16 @@ def main():
         df_tmp[column + '_SRAV'] = df.groupby(['series_id'])[column].apply(SRAV)
         df_tmp[column + '_kurtosis'] = df.groupby(['series_id'])[column].apply(kurtosis)
         df_tmp[column + '_zero_crossing'] = df.groupby(['series_id'])[column].apply(zero_crossing)
+		df_tmp[column +  '_unq'] = df[column].round(3).nunique()
+		try:
+			df_tmp[column + '_freq'] = df[column].value_counts().idxmax()
+		except:
+			df_tmp[column + '_freq'] = 0
+		df_tmp[column + '_max_freq'] = df[df[column] == df[column].max()].shape[0]
+		df_tmp[column + '_min_freq'] = df[df[column] == df[column].min()].shape[0]
+		df_tmp[column + '_pos_freq'] = df[df[column] >= 0].shape[0]
+		df_tmp[column + '_neg_freq'] = df[df[column] < 0].shape[0]
+		df_tmp[column + '_nzeros'] = (df[column]==0).sum(axis=0)
 	df = df_tmp.copy()
 	#Create a new column from conditions on other columns
 	df['column_y'] = df[(df['column_x1'] | 'column_x2') & 'column_x3']
