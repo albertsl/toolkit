@@ -3,6 +3,7 @@
 #Structure of the template mostly based on the Appendix B of the book Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron (https://amzn.to/2WIfsmk)
 #Big thank you to Uxue Lazcano (https://github.com/uxuelazkano) for code on model comparison
 #Load packages
+from scipy.stats import skew
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -82,9 +83,52 @@ def main():
 	df['position_norm_Y'] = df['position_Y'] / df['position_module']
 	df['position_norm_Z'] = df['position_Z'] / df['position_module']
 	df['position_over_velocity'] = df['position_module'] / df['velocity_module']
-	#For time series data
+	#For time series data: Discretize the data by different samples.
 	from astropy.stats import median_absolute_deviation
 	from statsmodels.robust.scale import mad
+	from scipy.stats import kurtosis
+	from scipy.stats import skew
+	
+	def CPT5(x):
+		den = len(x)*np.exp(np.std(x))
+		return sum(np.exp(x))/den
+
+	def SSC(x):
+		x = np.array(x)
+		x = np.append(x[-1], x)
+		x = np.append(x, x[1])
+		xn = x[1:len(x)-1]
+		xn_i2 = x[2:len(x)]    # xn+1
+		xn_i1 = x[0:len(x)-2]  # xn-1
+		ans = np.heaviside((xn-xn_i1)*(xn-xn_i2), 0)
+		return sum(ans[1:])
+
+	def wave_length(x):
+		x = np.array(x)
+		x = np.append(x[-1], x)
+		x = np.append(x, x[1])
+		xn = x[1:len(x)-1]
+		xn_i2 = x[2:len(x)]    # xn+1
+		return sum(abs(xn_i2-xn))
+
+	def norm_entropy(x):
+		tresh = 3
+		return sum(np.power(abs(x), tresh))
+
+	def SRAV(x):
+		SRA = sum(np.sqrt(abs(x)))
+		return np.power(SRA/len(x), 2)
+
+	def mean_abs(x):
+		return sum(abs(x))/len(x)
+
+	def zero_crossing(x):
+		x = np.array(x)
+		x = np.append(x[-1], x)
+		x = np.append(x, x[1])
+		xn = x[1:len(x)-1]
+		xn_i2 = x[2:len(x)]    # xn+1
+		return sum(np.heaviside(-xn*xn_i2, 0))
 
 	df_tmp = pd.DataFrame()
 	for column in tqdm(df.columns):
@@ -104,6 +148,18 @@ def main():
 		df_tmp[column + '_abs_mean'] = df.groupby('series_id')[column].apply(lambda x: np.mean(np.abs(x)))
 		df_tmp[column + '_abs_std'] = df.groupby('series_id')[column].apply(lambda x: np.std(np.abs(x)))
 		df_tmp[column + '_abs_range'] = df_tmp[column + '_abs_max'] - df_tmp[column + '_abs_min']
+		df_tmp[column + '_skew'] = df.groupby(['series_id'])[column].skew()
+        df_tmp[column + '_q25'] = df.groupby(['series_id'])[column].quantile(0.25)
+        df_tmp[column + '_q75'] = df.groupby(['series_id'])[column].quantile(0.75)
+        df_tmp[column + '_q95'] = df.groupby(['series_id'])[column].quantile(0.95)
+        df_tmp[column + '_iqr'] = df_tmp[column + '_q75'] - df_tmp[column + '_q25']
+        df_tmp[column + '_CPT5'] = df.groupby(['series_id'])[column].apply(CPT5)
+        df_tmp[column + '_SSC'] = df.groupby(['series_id'])[column].apply(SSC)
+        df_tmp[column + '_wave_lenght'] = df.groupby(['series_id'])[column].apply(wave_length)
+        df_tmp[column + '_norm_entropy'] = df.groupby(['series_id'])[column].apply(norm_entropy)
+        df_tmp[column + '_SRAV'] = df.groupby(['series_id'])[column].apply(SRAV)
+        df_tmp[column + '_kurtosis'] = df.groupby(['series_id'])[column].apply(kurtosis)
+        df_tmp[column + '_zero_crossing'] = df.groupby(['series_id'])[column].apply(zero_crossing)
 	df = df_tmp.copy()
 	#Create a new column from conditions on other columns
 	df['column_y'] = df[(df['column_x1'] | 'column_x2') & 'column_x3']
