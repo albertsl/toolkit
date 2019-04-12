@@ -41,6 +41,9 @@ def main():
 	#Generate new features with missing data
 	df['feature1_nan'] = df['feature1'].isna()
 	df['feature2_nan'] = df['feature2'].isna()
+	#Also look for infinite data, recommended to check it also after feature engineering
+	df.replace(np.inf,0,inplace=True)
+	df.replace(-np.inf,0,inplace=True)
 
 	#Check for duplicated data
 	df.duplicated().value_counts()
