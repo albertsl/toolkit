@@ -3,7 +3,6 @@
 #Structure of the template mostly based on the Appendix B of the book Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron (https://amzn.to/2WIfsmk)
 #Big thank you to Uxue Lazcano (https://github.com/uxuelazkano) for code on model comparison
 #Load packages
-from scipy.stats import skew
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
