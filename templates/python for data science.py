@@ -345,11 +345,11 @@ def main():
 	# Random Forest
 	#########
 	from sklearn.ensemble import RandomForestClassifier
-	rfc = RandomForestClassifier(n_estimators=200, random_state=101, n_jobs=-1)
+	rfc = RandomForestClassifier(n_estimators=200, random_state=101, n_jobs=-1, verbose=3)
 	rfc.fit(X_train, y_train)
 
 	from sklearn.ensemble import RandomForestRegressor
-	rfr = RandomForestRegressor(n_estimators=200, random_state=101, n_jobs=-1)
+	rfr = RandomForestRegressor(n_estimators=200, random_state=101, n_jobs=-1, verbose=3)
 	rfr.fit(X_train, y_train)
 
 	#Use model to predict
