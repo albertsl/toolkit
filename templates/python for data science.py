@@ -87,8 +87,8 @@ sns.distplot(df['column'])
 sns.countplot(df['column'])
 
 #Fix or remove outliers
-plt.boxplot(df['feature1'])
-plt.boxplot(df['feature2'])
+sns.boxplot(df['feature1'])
+sns.boxplot(df['feature2'])
 
 
 #Correlation analysis
