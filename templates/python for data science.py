@@ -55,7 +55,7 @@ def reduce_mem_usage(df):
 
 #Check for missing data
 total_null = df.isna().sum().sort_values(ascending=False)
-percent = (df.isna().sum()/df.isna().count()).sort_values(ascending=False)
+percent = 100*(df.isna().sum()/df.isna().count()).sort_values(ascending=False)
 missing_data = pd.concat([total_null, percent], axis=1, keys=['Total', 'Percent'])
 #Generate new features with missing data
 df['feature1_nan'] = df['feature1'].isna()
