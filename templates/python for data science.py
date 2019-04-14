@@ -54,23 +54,6 @@ def main():
 		
 		return df
 
-	#Visualize data
-	df.head()
-	df.describe()
-	df.info()
-	df.columns
-	#For a categorical dataset we want to see how many instances of each category there are
-	df['categorical_var'].value_counts()
-
-	#Exploratory Data Analysis (EDA)
-	sns.pairplot(df)
-	sns.distplot(df['column'])
-	sns.countplot(df['column'])
-	
-	#Fix or remove outliers
-	plt.boxplot(df['feature1'])
-	plt.boxplot(df['feature2'])
-
 	#Check for missing data
 	total_null = df.isna().sum().sort_values(ascending=False)
 	percent = (df.isna().sum()/df.isna().count()).sort_values(ascending=False)
@@ -90,6 +73,24 @@ def main():
 	df.fillna()
 	df.drop('column_full_of_nans')
 	df.dropna(how='any')
+	
+	#Visualize data
+	df.head()
+	df.describe()
+	df.info()
+	df.columns
+	#For a categorical dataset we want to see how many instances of each category there are
+	df['categorical_var'].value_counts()
+
+	#Exploratory Data Analysis (EDA)
+	sns.pairplot(df)
+	sns.distplot(df['column'])
+	sns.countplot(df['column'])
+	
+	#Fix or remove outliers
+	plt.boxplot(df['feature1'])
+	plt.boxplot(df['feature2'])
+
 
 	#Correlation analysis
 	sns.heatmap(df.corr(), annot=True, fmt='.2f')
