@@ -71,7 +71,7 @@ df['duplicated'] = df.duplicated() #Create a new feature
 #Fill missing data or drop columns/rows
 df.fillna()
 df.drop('column_full_of_nans')
-df.dropna(how='any')
+df.dropna(how='any', inplace=True)
 
 #Visualize data
 df.head()
