@@ -90,7 +90,6 @@ sns.countplot(df['column'])
 sns.boxplot(df['feature1'])
 sns.boxplot(df['feature2'])
 
-
 #Correlation analysis
 sns.heatmap(df.corr(), annot=True, fmt='.2f')
 correlations = df.corr().abs().unstack().sort_values(kind="quicksort").reset_index()
@@ -241,7 +240,7 @@ df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
 #Define Validation method
 #Train and validation set split
 from sklearn.model_selection import train_test_split
-X = df.drop('target_var', inplace=True, axis=1)
+X = df.drop('target_var', axis=1)
 y = df['column to predict']
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size = 0.4, stratify = y.values, random_state = 101)
 #Cross validation
