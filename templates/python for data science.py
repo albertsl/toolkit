@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
 sns.set()
+print("Numpy version:", np.version.version)
+print("Pandas version:", pd.__version__)
+print("Seaborn version:", sns.__version__)
 
 #Load data
 df = pd.read_csv('file.csv')
