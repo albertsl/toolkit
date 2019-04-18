@@ -500,3 +500,19 @@ from eli5.sklearn import PermutationImportance
 perm = PermutationImportance(model, random_state=101).fit(X_val, y_val)
 eli5.show_weights(perm, feature_names = X_val.columns.tolist())
 
+#Partial dependence plot
+from pdpbox import pdp, get_dataset, info_plots
+
+# Create the data that we will plot
+pdp_goals = pdp.pdp_isolate(model=model, dataset=X_val, model_features=X_val.columns, feature='Goals Scored')
+
+# plot it
+pdp.pdp_plot(pdp_goals, 'Goals Scored')
+plt.show()
+
+# Similar to previous PDP plot except we use pdp_interact instead of pdp_isolate and pdp_interact_plot instead of pdp_isolate_plot
+features_to_plot = ['Goals Scored', 'Distance Covered (Kms)']
+inter1  =  pdp.pdp_interact(model=model, dataset=X_val, model_features=X_val.columns, features=features_to_plot)
+
+pdp.pdp_interact_plot(pdp_interact_out=inter1, feature_names=features_to_plot, plot_type='contour')
+plt.show()
