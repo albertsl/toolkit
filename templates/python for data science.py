@@ -140,8 +140,8 @@ def SSC(x):
 	x = np.append(x[-1], x)
 	x = np.append(x, x[1])
 	xn = x[1:len(x)-1]
-	xn_i2 = x[2:len(x)]    # xn+1
-	xn_i1 = x[0:len(x)-2]  # xn-1
+	xn_i2 = x[2:len(x)]    #xn+1
+	xn_i1 = x[0:len(x)-2]  #xn-1
 	ans = np.heaviside((xn-xn_i1)*(xn-xn_i2), 0)
 	return sum(ans[1:])
 
@@ -150,7 +150,7 @@ def wave_length(x):
 	x = np.append(x[-1], x)
 	x = np.append(x, x[1])
 	xn = x[1:len(x)-1]
-	xn_i2 = x[2:len(x)]    # xn+1
+	xn_i2 = x[2:len(x)]    #xn+1
 	return sum(abs(xn_i2-xn))
 
 def norm_entropy(x):
@@ -169,7 +169,7 @@ def zero_crossing(x):
 	x = np.append(x[-1], x)
 	x = np.append(x, x[1])
 	xn = x[1:len(x)-1]
-	xn_i2 = x[2:len(x)]    # xn+1
+	xn_i2 = x[2:len(x)]    #xn+1
 	return sum(np.heaviside(-xn*xn_i2, 0))
 
 df_tmp = pd.DataFrame()
@@ -352,11 +352,11 @@ plt.show()
 # lightGBM (LGBM)
 #########
 import lightgbm as lgb
-# create dataset for lightgbm
+#create dataset for lightgbm
 lgb_train = lgb.Dataset(X_train, y_train)
 lgb_eval = lgb.Dataset(X_val, y_val, reference=lgb_train)
 
-# specify your configurations as a dict
+#specify your configurations as a dict
 params = {
 	'boosting_type': 'gbdt',
 	'objective': 'regression',
@@ -369,13 +369,13 @@ params = {
 	'verbose': 0
 }
 
-# train
+#train
 gbm = lgb.train(params, lgb_train, num_boost_round=20, valid_sets=lgb_eval, early_stopping_rounds=5)
 
-# save model to file
+#save model to file
 gbm.save_model('model.txt')
 
-# predict
+#predict
 y_pred = gbm.predict(X_val, num_iteration=gbm.best_iteration)
 
 #########
@@ -383,9 +383,9 @@ y_pred = gbm.predict(X_val, num_iteration=gbm.best_iteration)
 #########
 import xgboost as xgb
 
-params = {'objective': 'multi:softmax',  # Specify multiclass classification
-		'num_class': 9,  # Number of possible output classes
-		'tree_method': 'hist',  # Use gpu_hist for GPU accelerated algorithm.
+params = {'objective': 'multi:softmax',  #Specify multiclass classification
+		'num_class': 9,  #Number of possible output classes
+		'tree_method': 'hist',  #Use gpu_hist for GPU accelerated algorithm.
 		'eta': 0.1,
 		'max_depth': 6,
 		'silent': 1,
@@ -406,8 +406,8 @@ xgval = xgb.DMatrix(X_val, label=y_val)
 xgtest = xgb.DMatrix(X_test)
 
 num_rounds = 500
-gpu_res = {}  # Store accuracy result
-# Train model
+gpu_res = {}  #Store accuracy result
+#Train model
 xgbst = xgb.train(params, xgtrain, num_rounds, evals=[
 			(xgval, 'test')], evals_result=gpu_res)
 
@@ -503,16 +503,24 @@ eli5.show_weights(perm, feature_names = X_val.columns.tolist())
 #Partial dependence plot
 from pdpbox import pdp, get_dataset, info_plots
 
-# Create the data that we will plot
+#Create the data that we will plot
 pdp_goals = pdp.pdp_isolate(model=model, dataset=X_val, model_features=X_val.columns, feature='Goals Scored')
 
-# plot it
+#plot it
 pdp.pdp_plot(pdp_goals, 'Goals Scored')
 plt.show()
 
-# Similar to previous PDP plot except we use pdp_interact instead of pdp_isolate and pdp_interact_plot instead of pdp_isolate_plot
+#Similar to previous PDP plot except we use pdp_interact instead of pdp_isolate and pdp_interact_plot instead of pdp_isolate_plot
 features_to_plot = ['Goals Scored', 'Distance Covered (Kms)']
 inter1  =  pdp.pdp_interact(model=model, dataset=X_val, model_features=X_val.columns, features=features_to_plot)
 
 pdp.pdp_interact_plot(pdp_interact_out=inter1, feature_names=features_to_plot, plot_type='contour')
 plt.show()
+
+#SHAP Values: Understand how each feature affects every individual prediciton
+import shap
+data_for_prediction = X_val.iloc[row_num]
+explainer = shap.TreeExplainer(model)  #Use DeepExplainer for Deep Learning models, KernelExplainer for all other models
+shap_vals = explainer.shap_values(data_for_prediction)
+shap.initjs()
+shap.force_plot(explainer.expected_value[1], shap_values[1], data_for_prediction)
