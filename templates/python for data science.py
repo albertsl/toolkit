@@ -491,3 +491,12 @@ grid.best_estimator_
 #Try Ensemble methods. Combining your best models will often perform better than running them individually
 
 #Once you are confident about your final model, measure its performance on the test set to estimate the generalization error
+
+#Model interpretability
+#Feature importance
+import eli5
+from eli5.sklearn import PermutationImportance
+
+perm = PermutationImportance(model, random_state=101).fit(X_val, y_val)
+eli5.show_weights(perm, feature_names = X_val.columns.tolist())
+
