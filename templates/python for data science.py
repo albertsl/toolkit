@@ -523,4 +523,4 @@ data_for_prediction = X_val.iloc[row_num]
 explainer = shap.TreeExplainer(model)  #Use DeepExplainer for Deep Learning models, KernelExplainer for all other models
 shap_vals = explainer.shap_values(data_for_prediction)
 shap.initjs()
-shap.force_plot(explainer.expected_value[1], shap_values[1], data_for_prediction)
+shap.force_plot(explainer.expected_value[1], shap_vals[1], data_for_prediction)
