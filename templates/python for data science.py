@@ -524,3 +524,10 @@ explainer = shap.TreeExplainer(model)  #Use DeepExplainer for Deep Learning mode
 shap_vals = explainer.shap_values(data_for_prediction)
 shap.initjs()
 shap.force_plot(explainer.expected_value[1], shap_vals[1], data_for_prediction)
+
+#We can also do a SHAP plot of the whole dataset
+shap_vals = explainer.shap_values(X_val)
+shap.summary_plot(shap_vals[1], X_val)
+#SHAP Dependence plot
+shap.dependence_plot('feature_for_x', shap_vals[1], X_val, interaction_index="feature_for_color")
+
