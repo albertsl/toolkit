@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
 sns.set()
+import sys
+print("Python version:", sys.version)
 print("Numpy version:", np.version.version)
 print("Pandas version:", pd.__version__)
 print("Seaborn version:", sns.__version__)
