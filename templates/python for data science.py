@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
 sns.set()
+
+#Check versions
 import sys
 print("Python version:", sys.version)
 print("Numpy version:", np.version.version)
