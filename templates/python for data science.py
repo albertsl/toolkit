@@ -62,6 +62,14 @@ def reduce_mem_usage(df):
 	
 	return df
 
+#Improve execution speed of your code by adding these decorators:
+@numba.jit
+def f(x):
+	return x
+@numba.njit #The nopython=True option requires that the function be fully compiled (so that the Python interpreter calls are completely removed), otherwise an exception is raised.  These exceptions usually indicate places in the function that need to be modified in order to achieve better-than-Python performance.  We strongly recommend always using nopython=True.
+def f(x):
+	return x
+
 #Check for missing data
 total_null = df.isna().sum().sort_values(ascending=False)
 percent = 100*(df.isna().sum()/df.isna().count()).sort_values(ascending=False)
