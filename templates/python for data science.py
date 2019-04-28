@@ -17,7 +17,7 @@ print("Python version:", sys.version)
 print("Numpy version:", np.version.version)
 print("Pandas version:", pd.__version__)
 print("Seaborn version:", sns.__version__)
-print(numba.__version__)
+print("Numba version:", numba.__version__)
 
 #Load data
 df = pd.read_csv('file.csv')
