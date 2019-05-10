@@ -247,8 +247,17 @@ for i, row in df.iterrows():
 df['EI'] = pd.Series(lEI)
 
 #Scaling features
+#Standard Scaler: The StandardScaler assumes your data is normally distributed within each feature and will scale them such that the distribution is now centred around 0, with a standard deviation of 1.
+#If data is not normally distributed, this is not the best scaler to use.
 from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
+scaler.fit(df)
+df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
+#MinMax Scaler: Shrinks the range such that the range is now between 0 and 1 (or -1 to 1 if there are negative values).
+#This scaler works better for cases in which the standard scaler might not work so well. If the distribution is not Gaussian or the standard deviation is very small, the min-max scaler works better.
+#it is sensitive to outliers, so if there are outliers in the data, you might want to consider the Robust Scaler below.
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
 scaler.fit(df)
 df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
 
