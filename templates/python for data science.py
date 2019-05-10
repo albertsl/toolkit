@@ -266,6 +266,11 @@ from sklearn.preprocessing import RobustScaler
 scaler = RobustScaler()
 scaler.fit(df)
 df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
+#Normalizer: The normalizer scales each value by dividing it by its magnitude in n-dimensional space for n number of features.
+from sklearn.preprocessing import Normalizer
+scaler = RobustScaler()
+scaler.fit(df)
+df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
 
 #Apply all the same transformations to the test set
 
