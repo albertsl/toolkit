@@ -260,6 +260,12 @@ from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler()
 scaler.fit(df)
 df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
+#Robust Scaler: Uses a similar method to the Min-Max scaler but it instead uses the interquartile range, rather than the min-max, so that it is robust to outliers.
+#This means it is using less data for scaling so it’s more suitable when there are outliers in the data.RobustScaler
+from sklearn.preprocessing import RobustScaler
+scaler = RobustScaler()
+scaler.fit(df)
+df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
 
 #Apply all the same transformations to the test set
 
