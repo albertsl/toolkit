@@ -157,7 +157,7 @@ md = mahalanobis_distance_detect_outliers(mahalanobis_distance(cov_matrix(df)[1]
 threshold = mahalanobis_distance_threshold(mahalanobis_distance(cov_matrix(df)[1], df), k=2)
 outlier = pd.DataFrame({'Mahalanobis distance': md, 'Threshold':threshold})
 outlier['Outlier'] = outlier[outlier['Mahalanobis distance'] > outlier['Threshold']]
-
+df['Outlier'] = outlier['Outlier']
 
 #Correlation analysis
 sns.heatmap(df.corr(), annot=True, fmt='.2f')
