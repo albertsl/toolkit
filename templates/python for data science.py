@@ -107,6 +107,7 @@ sns.countplot(df['column'])
 sns.boxplot(df['feature1'])
 sns.boxplot(df['feature2'])
 #Outlier detection with Isolation Forest
+from sklearn.ensemble import IsolationForest
 anomalies_ratio = 0.009
 isolation_forest = IsolationForest(n_estimators=100, max_samples=256, contamination=anomalies_ratio, behaviour='new', random_state=101)
 isolation_forest.fit(df)
