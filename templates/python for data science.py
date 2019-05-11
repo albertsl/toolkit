@@ -106,6 +106,43 @@ sns.countplot(df['column'])
 #Fix or remove outliers
 sns.boxplot(df['feature1'])
 sns.boxplot(df['feature2'])
+#Outlier detection with Mahalanovis Distance
+def is_pos_def(A):
+	if np.allclose(A, A.T):
+		try:
+			np.linalg.cholesky(A)
+			return True
+		except np.linalg.LinAlgError:
+			return False
+	else:
+		return False
+
+def cov_matrix(data):
+	covariance_matrix = np.cov(data, rowvar=False)
+	if is_pos_def(covariance_matrix):
+		inv_covariance_matrix = np.linalg.inv(covariance_matrix)
+		if is_pos_def(inv_covariance_matrix):
+			return covariance_matrix
+		else:
+			print('Error: Inverse Covariance Matrix is not positive definite')
+	else:
+		print('Error: Covariance Matrix is not positive definite')
+
+def Mahalanobis_distance(inv_covariance_matrix, mean_distr, data):
+		diff = data - mean_distr
+		md = []
+		for i in range(len(diff)):
+			md.append(np.sqrt(diff[i].dot(inv_covariance_matrix).dot(diff[i])))
+		return md
+
+def Mahalanobis_distance_detect_outliers(dist, k=2): #k=3 for a higher threshold
+	threshold = np.mean(dist)*k
+	outliers = []
+	for i in range(len(dist)):
+		if dist[i] >= threshold:
+			outliers.append(i) #index of the outlier
+	return np.array(outliers)
+
 
 #Correlation analysis
 sns.heatmap(df.corr(), annot=True, fmt='.2f')
