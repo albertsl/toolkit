@@ -130,7 +130,7 @@ def cov_matrix(data):
 
 def Mahalanobis_distance(inv_covariance_matrix, mean_distr, data):
 		#normalized = data - mean_distr
-		normalized = data - data.mean()
+		normalized = data - data.mean(axis=0)
 		md = []
 		for i in range(len(normalized)):
 			md.append(np.sqrt(normalized[i].dot(inv_covariance_matrix).dot(normalized[i])))
