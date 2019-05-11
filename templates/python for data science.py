@@ -515,10 +515,20 @@ acc_svm = round(model.score(X_val, y_val) * 100, 2)
 #########
 # K-Means Clustering
 #########
+#Find parameter k: Elbow method
+SSE = []
+for k in range(1,10):
+	kmeans = KMeans(n_clusters=k)
+	kmeans.fit(df)
+	SSE.append(kmeans.inertia_)
+
+plt.plot(list(range(1,10)), SSE)
+
 #Train model
 from sklearn.cluster import KMeans
 kmeans = KMeans(n_clusters=K) #Choose K
 kmeans.fit(df)
+
 #Evaluate the model
 kmeans.cluster_centers_
 kmeans.labels_
