@@ -112,7 +112,7 @@ anomalies_ratio = 0.009
 isolation_forest = IsolationForest(n_estimators=100, max_samples=256, contamination=anomalies_ratio, behaviour='new', random_state=101)
 isolation_forest.fit(df)
 outliers = isolation_forest.predict(df)
-otuliers = [1 if x == -1 else 0 for x in outliers]
+outliers = [1 if x == -1 else 0 for x in outliers]
 df['Outlier'] = outliers
 
 #Outlier detection with Mahalanovis Distance
