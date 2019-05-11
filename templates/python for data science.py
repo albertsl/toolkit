@@ -141,6 +141,9 @@ sns.distplot(np.square(dist), bins=10, kde=False)
 def mahalanobis_distance_threshold(dist, k=2): #k=3 for a higher threshold
 	return np.mean(dist)*k
 
+#Visualize the Mahalanobis distance to check if the threshold is reasonable
+sns.distplot(dist, bins=10, kde=True)
+
 def mahalanobis_distance_detect_outliers(dist, k=2):
 	threshold = mahalanobis_distance_threshold(dist, k)
 	outliers = []
@@ -149,7 +152,12 @@ def mahalanobis_distance_detect_outliers(dist, k=2):
 			outliers.append(i) #index of the outlier
 	return np.array(outliers)
 
-mahalanobis_distance_detect_outliers(mahalanobis_distance(cov_matrix(df)[1], df), k=2)
+md = mahalanobis_distance_detect_outliers(mahalanobis_distance(cov_matrix(df)[1], df), k=2)
+#Flag outliers with Mahalanobis Distance
+threshold = mahalanobis_distance_threshold(mahalanobis_distance(cov_matrix(df)[1], df), k=2)
+outlier = pd.DataFrame({'Mahalanobis distance': md, 'Threshold':threshold})
+outlier['Outlier'] = outlier[outlier['Mahalanobis distance'] > outlier['Threshold']]
+
 
 #Correlation analysis
 sns.heatmap(df.corr(), annot=True, fmt='.2f')
