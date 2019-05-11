@@ -122,17 +122,18 @@ def cov_matrix(data):
 	if is_pos_def(covariance_matrix):
 		inv_covariance_matrix = np.linalg.inv(covariance_matrix)
 		if is_pos_def(inv_covariance_matrix):
-			return covariance_matrix
+			return covariance_matrix, inv_covariance_matrix
 		else:
 			print('Error: Inverse Covariance Matrix is not positive definite')
 	else:
 		print('Error: Covariance Matrix is not positive definite')
 
 def Mahalanobis_distance(inv_covariance_matrix, mean_distr, data):
-		diff = data - mean_distr
+		#normalized = data - mean_distr
+		normalized = data - np.mean(data)
 		md = []
-		for i in range(len(diff)):
-			md.append(np.sqrt(diff[i].dot(inv_covariance_matrix).dot(diff[i])))
+		for i in range(len(normalized)):
+			md.append(np.sqrt(normalized[i].dot(inv_covariance_matrix).dot(normalized[i])))
 		return md
 
 def Mahalanobis_distance_detect_outliers(dist, k=2): #k=3 for a higher threshold
@@ -143,6 +144,7 @@ def Mahalanobis_distance_detect_outliers(dist, k=2): #k=3 for a higher threshold
 			outliers.append(i) #index of the outlier
 	return np.array(outliers)
 
+Mahalanobis_distance_detect_outliers(Mahalanobis_distance(cov_matrix(df)[1], df), k=2)
 
 #Correlation analysis
 sns.heatmap(df.corr(), annot=True, fmt='.2f')
