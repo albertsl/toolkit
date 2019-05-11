@@ -565,3 +565,14 @@ shap.summary_plot(shap_vals[1], X_val)
 #SHAP Dependence plot
 shap.dependence_plot('feature_for_x', shap_vals[1], X_val, interaction_index="feature_for_color")
 
+#Dimensionality reduction
+#PCA: Decompose the data in a defined number of variables keeping the most variance possible.
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2, svd_solver='full')
+X_train_PCA = pca.fit_transform(X_train)
+X_train_PCA = pd.DataFrame(X_train_PCA)
+X_train_PCA.index = X_train.index
+
+X_test_PCA = pca.fit_transform(X_train)
+X_test_PCA = pd.DataFrame(X_test_PCA)
+X_test_PCA.index = X_train.index
