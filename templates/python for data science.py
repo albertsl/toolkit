@@ -128,8 +128,7 @@ def cov_matrix(data):
 	else:
 		print('Error: Covariance Matrix is not positive definite')
 
-def Mahalanobis_distance(inv_covariance_matrix, mean_distr, data):
-		#normalized = data - mean_distr
+def Mahalanobis_distance(inv_covariance_matrix, data):
 		normalized = data - data.mean(axis=0)
 		md = []
 		for i in range(len(normalized)):
