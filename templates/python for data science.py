@@ -610,6 +610,11 @@ perm = PermutationImportance(model, random_state=101).fit(X_val, y_val)
 eli5.show_weights(perm, feature_names = X_val.columns.tolist())
 
 #Partial dependence plot
+#New integration in sklearn, might not work with older versions
+from sklearn.inspection import partial_dependence, plot_partial_dependence
+partial_dependence(model, X_train, features=['feature', ('feat1', 'feat2')])
+plot_partial_dependence(model, X_train, features=['feature', ('feat1', 'feat2')])
+#With external module for legacy editions
 from pdpbox import pdp, get_dataset, info_plots
 
 #Create the data that we will plot
