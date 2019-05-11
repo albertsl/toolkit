@@ -106,6 +106,14 @@ sns.countplot(df['column'])
 #Fix or remove outliers
 sns.boxplot(df['feature1'])
 sns.boxplot(df['feature2'])
+#Outlier detection with Isolation Forest
+anomalies_ratio = 0.009
+isolation_forest = IsolationForest(n_estimators=100, max_samples=256, contamination=anomalies_ratio, behaviour='new', random_state=101)
+isolation_forest.fit(df)
+outliers = isolation_forest.predict(df)
+otuliers = [1 if x == -1 else 0 for x in outliers]
+df['Outlier'] = outliers
+
 #Outlier detection with Mahalanovis Distance
 def is_pos_def(A):
 	if np.allclose(A, A.T):
@@ -540,6 +548,11 @@ models = pd.DataFrame({
 'Score': [acc_lr, acc_svm, acc_knn, acc_log, 
 			acc_rf]})
 models.sort_values(by='Score', ascending=False)
+
+#Evaluate how each model is working
+plt.scatter(y_val, y_pred) #should have the shape of a line for good predictions
+sns.distplot(y_val - y_pred) #should be a normal distribution centered at 0
+
 #Analyze the most significant variables for each algorithm.
 #Analyze the types of errors the models make.
 #What data would a human have used to avoid these errors?
