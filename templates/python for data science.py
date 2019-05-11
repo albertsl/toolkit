@@ -135,6 +135,9 @@ def mahalanobis_distance(inv_covariance_matrix, data):
 			md.append(np.sqrt(normalized[i].dot(inv_covariance_matrix).dot(normalized[i])))
 		return md
 
+#Mahalanobis Distance should follow X2 distribution, let's visualize it:
+sns.distplot(np.square(dist), bins=10, kde=False)
+
 def mahalanobis_distance_threshold(dist, k=2): #k=3 for a higher threshold
 	return np.mean(dist)*k
 
