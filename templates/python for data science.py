@@ -23,6 +23,9 @@ print("Numba version:", numba.__version__)
 df = pd.read_csv('file.csv')
 #If data is too big, take a sample of it
 df = pd.read_csv('file.csv', nrows=50000)
+#Load mat file
+from scipy.io import loadmat
+data = loadmat('file.mat')
 #Reduce dataframe memory usage
 def reduce_mem_usage(df):
 	""" iterate through all the columns of a dataframe and modify the data type
