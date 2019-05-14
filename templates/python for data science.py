@@ -64,6 +64,15 @@ def reduce_mem_usage(df):
 	print('Decreased by {:.1f}%'.format(100 * (start_mem - end_mem) / start_mem))
 	
 	return df
+#Sometimes it changes some values in the dataframe, let's check it doesnt' change anything
+df_test = pd.DataFrame()
+df_opt = reduce_mem_usage(df)
+for col in df:
+    df_test[col] = df[col] - df_opt[col]
+#Mean, max and min for all columns should be 0
+df_test.describe().loc['mean']
+df_test.describe().loc['max']
+df_test.describe().loc['min']
 
 #Improve execution speed of your code by adding these decorators:
 @numba.jit
