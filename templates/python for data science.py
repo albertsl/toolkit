@@ -12,6 +12,8 @@ sns.set()
 import numba
 
 #Check versions
+import platform
+print("Operating system:", platform.system(), platform.release())
 import sys
 print("Python version:", sys.version)
 print("Numpy version:", np.version.version)
