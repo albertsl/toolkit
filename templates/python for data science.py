@@ -661,6 +661,11 @@ shap.summary_plot(shap_vals[1], X_val)
 shap.dependence_plot('feature_for_x', shap_vals[1], X_val, interaction_index="feature_for_color")
 
 #Dimensionality reduction
+#SVD: Find the percentage of variance explained by each principal component
+#First scale the data
+U, S, V = np.linalg.svd(df, full_matrices=False)
+importance = S/S.sum()
+varinace_explained = importance.cumsum()*100
 #PCA: Decompose the data in a defined number of variables keeping the most variance possible.
 from sklearn.decomposition import PCA
 pca = PCA(n_components=2, svd_solver='full')
