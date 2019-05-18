@@ -170,7 +170,7 @@ df['Outlier'] = outlier['Outlier']
 
 #Correlation analysis
 sns.heatmap(df.corr(), annot=True, fmt='.2f')
-correlations = df.corr().abs().unstack().sort_values(kind="quicksort").reset_index()
+correlations = df.corr(method='pearson').abs().unstack().sort_values(kind="quicksort").reset_index()
 correlations = correlations[correlations['level_0'] != correlations['level_1']]
 
 #Encode categorical variables
