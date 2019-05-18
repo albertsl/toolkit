@@ -12,6 +12,8 @@ sns.set()
 import numba
 
 #Check versions
+import platform
+print("Operating system:", platform.system(), platform.release())
 import sys
 print("Python version:", sys.version)
 print("Numpy version:", np.version.version)
@@ -23,6 +25,9 @@ print("Numba version:", numba.__version__)
 df = pd.read_csv('file.csv')
 #If data is too big, take a sample of it
 df = pd.read_csv('file.csv', nrows=50000)
+#Load mat file
+from scipy.io import loadmat
+data = loadmat('file.mat')
 #Reduce dataframe memory usage
 def reduce_mem_usage(df):
 	""" iterate through all the columns of a dataframe and modify the data type
@@ -61,6 +66,15 @@ def reduce_mem_usage(df):
 	print('Decreased by {:.1f}%'.format(100 * (start_mem - end_mem) / start_mem))
 	
 	return df
+#Sometimes it changes some values in the dataframe, let's check it doesnt' change anything
+df_test = pd.DataFrame()
+df_opt = reduce_mem_usage(df)
+for col in df:
+    df_test[col] = df[col] - df_opt[col]
+#Mean, max and min for all columns should be 0
+df_test.describe().loc['mean']
+df_test.describe().loc['max']
+df_test.describe().loc['min']
 
 #Improve execution speed of your code by adding these decorators:
 @numba.jit
@@ -652,6 +666,11 @@ shap.summary_plot(shap_vals[1], X_val)
 shap.dependence_plot('feature_for_x', shap_vals[1], X_val, interaction_index="feature_for_color")
 
 #Dimensionality reduction
+#SVD: Find the percentage of variance explained by each principal component
+#First scale the data
+U, S, V = np.linalg.svd(df, full_matrices=False)
+importance = S/S.sum()
+varinace_explained = importance.cumsum()*100
 #PCA: Decompose the data in a defined number of variables keeping the most variance possible.
 from sklearn.decomposition import PCA
 pca = PCA(n_components=2, svd_solver='full')
