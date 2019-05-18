@@ -194,7 +194,7 @@ correlations = df.corr(method='pearson').abs().unstack().sort_values(kind="quick
 correlations = correlations[correlations['level_0'] != correlations['level_1']]
 
 #Encode categorical variables
-#Encoding for target variable
+#Encoding for target variable (categorical variable)
 from sklearn.preprocessing import LabelEncoder
 le = LabelEncoder()
 df['categorical_var'] = le.fit_transform(df['categorical_var'])
