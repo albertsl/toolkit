@@ -84,6 +84,18 @@ def f(x):
 def f(x):
 	return x
 
+#Visualize data
+df.head()
+df.describe()
+df.info()
+df.columns
+#For a categorical dataset we want to see how many instances of each category there are
+df['categorical_var'].value_counts()
+#Automated data visualization
+from pandas_profiling import ProfileReport
+prof = ProfileReport(df)
+prof.to_file(outputfile='output.html')
+
 #Check for missing data
 total_null = df.isna().sum().sort_values(ascending=False)
 percent = 100*(df.isna().sum()/df.isna().count()).sort_values(ascending=False)
@@ -103,18 +115,6 @@ df['duplicated'] = df.duplicated() #Create a new feature
 df.fillna()
 df.drop('column_full_of_nans')
 df.dropna(how='any', inplace=True)
-
-#Visualize data
-df.head()
-df.describe()
-df.info()
-df.columns
-#For a categorical dataset we want to see how many instances of each category there are
-df['categorical_var'].value_counts()
-#Automated data visualization
-from pandas_profiling import ProfileReport
-prof = ProfileReport(df)
-prof.to_file(outputfile='output.html')
 
 #Exploratory Data Analysis (EDA)
 sns.pairplot(df)
