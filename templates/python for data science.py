@@ -125,7 +125,7 @@ sns.countplot(df['column'])
 #Fix or remove outliers
 sns.boxplot(df['feature1'])
 sns.boxplot(df['feature2'])
-plt.plot('var1', 'y') #Do this for all variables against y
+plt.scatter('var1', 'y') #Do this for all variables against y
 #Outlier detection with Isolation Forest
 from sklearn.ensemble import IsolationForest
 anomalies_ratio = 0.009
