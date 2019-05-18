@@ -135,7 +135,7 @@ outliers = isolation_forest.predict(df)
 outliers = [1 if x == -1 else 0 for x in outliers]
 df['Outlier'] = outliers
 
-#Outlier detection with Mahalanovis Distance
+#Outlier detection with Mahalanobis Distance
 def is_pos_def(A):
 	if np.allclose(A, A.T):
 		try:
