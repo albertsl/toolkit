@@ -207,6 +207,27 @@ sns.heatmap(df.corr(), annot=True, fmt='.2f')
 correlations = df.corr(method='pearson').abs().unstack().sort_values(kind="quicksort").reset_index()
 correlations = correlations[correlations['level_0'] != correlations['level_1']]
 
+#Colinearity
+from statsmodels.stats.outliers_influence import variance_inflation_factor    
+def calculate_vif_(X, thresh=5.0):
+    variables = list(range(X.shape[1]))
+    dropped = True
+    while dropped:
+        dropped = False
+        vif = [variance_inflation_factor(X.iloc[:, variables].values, ix)
+               for ix in range(X.iloc[:, variables].shape[1])]
+
+        maxloc = vif.index(max(vif))
+        if max(vif) > thresh:
+            print('vif ' + vif + ' dropping \'' + X.iloc[:, variables].columns[maxloc] +
+                  '\' at index: ' + str(maxloc))
+            del variables[maxloc]
+            dropped = True
+
+    print('Remaining variables:')
+    print(X.columns[variables])
+    return X.iloc[:, variables]
+
 #Encode categorical variables
 #Encoding for target variable (categorical variable)
 from sklearn.preprocessing import LabelEncoder
