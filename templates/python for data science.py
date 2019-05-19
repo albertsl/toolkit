@@ -129,6 +129,17 @@ sns.countplot(df['column'])
 sns.boxplot(df['feature1'])
 sns.boxplot(df['feature2'])
 plt.scatter('var1', 'y') #Do this for all variables against y
+
+def replace_outlier(df, column, value, threshold, direction='max'): #value could be the mean
+        if direction == 'max':
+            df[column] = df[column].apply(lambda x: value if x > threshold else x)
+            for item in df[df[column] > threshold].index:
+                df.loc[item, (column+'_nan')] = 1
+        elif direction == 'min':
+            df[column] = df[column].apply(lambda x: value if x < threshold else x)
+            for item in df[df[column] < threshold].index:
+                df.loc[item, (column+'_nan')] = 1
+
 #Outlier detection with Isolation Forest
 from sklearn.ensemble import IsolationForest
 anomalies_ratio = 0.009
