@@ -682,6 +682,6 @@ X_train_PCA = pca.fit_transform(X_train)
 X_train_PCA = pd.DataFrame(X_train_PCA)
 X_train_PCA.index = X_train.index
 
-X_test_PCA = pca.fit_transform(X_train)
+X_test_PCA = pca.transform(X_test)
 X_test_PCA = pd.DataFrame(X_test_PCA)
 X_test_PCA.index = X_train.index
