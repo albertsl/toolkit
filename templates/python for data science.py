@@ -5,6 +5,9 @@
 #Load packages
 import numpy as np
 import pandas as pd
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 1000)
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
@@ -84,13 +87,26 @@ def f(x):
 def f(x):
 	return x
 
+#Visualize data
+df.head()
+df.describe()
+df.info()
+df.columns
+#For a categorical dataset we want to see how many instances of each category there are
+df['categorical_var'].value_counts()
+#Automated data visualization
+from pandas_profiling import ProfileReport
+prof = ProfileReport(df)
+prof.to_file(outputfile='output.html')
+
 #Check for missing data
 total_null = df.isna().sum().sort_values(ascending=False)
 percent = 100*(df.isna().sum()/df.isna().count()).sort_values(ascending=False)
 missing_data = pd.concat([total_null, percent], axis=1, keys=['Total', 'Percent'])
 #Generate new features with missing data
-df['feature1_nan'] = df['feature1'].isna()
-df['feature2_nan'] = df['feature2'].isna()
+nanf = ['1']
+for feature in nanf:
+    df[feature + '_nan'] = df[nanf].isna()
 #Also look for infinite data, recommended to check it also after feature engineering
 df.replace(np.inf,0,inplace=True)
 df.replace(-np.inf,0,inplace=True)
@@ -103,14 +119,6 @@ df['duplicated'] = df.duplicated() #Create a new feature
 df.fillna()
 df.drop('column_full_of_nans')
 df.dropna(how='any', inplace=True)
-
-#Visualize data
-df.head()
-df.describe()
-df.info()
-df.columns
-#For a categorical dataset we want to see how many instances of each category there are
-df['categorical_var'].value_counts()
 
 #Exploratory Data Analysis (EDA)
 sns.pairplot(df)
@@ -141,6 +149,18 @@ print(featureScores.nlargest(5,'Score'))
 #Fix or remove outliers
 sns.boxplot(df['feature1'])
 sns.boxplot(df['feature2'])
+plt.scatter('var1', 'y') #Do this for all variables against y
+
+def replace_outlier(df, column, value, threshold, direction='max'): #value could be the mean
+        if direction == 'max':
+            df[column] = df[column].apply(lambda x: value if x > threshold else x)
+            for item in df[df[column] > threshold].index:
+                df.loc[item, (column+'_nan')] = 1
+        elif direction == 'min':
+            df[column] = df[column].apply(lambda x: value if x < threshold else x)
+            for item in df[df[column] < threshold].index:
+                df.loc[item, (column+'_nan')] = 1
+
 #Outlier detection with Isolation Forest
 from sklearn.ensemble import IsolationForest
 anomalies_ratio = 0.009
@@ -150,7 +170,7 @@ outliers = isolation_forest.predict(df)
 outliers = [1 if x == -1 else 0 for x in outliers]
 df['Outlier'] = outliers
 
-#Outlier detection with Mahalanovis Distance
+#Outlier detection with Mahalanobis Distance
 def is_pos_def(A):
 	if np.allclose(A, A.T):
 		try:
@@ -205,11 +225,32 @@ df['Outlier'] = outlier['Outlier']
 
 #Correlation analysis
 sns.heatmap(df.corr(), annot=True, fmt='.2f')
-correlations = df.corr().abs().unstack().sort_values(kind="quicksort").reset_index()
+correlations = df.corr(method='pearson').abs().unstack().sort_values(kind="quicksort").reset_index()
 correlations = correlations[correlations['level_0'] != correlations['level_1']]
 
+#Colinearity
+from statsmodels.stats.outliers_influence import variance_inflation_factor    
+def calculate_vif_(X, thresh=5.0):
+    variables = list(range(X.shape[1]))
+    dropped = True
+    while dropped:
+        dropped = False
+        vif = [variance_inflation_factor(X.iloc[:, variables].values, ix)
+               for ix in range(X.iloc[:, variables].shape[1])]
+
+        maxloc = vif.index(max(vif))
+        if max(vif) > thresh:
+            print('vif ' + vif + ' dropping \'' + X.iloc[:, variables].columns[maxloc] +
+                  '\' at index: ' + str(maxloc))
+            del variables[maxloc]
+            dropped = True
+
+    print('Remaining variables:')
+    print(X.columns[variables])
+    return X.iloc[:, variables]
+
 #Encode categorical variables
-#Encoding for target variable
+#Encoding for target variable (categorical variable)
 from sklearn.preprocessing import LabelEncoder
 le = LabelEncoder()
 df['categorical_var'] = le.fit_transform(df['categorical_var'])
@@ -694,6 +735,6 @@ X_train_PCA = pca.fit_transform(X_train)
 X_train_PCA = pd.DataFrame(X_train_PCA)
 X_train_PCA.index = X_train.index
 
-X_test_PCA = pca.fit_transform(X_train)
+X_test_PCA = pca.transform(X_test)
 X_test_PCA = pd.DataFrame(X_test_PCA)
-X_test_PCA.index = X_train.index
+X_test_PCA.index = X_test.index
