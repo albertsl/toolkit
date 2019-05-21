@@ -120,6 +120,19 @@ df.fillna()
 df.drop('column_full_of_nans')
 df.dropna(how='any', inplace=True)
 
+#Fix Skewed features
+numeric_feats = all_data.dtypes[all_data.dtypes != "object"].index
+# Check the skew of all numerical features
+skewed_feats = all_data[numeric_feats].apply(lambda x: skew(x.dropna())).sort_values(ascending=False)
+skewness = pd.DataFrame({'Skew' :skewed_feats})
+#Box Cox Transformation of (highly) skewed features. We use the scipy function boxcox1p which computes the Box-Cox transformation of 1+x
+#Note that setting λ=0 is equivalent to log1p used above for the target variable.
+from scipy.special import boxcox1p
+skewed_features = skewness.index
+lambd = 0.15
+for feat in skewed_features:
+    all_data[feat] = boxcox1p(all_data[feat], lambd)
+
 #Exploratory Data Analysis (EDA)
 sns.pairplot(df)
 sns.distplot(df['column'])
