@@ -125,6 +125,19 @@ get_univariate_plots(data=data_train, target_col='target', data_test=data_test, 
 from featexp import get_trend_stats
 stats = get_trend_stats(data=data_train, target_col='target', data_test=data_test)
 
+#Unsupervised Feature selection before training a model
+from sklearn.feature_selection import SelectKBest
+bestfeatures = SelectKBest(score_func=chi2, k='all')
+fit = bestfeatures.fit(X,Y)
+
+dfscores = pd.DataFrame(fit.scores_)
+dfcolumns = pd.DataFrame(df.columns)
+
+featureScores = pd.concat([dfcolumns,dfscores],axis=1)
+featureScores.columns = ['Specs','Score']  #naming the dataframe columns
+
+print(featureScores.nlargest(5,'Score'))
+
 #Fix or remove outliers
 sns.boxplot(df['feature1'])
 sns.boxplot(df['feature2'])
