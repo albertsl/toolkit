@@ -117,6 +117,14 @@ sns.pairplot(df)
 sns.distplot(df['column'])
 sns.countplot(df['column'])
 
+#Feature understanding - see how the variable affects the target variable
+from featexp import get_univariate_plots
+# Plots drawn for all features if nothing is passed in feature_list parameter.
+get_univariate_plots(data=data_train, target_col='target', features_list=['DAYS_BIRTH'], bins=10)
+get_univariate_plots(data=data_train, target_col='target', data_test=data_test, features_list=['DAYS_EMPLOYED'])
+from featexp import get_trend_stats
+stats = get_trend_stats(data=data_train, target_col='target', data_test=data_test)
+
 #Fix or remove outliers
 sns.boxplot(df['feature1'])
 sns.boxplot(df['feature2'])
