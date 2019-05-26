@@ -598,6 +598,19 @@ xgbst = xgb.train(params, xgtrain, num_rounds, evals=[
 y_pred = xgbst.predict(xgtest)
 
 #########
+# AdaBoost
+#########
+from sklearn.ensemble import AdaBoostClassifier
+model = AdaBoostClassifier(random_state=101)
+model.fit(X_train, y_train)
+model.score(X_val,y_val)
+#Regression
+from sklearn.ensemble import AdaBoostRegressor
+model = AdaBoostRegressor(random_state=101)
+model.fit(X_train, y_train)
+model.score(X_val, y_val)
+
+#########
 # Support Vector Machine (SVM)
 #########
 from sklearn.svm import SVC
