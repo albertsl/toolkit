@@ -597,6 +597,15 @@ xgbst = xgb.train(params, xgtrain, num_rounds, evals=[
 
 y_pred = xgbst.predict(xgtest)
 
+#Simplified code
+model = xgb.XGBClassifier(random_state=1,learning_rate=0.01)
+model.fit(x_train, y_train)
+model.score(x_test,y_test)
+#Regression
+model=xgb.XGBRegressor()
+model.fit(x_train, y_train)
+model.score(x_test,y_test)
+
 #########
 # AdaBoost
 #########
