@@ -89,6 +89,19 @@ def f(x):
 def f(x):
 	return x
 
+#Styling pandas DataFrame visualization https://pbpython.com/styling-pandas.html
+#https://pandas.pydata.org/pandas-docs/stable/user_guide/style.html
+# more info on string formatting: https://mkaz.blog/code/python-string-format-cookbook/
+format_dict = {'price': '${0:,.2f}', 'date': '{:%m-%Y}', 'pct_of_total': '{:.2%}'}
+#Format the numbers
+df.head().style.format(format_dict).hide_index()
+#Highlight max and min
+df.head().style.format(format_dict).hide_index().highlight_max(color='lightgreen').highlight_min(color='#cd4f39')
+#Colour gradient in the background
+df.head().style.format(format_dict).background_gradient(subset=['sum'], cmap='BuGn'))
+#Bars indicating number size
+df.head().style.format(format_dict).hide_index().bar(color='#FFA07A', vmin=100_000, subset=['sum'], align='zero').bar(color='lightgreen', vmin=0, subset=['pct_of_total'], align='zero').set_caption('2018 Sales Performance'))
+
 #Visualize data
 df.head()
 df.describe()
