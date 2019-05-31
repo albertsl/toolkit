@@ -250,6 +250,10 @@ from sklearn.preprocessing import LabelEncoder
 le = LabelEncoder()
 df['var_oe'] = le.fit_transform(df['var'])
 
+#BinaryEncoder when we have many categories in one variable it means creating many columns with OHE. With Binary encoding we can do so with many less columns by using binary numbers. Use only when there is a high cardinality in the categorical variable.
+from category_encoders.binary import BinaryEncoder
+be = BinaryEncoder(cols = ['var'])
+be.fit_transform(df)
 
 #Feature selection: Drop attributes that provide no useful information for the task
 
