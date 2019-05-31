@@ -233,6 +233,7 @@ def calculate_vif_(X, thresh=5.0):
 from sklearn.preprocessing import LabelEncoder
 le = LabelEncoder()
 df['categorical_var'] = le.fit_transform(df['categorical_var'])
+
 #One hot encoding for categorical information
 #Use sklearn's OneHotEncoder for categories encoded as possitive real numbers
 from sklearn.preprocessing import OneHotEncoder
@@ -240,6 +241,15 @@ enc = OneHotEncoder()
 df['var_to_encode'] = enc.fit_transform(df['var_to_encode'])
 #Use pandas get_dummies for categories encoded as strings
 pd.get_dummies(df, columns=['col1','col2'])
+
+#OrdinalEncoding for categories which have an order (example: low/medium/high)
+map_dict = {'low': 0, 'medium': 1, 'high': 2}
+df['var_oe'] = df['var'].apply(lambda x: map_dict[x])
+#We can also do it with sklearn's LabelEncoder
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df['var_oe'] = le.fit_transform(df['var'])
+
 
 #Feature selection: Drop attributes that provide no useful information for the task
 
