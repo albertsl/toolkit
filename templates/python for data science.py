@@ -3,6 +3,8 @@
 #Structure of the template mostly based on the Appendix B of the book Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron (https://amzn.to/2WIfsmk)
 #Big thank you to Uxue Lazcano (https://github.com/uxuelazkano) for code on model comparison
 #Load packages
+from catboost import CatBoostRegressor
+from catboost import CatBoostClassifier
 import numpy as np
 import pandas as pd
 pd.set_option('display.max_rows', 500)
@@ -87,6 +89,19 @@ def f(x):
 def f(x):
 	return x
 
+#Styling pandas DataFrame visualization https://pbpython.com/styling-pandas.html
+#https://pandas.pydata.org/pandas-docs/stable/user_guide/style.html
+# more info on string formatting: https://mkaz.blog/code/python-string-format-cookbook/
+format_dict = {'price': '${0:,.2f}', 'date': '{:%m-%Y}', 'pct_of_total': '{:.2%}'}
+#Format the numbers
+df.head().style.format(format_dict).hide_index()
+#Highlight max and min
+df.head().style.format(format_dict).hide_index().highlight_max(color='lightgreen').highlight_min(color='#cd4f39')
+#Colour gradient in the background
+df.head().style.format(format_dict).background_gradient(subset=['sum'], cmap='BuGn'))
+#Bars indicating number size
+df.head().style.format(format_dict).hide_index().bar(color='#FFA07A', vmin=100_000, subset=['sum'], align='zero').bar(color='lightgreen', vmin=0, subset=['pct_of_total'], align='zero').set_caption('2018 Sales Performance'))
+
 #Visualize data
 df.head()
 df.describe()
@@ -120,10 +135,44 @@ df.fillna()
 df.drop('column_full_of_nans')
 df.dropna(how='any', inplace=True)
 
+#Fix Skewed features
+numeric_feats = all_data.dtypes[all_data.dtypes != "object"].index
+# Check the skew of all numerical features
+skewed_feats = all_data[numeric_feats].apply(lambda x: skew(x.dropna())).sort_values(ascending=False)
+skewness = pd.DataFrame({'Skew' :skewed_feats})
+#Box Cox Transformation of (highly) skewed features. We use the scipy function boxcox1p which computes the Box-Cox transformation of 1+x
+#Note that setting λ=0 is equivalent to log1p used above for the target variable.
+from scipy.special import boxcox1p
+skewed_features = skewness.index
+lambd = 0.15
+for feat in skewed_features:
+    all_data[feat] = boxcox1p(all_data[feat], lambd)
+
 #Exploratory Data Analysis (EDA)
 sns.pairplot(df)
 sns.distplot(df['column'])
 sns.countplot(df['column'])
+
+#Feature understanding - see how the variable affects the target variable
+from featexp import get_univariate_plots
+# Plots drawn for all features if nothing is passed in feature_list parameter.
+get_univariate_plots(data=data_train, target_col='target', features_list=['DAYS_BIRTH'], bins=10)
+get_univariate_plots(data=data_train, target_col='target', data_test=data_test, features_list=['DAYS_EMPLOYED'])
+from featexp import get_trend_stats
+stats = get_trend_stats(data=data_train, target_col='target', data_test=data_test)
+
+#Unsupervised Feature selection before training a model
+from sklearn.feature_selection import SelectKBest
+bestfeatures = SelectKBest(score_func=chi2, k='all')
+fit = bestfeatures.fit(X,Y)
+
+dfscores = pd.DataFrame(fit.scores_)
+dfcolumns = pd.DataFrame(df.columns)
+
+featureScores = pd.concat([dfcolumns,dfscores],axis=1)
+featureScores.columns = ['Specs','Score']  #naming the dataframe columns
+
+print(featureScores.nlargest(5,'Score'))
 
 #Fix or remove outliers
 sns.boxplot(df['feature1'])
@@ -582,6 +631,43 @@ xgbst = xgb.train(params, xgtrain, num_rounds, evals=[
 
 y_pred = xgbst.predict(xgtest)
 
+#Simplified code
+model = xgb.XGBClassifier(random_state=1,learning_rate=0.01)
+model.fit(x_train, y_train)
+model.score(x_test,y_test)
+#Regression
+model=xgb.XGBRegressor()
+model.fit(x_train, y_train)
+model.score(x_test,y_test)
+
+#########
+# AdaBoost
+#########
+from sklearn.ensemble import AdaBoostClassifier
+model = AdaBoostClassifier(random_state=101)
+model.fit(X_train, y_train)
+model.score(X_val,y_val)
+#Regression
+from sklearn.ensemble import AdaBoostRegressor
+model = AdaBoostRegressor(random_state=101)
+model.fit(X_train, y_train)
+model.score(X_val, y_val)
+
+#########
+# CatBoost
+#########
+#CatBoost algorithm works great for data with lots of categorical variables. You should not perform one-hot encoding for categorical variables before applying this model.
+model = CatBoostClassifier()
+categorical_features_indices = np.where(df.dtypes != np.float)[0]
+model.fit(X_train, y_train, cat_features=categorical_features_indices, eval_set=(X_val, y_val))
+model.score(X_val, y_val)
+#Regression
+model = CatBoostRegressor()
+categorical_features_indices = np.where(df.dtypes != np.float)[0]
+model.fit(x_train, y_train,cat_features=categorical_features_indices,eval_set=(X_val, y_val))
+model.score(X_val, y_val)
+
+
 #########
 # Support Vector Machine (SVM)
 #########
@@ -673,6 +759,98 @@ grid.best_params_
 grid.best_estimator_
 
 #Try Ensemble methods. Combining your best models will often perform better than running them individually
+#Max Voting
+model1 = tree.DecisionTreeClassifier()
+model2 = KNeighborsClassifier()
+model3 = LogisticRegression()
+
+model1.fit(x_train, y_train)
+model2.fit(x_train, y_train)
+model3.fit(x_train, y_train)
+
+pred1=model1.predict(X_test)
+pred2=model2.predict(X_test)
+pred3=model3.predict(X_test)
+
+final_pred = np.array([])
+for i in range(len(X_test)):
+    final_pred = np.append(final_pred, mode([pred1[i], pred2[i], pred3[i]]))
+
+#We can also use VotingClassifier from sklearn
+from sklearn.ensemble import VotingClassifier
+model1 = LogisticRegression(random_state=1)
+model2 = tree.DecisionTreeClassifier(random_state=1)
+model = VotingClassifier(estimators=[('lr', model1), ('dt', model2)], voting='hard')
+model.fit(x_train,y_train)
+model.score(x_test,y_test)
+
+#Averaging
+finalpred=(pred1+pred2+pred3)/3
+
+#Weighted Average
+finalpred=(pred1*0.3+pred2*0.3+pred3*0.4)
+
+#Stacking
+from sklearn.model_selection import StratifiedKFold
+def Stacking(model, train, y, test, n_fold):
+   folds = StratifiedKFold(n_splits=n_fold, random_state=101)
+   test_pred = np.empty((test.shape[0], 1), float)
+   train_pred = np.empty((0, 1), float)
+   for train_indices, val_indices in folds.split(train,y.values):
+      X_train, X_val = train.iloc[train_indices], train.iloc[val_indices]
+      y_train, y_val = y.iloc[train_indices], y.iloc[val_indices]
+
+      model.fit(X_train, y_train)
+      train_pred = np.append(train_pred, model.predict(X_val))
+      test_pred = np.append(test_pred, model.predict(test))
+    return test_pred.reshape(-1,1), train_pred
+
+model1 = DecisionTreeClassifier(random_state=101)
+test_pred1, train_pred1 = Stacking(model1, X_train, y_train, X_test, 10)
+train_pred1 = pd.DataFrame(train_pred1)
+test_pred1 = pd.DataFrame(test_pred1)
+
+model2 = KNeighborsClassifier()
+test_pred2, train_pred2 = Stacking(model2, X_train, y_train, X_test, 10)
+train_pred2 = pd.DataFrame(train_pred2)
+test_pred2 = pd.DataFrame(test_pred2)
+
+df = pd.concat([train_pred1, train_pred2], axis=1)
+df_test = pd.concat([test_pred1, test_pred2], axis=1)
+
+model = LogisticRegression(random_state=101)
+model.fit(df,y_train)
+model.score(df_test, y_test)
+
+#Blending
+model1 = DecisionTreeClassifier()
+model1.fit(X_train, y_train)
+val_pred1 = pd.DataFrame(model1.predict(X_val))
+test_pred1 = pd.DataFrame(model1.predict(X_test))
+
+model2 = KNeighborsClassifier()
+model2.fit(X_train,y_train)
+val_pred2 = pd.DataFrame(model2.predict(X_val))
+test_pred2 = pd.DataFrame(model2.predict(X_test))
+
+df_val = pd.concat([X_val, val_pred1,val_pred2],axis=1)
+df_test = pd.concat([X_test, test_pred1,test_pred2],axis=1)
+model = LogisticRegression()
+model.fit(df_val,y_val)
+model.score(df_test,y_test)
+
+#Bagging
+from sklearn.ensemble import BaggingClassifier
+from sklearn.tree import DecisionTreeClassifier
+ens = BaggingClassifier(DecisionTreeClassifier(random_state=101))
+ens.fit(X_train, y_train)
+ens.score(X_val,y_val)
+#Regression
+from sklearn.ensemble import BaggingRegressor
+from sklearn.tree import DecisionTreeClassifier
+ens = BaggingRegressor(DecisionTreeRegressor(random_state=101))
+ens.fit(X_train, y_train)
+ens.score(X_val,y_val)
 
 #Once you are confident about your final model, measure its performance on the test set to estimate the generalization error
 
