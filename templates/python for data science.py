@@ -160,19 +160,6 @@ get_univariate_plots(data=data_train, target_col='target', data_test=data_test, 
 from featexp import get_trend_stats
 stats = get_trend_stats(data=data_train, target_col='target', data_test=data_test)
 
-#Unsupervised Feature selection before training a model
-from sklearn.feature_selection import SelectKBest
-bestfeatures = SelectKBest(score_func=chi2, k='all')
-fit = bestfeatures.fit(X,Y)
-
-dfscores = pd.DataFrame(fit.scores_)
-dfcolumns = pd.DataFrame(df.columns)
-
-featureScores = pd.concat([dfcolumns,dfscores],axis=1)
-featureScores.columns = ['Specs','Score']  #naming the dataframe columns
-
-print(featureScores.nlargest(5,'Score'))
-
 #Fix or remove outliers
 sns.boxplot(df['feature1'])
 sns.boxplot(df['feature2'])
@@ -309,6 +296,18 @@ he = HashingEncoder(cols = ['var'])
 df = he.fit_transform(df)
 
 #Feature selection: Drop attributes that provide no useful information for the task
+#Unsupervised Feature selection before training a model
+from sklearn.feature_selection import SelectKBest
+bestfeatures = SelectKBest(score_func=chi2, k='all')
+fit = bestfeatures.fit(X,Y)
+
+dfscores = pd.DataFrame(fit.scores_)
+dfcolumns = pd.DataFrame(df.columns)
+
+featureScores = pd.concat([dfcolumns,dfscores],axis=1)
+featureScores.columns = ['Specs','Score']  #naming the dataframe columns
+
+print(featureScores.nlargest(5,'Score'))
 
 #Feature engineering. Create new features by transforming the data
 #Discretize continuous features
@@ -884,6 +883,14 @@ inter1  =  pdp.pdp_interact(model=model, dataset=X_val, model_features=X_val.col
 
 pdp.pdp_interact_plot(pdp_interact_out=inter1, feature_names=features_to_plot, plot_type='contour')
 plt.show()
+
+#ALE Plots: faster and unbiased alternative to partial dependence plots (PDPs).
+
+partial dependence plots have a serious problem when the features are correlated.
+
+The computation of a partial dependence plot for a feature that is strongly correlated with other features involves averaging predictions of artificial data instances that are unlikely in reality. This can greatly bias the estimated feature effect.
+
+Next, we consider the second-order effect of humidity and temperature on the predicted number of bikes. Remember that the second-order effect is the additional interaction effect of the two features and does not include the main effects. This means that, for example, you will not see the main effect that high humidity leads to a lower number of predicted bikes on average in the second-order ALE plot.
 
 #SHAP Values: Understand how each feature affects every individual prediciton
 import shap
