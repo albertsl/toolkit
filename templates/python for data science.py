@@ -3,8 +3,6 @@
 #Structure of the template mostly based on the Appendix B of the book Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron (https://amzn.to/2WIfsmk)
 #Big thank you to Uxue Lazcano (https://github.com/uxuelazkano) for code on model comparison
 #Load packages
-from catboost import CatBoostRegressor
-from catboost import CatBoostClassifier
 import numpy as np
 import pandas as pd
 pd.set_option('display.max_rows', 500)
@@ -657,6 +655,8 @@ model.score(X_val, y_val)
 # CatBoost
 #########
 #CatBoost algorithm works great for data with lots of categorical variables. You should not perform one-hot encoding for categorical variables before applying this model.
+from catboost import CatBoostRegressor
+from catboost import CatBoostClassifier
 model = CatBoostClassifier()
 categorical_features_indices = np.where(df.dtypes != np.float)[0]
 model.fit(X_train, y_train, cat_features=categorical_features_indices, eval_set=(X_val, y_val))
