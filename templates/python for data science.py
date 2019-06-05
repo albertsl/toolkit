@@ -886,7 +886,7 @@ plt.show()
 
 #ALE Plots: faster and unbiased alternative to partial dependence plots (PDPs). They have a serious problem when the features are correlated.
 #The computation of a partial dependence plot for a feature that is strongly correlated with other features involves averaging predictions of artificial data instances that are unlikely in reality. This can greatly bias the estimated feature effect.
-https: // github.com/blent-ai/ALEPython
+https://github.com/blent-ai/ALEPython
 
 #SHAP Values: Understand how each feature affects every individual prediciton
 import shap
@@ -901,6 +901,10 @@ shap_vals = explainer.shap_values(X_val)
 shap.summary_plot(shap_vals[1], X_val)
 #SHAP Dependence plot
 shap.dependence_plot('feature_for_x', shap_vals[1], X_val, interaction_index="feature_for_color")
+
+#Local interpretable model-agnostic explanations (LIME)
+#Surrogate models are trained to approximate the predictions of the underlying black box model. Instead of training a global surrogate model, LIME focuses on training local surrogate models to explain individual predictions.
+https://github.com/marcotcr/lime 
 
 #Dimensionality reduction
 #SVD: Find the percentage of variance explained by each principal component
