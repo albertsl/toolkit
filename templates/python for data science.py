@@ -1076,3 +1076,7 @@ class Network(nn.Module):
         x = F.softmax(self.output(x), dim=1)
         
         return x
+
+#Initializing weights and biases
+model.hidden.bias.data.fill_(0)
+model.hidden.weight.data.normal_(std=0.01)
