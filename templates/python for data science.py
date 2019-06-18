@@ -97,9 +97,9 @@ df.head().style.format(format_dict).hide_index()
 #Highlight max and min
 df.head().style.format(format_dict).hide_index().highlight_max(color='lightgreen').highlight_min(color='#cd4f39')
 #Colour gradient in the background
-df.head().style.format(format_dict).background_gradient(subset=['sum'], cmap='BuGn'))
+df.head().style.format(format_dict).background_gradient(subset=['sum'], cmap='BuGn')
 #Bars indicating number size
-df.head().style.format(format_dict).hide_index().bar(color='#FFA07A', vmin=100_000, subset=['sum'], align='zero').bar(color='lightgreen', vmin=0, subset=['pct_of_total'], align='zero').set_caption('2018 Sales Performance'))
+df.head().style.format(format_dict).hide_index().bar(color='#FFA07A', vmin=100_000, subset=['sum'], align='zero').bar(color='lightgreen', vmin=0, subset=['pct_of_total'], align='zero').set_caption('2018 Sales Performance')
 
 #Visualize data
 df.head()
@@ -793,17 +793,17 @@ finalpred=(pred1*0.3+pred2*0.3+pred3*0.4)
 #Stacking
 from sklearn.model_selection import StratifiedKFold
 def Stacking(model, train, y, test, n_fold):
-   folds = StratifiedKFold(n_splits=n_fold, random_state=101)
-   test_pred = np.empty((test.shape[0], 1), float)
-   train_pred = np.empty((0, 1), float)
-   for train_indices, val_indices in folds.split(train,y.values):
-      X_train, X_val = train.iloc[train_indices], train.iloc[val_indices]
-      y_train, y_val = y.iloc[train_indices], y.iloc[val_indices]
+	folds = StratifiedKFold(n_splits=n_fold, random_state=101)
+	test_pred = np.empty((test.shape[0], 1), float)
+	train_pred = np.empty((0, 1), float)
+	for train_indices, val_indices in folds.split(train,y.values):
+		X_train, X_val = train.iloc[train_indices], train.iloc[val_indices]
+		y_train, y_val = y.iloc[train_indices], y.iloc[val_indices]
 
-      model.fit(X_train, y_train)
-      train_pred = np.append(train_pred, model.predict(X_val))
-      test_pred = np.append(test_pred, model.predict(test))
-    return test_pred.reshape(-1,1), train_pred
+		model.fit(X_train, y_train)
+		train_pred = np.append(train_pred, model.predict(X_val))
+		test_pred = np.append(test_pred, model.predict(test))
+	return test_pred.reshape(-1,1), train_pred
 
 model1 = DecisionTreeClassifier(random_state=101)
 test_pred1, train_pred1 = Stacking(model1, X_train, y_train, X_test, 10)
@@ -886,7 +886,7 @@ plt.show()
 
 #ALE Plots: faster and unbiased alternative to partial dependence plots (PDPs). They have a serious problem when the features are correlated.
 #The computation of a partial dependence plot for a feature that is strongly correlated with other features involves averaging predictions of artificial data instances that are unlikely in reality. This can greatly bias the estimated feature effect.
-https://github.com/blent-ai/ALEPython
+#https://github.com/blent-ai/ALEPython
 
 #SHAP Values: Understand how each feature affects every individual prediciton
 import shap
@@ -904,7 +904,7 @@ shap.dependence_plot('feature_for_x', shap_vals[1], X_val, interaction_index="fe
 
 #Local interpretable model-agnostic explanations (LIME)
 #Surrogate models are trained to approximate the predictions of the underlying black box model. Instead of training a global surrogate model, LIME focuses on training local surrogate models to explain individual predictions.
-https://github.com/marcotcr/lime 
+#https://github.com/marcotcr/lime 
 
 #Dimensionality reduction
 #SVD: Find the percentage of variance explained by each principal component
@@ -1036,25 +1036,25 @@ b.numpy()
 from torch import nn
 
 class Network(nn.Module):
-    def __init__(self):
-        super().__init__()
-        
-        # Inputs to hidden layer linear transformation
-        self.hidden = nn.Linear(784, 256)
-        # Output layer, 10 units - one for each digit
-        self.output = nn.Linear(256, 10)
-        
-        # Define sigmoid activation and softmax output 
-        self.sigmoid = nn.Sigmoid()
-        self.softmax = nn.Softmax(dim=1)
-        
-    def forward(self, x):
-        # Pass the input tensor through each of our operations
-        x = self.hidden(x)
-        x = self.sigmoid(x)
-        x = self.output(x)
-        x = self.softmax(x)
-        
+	def __init__(self):
+		super().__init__()
+
+		# Inputs to hidden layer linear transformation
+		self.hidden = nn.Linear(784, 256)
+		# Output layer, 10 units - one for each digit
+		self.output = nn.Linear(256, 10)
+
+		# Define sigmoid activation and softmax output 
+		self.sigmoid = nn.Sigmoid()
+		self.softmax = nn.Softmax(dim=1)
+		
+	def forward(self, x):
+		# Pass the input tensor through each of our operations
+		x = self.hidden(x)
+		x = self.sigmoid(x)
+		x = self.output(x)
+		x = self.softmax(x)
+
 		return x
 
 model = Network()
@@ -1080,3 +1080,19 @@ class Network(nn.Module):
 #Initializing weights and biases
 model.hidden.bias.data.fill_(0)
 model.hidden.weight.data.normal_(std=0.01)
+
+#Now that we have a network, let's see what happens when we pass in an image.
+# Grab some data 
+dataiter = iter(trainloader)
+images, labels = dataiter.next()
+
+# Resize images into a 1D vector, new shape is (batch size, color channels, image pixels) 
+images.resize_(64, 1, 784)
+# or images.resize_(images.shape[0], 1, 784) to automatically get batch size
+
+# Forward pass through the network
+img_idx = 0
+ps = model.forward(images[img_idx,:])
+
+img = images[img_idx]
+helper.view_classify(img.view(1, 28, 28), ps)
