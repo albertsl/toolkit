@@ -1096,3 +1096,28 @@ ps = model.forward(images[img_idx,:])
 
 img = images[img_idx]
 helper.view_classify(img.view(1, 28, 28), ps)
+
+#PyTorch provides a convenient way to build networks like this where a tensor is passed sequentially through operations, `nn.Sequential` ([documentation](https://pytorch.org/docs/master/nn.html#torch.nn.Sequential)). Using this to build the equivalent network:
+# Hyperparameters for our network
+input_size = 784
+hidden_sizes = [128, 64]
+output_size = 10
+
+# Build a feed-forward network
+model = nn.Sequential(nn.Linear(input_size, hidden_sizes[0]),
+                      nn.ReLU(),
+                      nn.Linear(hidden_sizes[0], hidden_sizes[1]),
+                      nn.ReLU(),
+                      nn.Linear(hidden_sizes[1], output_size),
+                      nn.Softmax(dim=1))
+print(model)
+
+# Forward pass through the network and display output
+images, labels = next(iter(trainloader))
+images.resize_(images.shape[0], 1, 784)
+ps = model.forward(images[0, :])
+helper.view_classify(images[0].view(1, 28, 28), ps)
+
+#The operations are available by passing in the appropriate index. For example, if you want to get first Linear operation and look at the weights, you'd use model[0].
+print(model[0])
+model[0].weight
