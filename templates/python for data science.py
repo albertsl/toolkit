@@ -1000,7 +1000,7 @@ weights = torch.randn_like(features)
 bias = torch.randn((1, 1))
 
 y = activation(torch.sum(features * weights) + bias)
-y = activation(torch.mm(features,weights.reshape(5,1))+bias)
+y = activation(torch.mm(features,weights.reshape(5,1))+bias) #Also can use view instead of reshape
 
 #Higher dimension
 ### Generate some data
@@ -1031,3 +1031,6 @@ import numpy as np
 a = np.random.rand(4,3)
 b = torch.from_numpy(a)
 b.numpy()
+
+#Building Networks with Pytorch
+from torch import nn
