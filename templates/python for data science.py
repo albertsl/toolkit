@@ -978,7 +978,7 @@ new_df[['column_Kfold_Target_Enc','column']]
 import torch
 torch.__version__
 
-def activation(x):
+def sigmoid_activation(x):
     """ Sigmoid activation function #https://upload.wikimedia.org/wikipedia/commons/8/88/Logistic-curve.svg
     
         Arguments
@@ -986,6 +986,9 @@ def activation(x):
         x: torch.Tensor
     """
     return 1/(1+torch.exp(-x))
+
+def softmax_activation(x):
+    return torch.exp(x)/torch.sum(torch.exp(x), dim=1).view(-1, 1)
 
 ### Generate some data
 torch.manual_seed(7) # Set the random seed so things are predictable
