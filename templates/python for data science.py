@@ -1121,3 +1121,11 @@ helper.view_classify(images[0].view(1, 28, 28), ps)
 #The operations are available by passing in the appropriate index. For example, if you want to get first Linear operation and look at the weights, you'd use model[0].
 print(model[0])
 model[0].weight
+
+# Define the loss
+criterion = nn.CrossEntropyLoss()
+# Forward pass, get our logits
+logits = model(images)
+# Calculate the loss with the logits and the labels
+loss = criterion(logits, labels)
+print(loss)
