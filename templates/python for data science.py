@@ -1284,3 +1284,10 @@ for e in range(epochs):
 plt.plot(train_losses, label='Training loss')
 plt.plot(test_losses, label='Validation loss')
 plt.legend(frameon=False)
+
+#######Save and load pytorch models
+#Save
+torch.save(model.state_dict(), 'checkpoint.pth')
+#Load
+state_dict = torch.load('checkpoint.pth')
+model.load_state_dict(state_dict)
