@@ -982,3 +982,470 @@ targetc = KFoldTargetEncoderTrain('column','target',n_fold=5)
 new_df = targetc.fit_transform(df)
 
 new_df[['column_Kfold_Target_Enc','column']]
+
+
+#########
+# Deep learning with Pytorch (extracted from the Udacity Secure and Private AI course)
+#########
+import torch
+torch.__version__
+
+def sigmoid_activation(x):
+    """ Sigmoid activation function #https://upload.wikimedia.org/wikipedia/commons/8/88/Logistic-curve.svg
+    
+        Arguments
+        ---------
+        x: torch.Tensor
+    """
+    return 1/(1+torch.exp(-x))
+
+def softmax_activation(x):
+    return torch.exp(x)/torch.sum(torch.exp(x), dim=1).view(-1, 1)
+
+### Generate some data
+torch.manual_seed(7) # Set the random seed so things are predictable
+# Features are 5 random normal variables
+features = torch.randn((1, 5))
+# True weights for our data, random normal variables again
+weights = torch.randn_like(features)
+# and a true bias term
+bias = torch.randn((1, 1))
+
+y = activation(torch.sum(features * weights) + bias)
+y = activation(torch.mm(features,weights.reshape(5,1))+bias) #Also can use view instead of reshape
+
+#Higher dimension
+### Generate some data
+torch.manual_seed(7) # Set the random seed so things are predictable
+
+# Features are 3 random normal variables
+features = torch.randn((1, 3))
+
+# Define the size of each layer in our network
+n_input = features.shape[1]     # Number of input units, must match number of input features
+n_hidden = 2                    # Number of hidden units 
+n_output = 1                    # Number of output units
+
+# Weights for inputs to hidden layer
+W1 = torch.randn(n_input, n_hidden)
+# Weights for hidden layer to output layer
+W2 = torch.randn(n_hidden, n_output)
+
+# and bias terms for hidden and output layers
+B1 = torch.randn((1, n_hidden))
+B2 = torch.randn((1, n_output))
+
+h = activation(torch.mm(features, W1) + B1)
+y = activation(torch.mm(h, W2) + B2)
+
+#Convert from torch to numpy
+import numpy as np
+a = np.random.rand(4,3)
+b = torch.from_numpy(a)
+b.numpy()
+
+#Building Networks with Pytorch
+from torch import nn
+
+class Network(nn.Module):
+	def __init__(self):
+		super().__init__()
+
+		# Inputs to hidden layer linear transformation
+		self.hidden = nn.Linear(784, 256)
+		# Output layer, 10 units - one for each digit
+		self.output = nn.Linear(256, 10)
+
+		# Define sigmoid activation and softmax output 
+		self.sigmoid = nn.Sigmoid()
+		self.softmax = nn.Softmax(dim=1)
+		
+	def forward(self, x):
+		# Pass the input tensor through each of our operations
+		x = self.hidden(x)
+		x = self.sigmoid(x)
+		x = self.output(x)
+		x = self.softmax(x)
+
+		return x
+
+model = Network()
+
+import torch.nn.functional as F
+
+class Network(nn.Module):
+    def __init__(self):
+        super().__init__()
+        # Inputs to hidden layer linear transformation
+        self.hidden = nn.Linear(784, 256)
+        # Output layer, 10 units - one for each digit
+        self.output = nn.Linear(256, 10)
+        
+    def forward(self, x):
+        # Hidden layer with sigmoid activation
+        x = F.sigmoid(self.hidden(x))
+        # Output layer with softmax activation
+        x = F.softmax(self.output(x), dim=1)
+        
+        return x
+
+#Initializing weights and biases
+model.hidden.bias.data.fill_(0)
+model.hidden.weight.data.normal_(std=0.01)
+
+#Now that we have a network, let's see what happens when we pass in an image.
+# Grab some data 
+dataiter = iter(trainloader)
+images, labels = dataiter.next()
+
+# Resize images into a 1D vector, new shape is (batch size, color channels, image pixels) 
+images.resize_(64, 1, 784)
+# or images.resize_(images.shape[0], 1, 784) to automatically get batch size
+
+# Forward pass through the network
+img_idx = 0
+ps = model.forward(images[img_idx,:])
+
+img = images[img_idx]
+helper.view_classify(img.view(1, 28, 28), ps)
+
+#PyTorch provides a convenient way to build networks like this where a tensor is passed sequentially through operations, `nn.Sequential` ([documentation](https://pytorch.org/docs/master/nn.html#torch.nn.Sequential)). Using this to build the equivalent network:
+# Hyperparameters for our network
+input_size = 784
+hidden_sizes = [128, 64]
+output_size = 10
+
+# Build a feed-forward network
+model = nn.Sequential(nn.Linear(input_size, hidden_sizes[0]),
+                      nn.ReLU(),
+                      nn.Linear(hidden_sizes[0], hidden_sizes[1]),
+                      nn.ReLU(),
+                      nn.Linear(hidden_sizes[1], output_size),
+                      nn.Softmax(dim=1))
+print(model)
+
+# Forward pass through the network and display output
+images, labels = next(iter(trainloader))
+images.resize_(images.shape[0], 1, 784)
+ps = model.forward(images[0, :])
+helper.view_classify(images[0].view(1, 28, 28), ps)
+
+#The operations are available by passing in the appropriate index. For example, if you want to get first Linear operation and look at the weights, you'd use model[0].
+print(model[0])
+model[0].weight
+
+# Define the loss
+criterion = nn.CrossEntropyLoss()
+# Forward pass, get our logits
+logits = model(images)
+# Calculate the loss with the logits and the labels
+loss = criterion(logits, labels)
+print(loss)
+
+#########
+# Train a model
+#########
+model = nn.Sequential(nn.Linear(784, 128),
+                      nn.ReLU(),
+                      nn.Linear(128, 64),
+                      nn.ReLU(),
+                      nn.Linear(64, 10),
+                      nn.LogSoftmax(dim=1))
+
+criterion = nn.NLLLoss()
+optimizer = optim.SGD(model.parameters(), lr=0.003)
+
+epochs = 5
+for e in range(epochs):
+    running_loss = 0
+    for images, labels in trainloader:
+        # Flatten MNIST images into a 784 long vector
+        images = images.view(images.shape[0], -1)
+    
+        # TODO: Training pass
+        optimizer.zero_grad()
+        
+        output = model(images)
+        loss = criterion(output, labels)
+        loss.backward()
+        optimizer.step()
+        
+        running_loss += loss.item()
+    else:
+        print(f"Training loss: {running_loss/len(trainloader)}")
+
+#########
+# Validation Loop
+#########
+model = Classifier()
+criterion = nn.NLLLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.003)
+
+epochs = 30
+steps = 0
+
+train_losses, test_losses = [], []
+for e in range(epochs):
+    running_loss = 0
+    for images, labels in trainloader:
+        
+        optimizer.zero_grad()
+        
+        log_ps = model(images)
+        loss = criterion(log_ps, labels)
+        loss.backward()
+        optimizer.step()
+        
+        running_loss += loss.item()
+        
+    else:
+        ## TODO: Implement the validation pass and print out the validation accuracy
+        print(f'Accuracy: {accuracy.item()*100}%')
+        
+        test_loss = 0
+        accuracy = 0
+        
+        # Turn off gradients for validation, saves memory and computations
+        with torch.no_grad():
+            for images, labels in testloader:
+                log_ps = model(images)
+                test_loss += criterion(log_ps, labels)
+                
+                ps = torch.exp(log_ps)
+                top_p, top_class = ps.topk(1, dim=1)
+                equals = top_class == labels.view(*top_class.shape)
+                accuracy += torch.mean(equals.type(torch.FloatTensor))
+                
+        train_losses.append(running_loss/len(trainloader))
+        test_losses.append(test_loss/len(testloader))
+
+        print("Epoch: {}/{}.. ".format(e+1, epochs),
+              "Training Loss: {:.3f}.. ".format(running_loss/len(trainloader)),
+              "Test Loss: {:.3f}.. ".format(test_loss/len(testloader)),
+              "Test Accuracy: {:.3f}".format(accuracy/len(testloader)))
+
+#########
+# Dropout for avoiding overfitting
+#########
+class Classifier(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(784, 256)
+        self.fc2 = nn.Linear(256, 128)
+        self.fc3 = nn.Linear(128, 64)
+        self.fc4 = nn.Linear(64, 10)
+
+        # Dropout module with 0.2 drop probability
+        self.dropout = nn.Dropout(p=0.2)
+
+    def forward(self, x):
+        # make sure input tensor is flattened
+        x = x.view(x.shape[0], -1)
+
+        # Now with dropout
+        x = self.dropout(F.relu(self.fc1(x)))
+        x = self.dropout(F.relu(self.fc2(x)))
+        x = self.dropout(F.relu(self.fc3(x)))
+
+        # output so no dropout here
+        x = F.log_softmax(self.fc4(x), dim=1)
+
+        return x
+
+model = Classifier()
+criterion = nn.NLLLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.003)
+
+epochs = 30
+steps = 0
+
+train_losses, test_losses = [], []
+for e in range(epochs):
+    running_loss = 0
+    for images, labels in trainloader:
+        
+        optimizer.zero_grad()
+        
+        log_ps = model(images)
+        loss = criterion(log_ps, labels)
+        loss.backward()
+        optimizer.step()
+        
+        running_loss += loss.item()
+        
+    else:
+        test_loss = 0
+        accuracy = 0
+        
+        # Turn off gradients for validation, saves memory and computations
+        with torch.no_grad():
+            model.eval()
+            for images, labels in testloader:
+                log_ps = model(images)
+                test_loss += criterion(log_ps, labels)
+                
+                ps = torch.exp(log_ps)
+                top_p, top_class = ps.topk(1, dim=1)
+                equals = top_class == labels.view(*top_class.shape)
+                accuracy += torch.mean(equals.type(torch.FloatTensor))
+        
+        model.train()
+        
+        train_losses.append(running_loss/len(trainloader))
+        test_losses.append(test_loss/len(testloader))
+
+        print("Epoch: {}/{}.. ".format(e+1, epochs),
+              "Training Loss: {:.3f}.. ".format(train_losses[-1]),
+              "Test Loss: {:.3f}.. ".format(test_losses[-1]),
+              "Test Accuracy: {:.3f}".format(accuracy/len(testloader)))
+
+plt.plot(train_losses, label='Training loss')
+plt.plot(test_losses, label='Validation loss')
+plt.legend(frameon=False)
+
+#########
+# Save and load pytorch models
+#########
+#Save
+torch.save(model.state_dict(), 'checkpoint.pth')
+#Load
+state_dict = torch.load('checkpoint.pth')
+model.load_state_dict(state_dict)
+
+######Load image data with Pytorch
+import torch
+from torchvision import datasets, transforms
+import helper
+
+data_dir = 'Cat_Dog_data/train'
+
+transform = transforms.Compose([transforms.Resize(255),
+                                transforms.CenterCrop(224),
+                                transforms.ToTensor()])
+dataset = datasets.ImageFolder(data_dir, transform=transform)
+dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
+
+# Run this to test your data loader
+images, labels = next(iter(dataloader))
+helper.imshow(images[0], normalize=False)
+
+data_dir = 'Cat_Dog_data'
+# Define transforms for the training data and testing data
+train_transforms = transforms.Compose([transforms.RandomRotation(30),
+                                       transforms.RandomResizedCrop(224),
+                                       transforms.RandomHorizontalFlip(),
+                                       transforms.ToTensor()]) 
+
+test_transforms = transforms.Compose([transforms.Resize(255),
+                                      transforms.CenterCrop(224),
+                                      transforms.ToTensor()])
+
+
+# Pass transforms in here, then run the next cell to see how the transforms look
+train_data = datasets.ImageFolder(data_dir + '/train', transform=train_transforms)
+test_data = datasets.ImageFolder(data_dir + '/test', transform=test_transforms)
+
+trainloader = torch.utils.data.DataLoader(train_data, batch_size=32)
+testloader = torch.utils.data.DataLoader(test_data, batch_size=32)
+
+# change this to the trainloader or testloader 
+data_iter = iter(testloader)
+
+images, labels = next(data_iter)
+fig, axes = plt.subplots(figsize=(10,4), ncols=4)
+for ii in range(4):
+    ax = axes[ii]
+    helper.imshow(images[ii], ax=ax, normalize=False)
+
+#########
+# Transfer learning with Pytorch
+#########
+import torch
+from torch import nn
+from torch import optim
+import torch.nn.functional as F
+from torchvision import datasets, transforms, models
+
+data_dir = 'Cat_Dog_data'
+
+#Define transforms for the training data and testing data
+train_transforms = transforms.Compose([transforms.RandomRotation(30),
+                                       transforms.RandomResizedCrop(224),
+                                       transforms.RandomHorizontalFlip(),
+                                       transforms.ToTensor(),
+                                       transforms.Normalize([0.485, 0.456, 0.406],
+                                                            [0.229, 0.224, 0.225])])
+
+test_transforms = transforms.Compose([transforms.Resize(255),
+                                      transforms.CenterCrop(224),
+                                      transforms.ToTensor(),
+                                      transforms.Normalize([0.485, 0.456, 0.406],
+                                                           [0.229, 0.224, 0.225])])
+
+# Pass transforms in here, then run the next cell to see how the transforms look
+train_data = datasets.ImageFolder(data_dir + '/train', transform=train_transforms)
+test_data = datasets.ImageFolder(data_dir + '/test', transform=test_transforms)
+
+trainloader = torch.utils.data.DataLoader(train_data, batch_size=64, shuffle=True)
+testloader = torch.utils.data.DataLoader(test_data, batch_size=64)
+
+#Load a pretrained model
+model = models.densenet121(pretrained=True)
+
+# Freeze parameters so we don't backprop through them
+for param in model.parameters():
+    param.requires_grad = False
+
+from collections import OrderedDict
+classifier = nn.Sequential(OrderedDict([
+                          ('fc1', nn.Linear(1024, 500)),
+                          ('relu', nn.ReLU()),
+                          ('fc2', nn.Linear(500, 2)),
+                          ('output', nn.LogSoftmax(dim=1))
+                          ]))
+    
+model.classifier = classifier
+
+epochs = 1
+steps = 0
+running_loss = 0
+print_every = 5
+for epoch in range(epochs):
+    for inputs, labels in trainloader:
+        steps += 1
+        # Move input and label tensors to the default device
+        inputs, labels = inputs.to(device), labels.to(device)
+        
+        optimizer.zero_grad()
+        
+        logps = model.forward(inputs)
+        loss = criterion(logps, labels)
+        loss.backward()
+        optimizer.step()
+
+        running_loss += loss.item()
+        
+        if steps % print_every == 0:
+            test_loss = 0
+            accuracy = 0
+            model.eval()
+            with torch.no_grad():
+                for inputs, labels in testloader:
+                    inputs, labels = inputs.to(device), labels.to(device)
+                    logps = model.forward(inputs)
+                    batch_loss = criterion(logps, labels)
+                    
+                    test_loss += batch_loss.item()
+                    
+                    # Calculate accuracy
+                    ps = torch.exp(logps)
+                    top_p, top_class = ps.topk(1, dim=1)
+                    equals = top_class == labels.view(*top_class.shape)
+                    accuracy += torch.mean(equals.type(torch.FloatTensor)).item()
+                    
+            print(f"Epoch {epoch+1}/{epochs}.. "
+                  f"Train loss: {running_loss/print_every:.3f}.. "
+                  f"Test loss: {test_loss/len(testloader):.3f}.. "
+                  f"Test accuracy: {accuracy/len(testloader):.3f}")
+            running_loss = 0
+            model.train()
