@@ -114,6 +114,22 @@ from pandas_profiling import ProfileReport
 prof = ProfileReport(df)
 prof.to_file(outputfile='output.html')
 
+#Define Validation method
+#Train and validation set split
+from sklearn.model_selection import train_test_split
+X = df.drop('target_var', axis=1)
+y = df['column to predict']
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size = 0.4, stratify = y.values, random_state = 101)
+#Cross validation
+from sklearn.model_selection import cross_val_score
+cross_val_score(model, X, y, cv=5)
+#StratifiedKFold
+from sklearn.model_selection import StratifiedKFold
+skf = StratifiedKFold(n_splits=5, random_state=101)
+for train_index, val_index in skf.split(X, y):
+	X_train, X_val = X[train_index], X[val_index]
+	y_train, y_val = y[train_index], y[val_index]
+
 #Check for missing data
 total_null = df.isna().sum().sort_values(ascending=False)
 percent = 100*(df.isna().sum()/df.isna().count()).sort_values(ascending=False)
@@ -456,23 +472,6 @@ scaler.fit(df)
 df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
 
 #Apply all the same transformations to the test set
-
-#Define Validation method
-#Train and validation set split
-from sklearn.model_selection import train_test_split
-X = df.drop('target_var', axis=1)
-y = df['column to predict']
-X_train, X_val, y_train, y_val = train_test_split(X, y, test_size = 0.4, stratify = y.values, random_state = 101)
-#Cross validation
-from sklearn.model_selection import cross_val_score
-cross_val_score(model, X, y, cv=5)
-#StratifiedKFold
-from sklearn.model_selection import StratifiedKFold
-skf = StratifiedKFold(n_splits=5, random_state=101)
-for train_index, val_index in skf.split(X, y):
-	X_train, X_val = X[train_index], X[val_index]
-	y_train, y_val = y[train_index], y[val_index]
-
 
 #Train many quick and dirty models from different categories(e.g., linear, naive Bayes, SVM, Random Forests, neural net, etc.) using standard parameters.
 #########
