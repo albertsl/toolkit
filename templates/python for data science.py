@@ -295,8 +295,20 @@ df['categorical_var'] = le.fit_transform(df['categorical_var'])
 #One hot encoding for categorical information
 #Use sklearn's OneHotEncoder for categories encoded as possitive real numbers
 from sklearn.preprocessing import OneHotEncoder
-enc = OneHotEncoder()
+enc = OneHotEncoder(handle_unknown='ignore', sparse=False)
 df['var_to_encode'] = enc.fit_transform(df['var_to_encode'])
+#Also can be done like this
+OH_cols_train = pd.DataFrame(enc.fit_transform(X_train[low_cardinality_cols]))
+OH_cols_val = pd.DataFrame(enc.transform(X_val[low_cardinality_cols]))
+OH_cols_train.index = X_train.index
+OH_cols_val.index = X_val.index
+# Remove categorical columns (will replace with one-hot encoding)
+num_X_train = X_train.drop(low_cardinality_cols, axis=1)
+num_X_val = X_val.drop(low_cardinality_cols, axis=1)
+# Add one-hot encoded columns to numerical features
+OH_X_train = pd.concat([num_X_train, OH_cols_train], axis=1)
+OH_X_val = pd.concat([num_X_valid, OH_cols_val], axis=1)
+
 #Use pandas get_dummies for categories encoded as strings
 pd.get_dummies(df, columns=['col1','col2'])
 
