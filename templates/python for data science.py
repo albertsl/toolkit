@@ -1,7 +1,6 @@
 #Albert Sanchez Lafuente 2/4/2019, Pineda de Mar, Spain
 #https://github.com/albertsl/
 #Structure of the template mostly based on the Appendix B of the book Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron (https://amzn.to/2WIfsmk)
-#Big thank you to Uxue Lazcano (https://github.com/uxuelazkano) for code on model comparison
 #Load packages
 import numpy as np
 import pandas as pd
@@ -146,8 +145,15 @@ df.replace(-np.inf,0,inplace=True)
 df.duplicated().value_counts()
 df['duplicated'] = df.duplicated() #Create a new feature
 
-#Fill missing data or drop columns/rows
+#Fill missing data 
 df.fillna()
+#Also with sklearn
+from sklearn.impute import SimpleImputer
+si = SimpleImputer()
+imputed_X_train = pd.DataFrame(si.fit_transform(X_train))
+imputed_X_val = pd.DataFrame(si.transform(X_val))
+
+#Drop columns/rows
 df.drop('column_full_of_nans')
 df.dropna(how='any', inplace=True)
 
@@ -702,6 +708,7 @@ kmeans.cluster_centers_
 kmeans.labels_
 
 #Measure and compare their performance
+#Big thank you to Uxue Lazcano (https://github.com/uxuelazkano) for code on model comparison
 models = pd.DataFrame({
 'Model': ['Linear Regression', 'Support Vector Machine', 'KNN', 'Logistic Regression', 
 			'Random Forest'],
