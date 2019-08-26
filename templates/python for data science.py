@@ -973,7 +973,7 @@ new_df[['column_Kfold_Target_Enc','column']]
 
 
 #########
-# Notes on the Pytorch udacity course by Facebook
+# Deep learning with Pytorch (extracted from the Udacity Secure and Private AI course)
 #########
 import torch
 torch.__version__
@@ -1130,7 +1130,9 @@ logits = model(images)
 loss = criterion(logits, labels)
 print(loss)
 
-######Train a  model
+#########
+# Train a model
+#########
 model = nn.Sequential(nn.Linear(784, 128),
                       nn.ReLU(),
                       nn.Linear(128, 64),
@@ -1160,7 +1162,9 @@ for e in range(epochs):
     else:
         print(f"Training loss: {running_loss/len(trainloader)}")
 
-#####Validation loop
+#########
+# Validation Loop
+#########
 model = Classifier()
 criterion = nn.NLLLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.003)
@@ -1208,7 +1212,9 @@ for e in range(epochs):
               "Test Loss: {:.3f}.. ".format(test_loss/len(testloader)),
               "Test Accuracy: {:.3f}".format(accuracy/len(testloader)))
 
-######Dropout for avoiding overfitting
+#########
+# Dropout for avoiding overfitting
+#########
 class Classifier(nn.Module):
     def __init__(self):
         super().__init__()
@@ -1285,7 +1291,9 @@ plt.plot(train_losses, label='Training loss')
 plt.plot(test_losses, label='Validation loss')
 plt.legend(frameon=False)
 
-#######Save and load pytorch models
+#########
+# Save and load pytorch models
+#########
 #Save
 torch.save(model.state_dict(), 'checkpoint.pth')
 #Load
@@ -1337,7 +1345,9 @@ for ii in range(4):
     ax = axes[ii]
     helper.imshow(images[ii], ax=ax, normalize=False)
 
-#####Transfer learning with Pytorch
+#########
+# Transfer learning with Pytorch
+#########
 import torch
 from torch import nn
 from torch import optim
