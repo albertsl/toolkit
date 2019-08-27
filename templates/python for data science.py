@@ -296,6 +296,9 @@ def calculate_vif_(X, thresh=5.0):
 from sklearn.preprocessing import LabelEncoder
 le = LabelEncoder()
 df['categorical_var'] = le.fit_transform(df['categorical_var'])
+#Check for new categories in the validation/test set
+X_val[col] = X_val[col].apply(lambda x: 'new_category' if x not in le.classes_ else x)
+le.classes_ = np.append(le.classes_, 'new_category')
 
 #One hot encoding for categorical information
 #Use sklearn's OneHotEncoder for categories encoded as possitive real numbers
