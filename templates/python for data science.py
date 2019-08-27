@@ -345,7 +345,7 @@ bestfeatures = SelectKBest(score_func=chi2, k='all')
 fit = bestfeatures.fit(X_train, y_train)
 
 dfscores = pd.DataFrame(fit.scores_)
-dfcolumns = pd.DataFrame(df.columns)
+dfcolumns = pd.DataFrame(X_train.columns)
 featureScores = pd.concat([dfcolumns,dfscores],axis=1)
 featureScores.columns = ['Specs','Score']
 
