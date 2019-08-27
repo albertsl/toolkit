@@ -340,17 +340,16 @@ df = he.fit_transform(df)
 
 #Feature selection: Drop attributes that provide no useful information for the task
 #Unsupervised Feature selection before training a model
-from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import SelectKBest, chi2
 bestfeatures = SelectKBest(score_func=chi2, k='all')
-fit = bestfeatures.fit(X,Y)
+fit = bestfeatures.fit(X_train, y_train)
 
 dfscores = pd.DataFrame(fit.scores_)
 dfcolumns = pd.DataFrame(df.columns)
-
 featureScores = pd.concat([dfcolumns,dfscores],axis=1)
-featureScores.columns = ['Specs','Score']  #naming the dataframe columns
+featureScores.columns = ['Specs','Score']
 
-print(featureScores.nlargest(5,'Score'))
+featureScores.sort_values('Score', ascending=False)
 
 #Feature engineering. Create new features by transforming the data
 #Discretize continuous features
