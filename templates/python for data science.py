@@ -349,7 +349,7 @@ dfcolumns = pd.DataFrame(X_train.columns)
 featureScores = pd.concat([dfcolumns,dfscores],axis=1)
 featureScores.columns = ['Specs','Score']
 
-featureScores.sort_values('Score', ascending=False)
+featureScores.sort_values('Score', ascending=False) #The highest the number, the more irrelevant the variable is
 
 #Feature engineering. Create new features by transforming the data
 #Discretize continuous features
