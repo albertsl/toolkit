@@ -152,6 +152,11 @@ from sklearn.impute import SimpleImputer
 si = SimpleImputer()
 imputed_X_train = pd.DataFrame(si.fit_transform(X_train))
 imputed_X_val = pd.DataFrame(si.transform(X_val))
+#Find nan values and fill them however you want
+from math import isnan
+for i in df.iterrows():
+	if isnan(i[1][col]):
+		df[col].loc[i[0]] = i*3
 
 #Drop columns/rows
 df.drop('column_full_of_nans')
