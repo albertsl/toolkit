@@ -794,6 +794,18 @@ grid = GridSearchCV(model, param_grid, verbose = 3)
 grid.fit(X_train, y_train)
 grid.best_params_
 grid.best_estimator_
+#my implementation
+trl = []
+scl = []
+for trees in range(100, 5000, 50):
+    rfr = RandomForestRegressor(n_estimators=trees, random_state=101, n_jobs=-1, verbose=3, criterion='mse')
+    rfr.fit(X_train, y_train)
+    sc = eval_model(rfr, X_val, y_val)
+    trl.append(trees)
+    scl.append(sc)
+
+pd.DataFrame({'trees': trl, 'score':scl}).sort_values('score')
+plt.plot(trl, scl)
 
 #Try Ensemble methods. Combining your best models will often perform better than running them individually
 #Max Voting
