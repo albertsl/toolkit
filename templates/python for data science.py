@@ -111,7 +111,7 @@ df['categorical_var'].value_counts()
 #Automated data visualization
 from pandas_profiling import ProfileReport
 prof = ProfileReport(df)
-prof.to_file(outputfile='output.html')
+prof.to_file(output_file='output.html')
 
 #Define Validation method
 #Train and validation set split
