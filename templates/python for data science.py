@@ -543,6 +543,24 @@ sns.distplot(y_val - y_pred) #should be a normal distribution centered at 0
 acc_lr = round(lr.score(X_val, y_val) * 100, 2)
 
 #########
+# Lasso Regression
+#########
+from sklearn.linear_model import Lasso
+ls = Lasso(alpha=0.0005, random_state=101)
+ls.fit(X_train,y_train)
+
+y_pred = ls.predict(X_val)
+
+#########
+# Ridge Regression
+#########
+from sklearn.linear_model import Ridge
+rdg = Ridge(alpha=0.002, random_state=101)
+rdg.fit(X_train,y_train)
+
+y_pred = rdg.predict(X_val)
+
+#########
 # Logistic Regression
 #########
 from sklearn.linear_model import LogisticRegression
