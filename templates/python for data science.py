@@ -168,12 +168,34 @@ numeric_feats = all_data.dtypes[all_data.dtypes != "object"].index
 skewed_feats = all_data[numeric_feats].apply(lambda x: skew(x.dropna())).sort_values(ascending=False)
 skewness = pd.DataFrame({'Skew' :skewed_feats})
 #Box Cox Transformation of (highly) skewed features. We use the scipy function boxcox1p which computes the Box-Cox transformation of 1+x
-#Note that setting λ=0 is equivalent to log1p used above for the target variable.
+#Note that setting λ=0 is equivalent to log1p
 from scipy.special import boxcox1p
 skewed_features = skewness.index
 lambd = 0.15
 for feat in skewed_features:
     all_data[feat] = boxcox1p(all_data[feat], lambd)
+#check different approaches to fix skewness:
+skewed_features = skewness.index
+for feature in skewed_features:
+    original_skewness = skewness.loc[feature]['Skew']
+    try:
+        log_transform = skew(df[feature].apply(log))
+        lambd = 0.15
+        boxcox_transform = skew(boxcox1p(df[feature], lambd))
+        print(f'{feature}')
+		print(f'Original skewness: {original_skewness}')
+		print(f'log transform skewness: {log_transform}')
+		print(f'box cox transform: {boxcox_transform}')
+		print(f'Log Change: {original_skewness-log_transform}')
+		print(f'BoxCox Change: {original_skewness-boxcox_transform}')
+    except:
+        lambd = 0.15
+        boxcox_transform = skew(boxcox1p(df[feature], lambd))
+        print(f'{feature}')
+		print(f'Original skewness: {original_skewness}')
+		print(f'log transform skewness: Math domain error')
+		print(f'box cox transform: {boxcox_transform}')
+		print(f'BoxCox Change: {original_skewness-boxcox_transform}')
 
 #Exploratory Data Analysis (EDA)
 sns.pairplot(df)
