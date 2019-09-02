@@ -188,6 +188,16 @@ for feature in skewed_features:
 		print(f'boxcox1p transform: {boxcox_transform}')
 		print(f'Log1p Change: {original_skewness-log_transform}')
 		print(f'BoxCox1p Change: {original_skewness-boxcox_transform}')
+		if original_skewness > 0.5:
+			if log_transform < 0.5 and log_transform > -0.5:
+				print(f'Feature: {feature}, original skewness: {original_skewness}, new skewness: {log_transform}')
+			if original_skewness-log_transform > 0.5:
+				print(f'big change with feature {feature}, change: {original_skewness-log_transform}, new skewness: {log_transform}')
+		if original_skewness < -0.5:
+			if log_transform < 0.5 and log_transform > -0.5:
+				print(f'Feature: {feature}, original skewness: {original_skewness}, new skewness: {log_transform}')
+			if original_skewness-log_transform > 0.5:
+				print(f'big change with feature {feature}, change: {original_skewness-log_transform}, new skewness: {log_transform}')
 
 #Exploratory Data Analysis (EDA)
 sns.pairplot(df)
