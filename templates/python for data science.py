@@ -179,23 +179,15 @@ skewed_features = skewness.index
 for feature in skewed_features:
     original_skewness = skewness.loc[feature]['Skew']
     try:
-        log_transform = skew(df[feature].apply(log))
+        log_transform = skew(df[feature].apply(log1p))
         lambd = 0.15
         boxcox_transform = skew(boxcox1p(df[feature], lambd))
         print(f'{feature}')
 		print(f'Original skewness: {original_skewness}')
-		print(f'log transform skewness: {log_transform}')
-		print(f'box cox transform: {boxcox_transform}')
-		print(f'Log Change: {original_skewness-log_transform}')
-		print(f'BoxCox Change: {original_skewness-boxcox_transform}')
-    except:
-        lambd = 0.15
-        boxcox_transform = skew(boxcox1p(df[feature], lambd))
-        print(f'{feature}')
-		print(f'Original skewness: {original_skewness}')
-		print(f'log transform skewness: Math domain error')
-		print(f'box cox transform: {boxcox_transform}')
-		print(f'BoxCox Change: {original_skewness-boxcox_transform}')
+		print(f'log1p transform skewness: {log_transform}')
+		print(f'boxcox1p transform: {boxcox_transform}')
+		print(f'Log1p Change: {original_skewness-log_transform}')
+		print(f'BoxCox1p Change: {original_skewness-boxcox_transform}')
 
 #Exploratory Data Analysis (EDA)
 sns.pairplot(df)
