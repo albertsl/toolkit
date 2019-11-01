@@ -1528,3 +1528,28 @@ for epoch in range(epochs):
                   f"Test accuracy: {accuracy/len(testloader):.3f}")
             running_loss = 0
             model.train()
+
+#GeoPandas
+import geopandas as gpd
+gdf = gpd.read_file('data.shp')
+gdf.head()
+gdf.plot()
+
+world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+ax = world.plot(figsize=(10,10), color='none', edgecolor='black', zorder=3)
+gdf.plot(color='blue', ax=ax)
+
+#Coordinate Reference System (CRS)
+df = pd.read_csv("data.csv")
+gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.Longitude, df.Latitude))
+gdf.crs = {'init': 'epsg:4326'}
+
+#Re-projecting (Changing the CRS)
+gdf = gdf.to_crs(epsg=32630)
+
+#Attributes of geometry objects
+X = gdf.geometry.x #For points
+y = gdf.geometry.y #For points
+l = gdf.geometry.length #For lines
+a = gdf.geometry.area #For polygons
+
