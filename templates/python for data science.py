@@ -493,6 +493,8 @@ for i, row in df.iterrows():
 			lEI[i] = 1
 
 df['EI'] = pd.Series(lEI)
+#Create new column, dividing the dataset in groups of the same number of events
+df['group'] = pd.cut(df['Age'], 3, labels=['kids', 'adults', 'senior'])
 
 #Scaling features
 #Standard Scaler: The StandardScaler assumes your data is normally distributed within each feature and will scale them such that the distribution is now centred around 0, with a standard deviation of 1.
