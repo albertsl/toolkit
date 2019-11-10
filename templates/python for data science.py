@@ -133,6 +133,10 @@ for train_index, val_index in skf.split(X, y):
 	X_train, X_val = X[train_index], X[val_index]
 	y_train, y_val = y[train_index], y[val_index]
 
+#Select columns of a certain type
+df_bool = df.select_dtypes(include='bool')
+df_noint = df.select_dtypes(exclude='int')
+
 #Check for missing data
 total_null = df.isna().sum().sort_values(ascending=False)
 percent = 100*(df.isna().sum()/df.isna().count()).sort_values(ascending=False)
