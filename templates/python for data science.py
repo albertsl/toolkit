@@ -70,7 +70,7 @@ def reduce_mem_usage(df):
 	print('Decreased by {:.1f}%'.format(100 * (start_mem - end_mem) / start_mem))
 	
 	return df
-#Sometimes it changes some values in the dataframe, let's check it doesnt' change anything
+#Sometimes it changes some values in the dataframe, let's check it doesn't change anything
 df_test = pd.DataFrame()
 df_opt = reduce_mem_usage(df)
 for col in df:
