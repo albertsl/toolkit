@@ -80,6 +80,11 @@ df_test.describe().loc['mean']
 df_test.describe().loc['max']
 df_test.describe().loc['min']
 
+#Save dataframe as h5
+df.to_hdf('df.h5', key='df', mode='w')
+#Read dataframe from h5
+df = pd.read_hdf('df.h5', 'df')
+
 #Improve execution speed of your code by adding these decorators:
 @numba.jit
 def f(x):
