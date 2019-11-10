@@ -88,6 +88,10 @@ def f(x):
 def f(x):
 	return x
 
+#Speed-up pandas apply time:
+import swifter
+df.swifter.apply(lambda x: x.sum() - x.min())
+
 #Styling pandas DataFrame visualization https://pbpython.com/styling-pandas.html
 #https://pandas.pydata.org/pandas-docs/stable/user_guide/style.html
 # more info on string formatting: https://mkaz.blog/code/python-string-format-cookbook/
