@@ -92,6 +92,14 @@ def f(x):
 import swifter
 df.swifter.apply(lambda x: x.sum() - x.min())
 
+#Speed-up pandas using GPU with cudf. Install using:
+#conda install -c nvidia -c rapidsai -c numba -c conda-forge -c defaults cudf
+import cudf
+cudf_df = cudf.DataFrame.from_pandas(df)
+#we can use all the same methods as we use in pandas
+cudf_df['col1'].mean()
+cudf_df.merge(cudf_df2, on='b')
+
 #Styling pandas DataFrame visualization https://pbpython.com/styling-pandas.html
 #https://pandas.pydata.org/pandas-docs/stable/user_guide/style.html
 # more info on string formatting: https://mkaz.blog/code/python-string-format-cookbook/
