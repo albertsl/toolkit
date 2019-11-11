@@ -1547,7 +1547,7 @@ gdf.plot(color='blue', ax=ax)
 
 #Coordinate Reference System (CRS)
 df = pd.read_csv("data.csv")
-gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.Longitude, df.Latitude))
+gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df['Longitude'], df['Latitude']))
 gdf.crs = {'init': 'epsg:4326'}
 
 #Re-projecting (Changing the CRS)
@@ -1558,4 +1558,3 @@ X = gdf.geometry.x #For points
 y = gdf.geometry.y #For points
 l = gdf.geometry.length #For lines
 a = gdf.geometry.area #For polygons
-
