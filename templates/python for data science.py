@@ -70,7 +70,7 @@ def reduce_mem_usage(df):
 	print('Decreased by {:.1f}%'.format(100 * (start_mem - end_mem) / start_mem))
 	
 	return df
-#Sometimes it changes some values in the dataframe, let's check it doesnt' change anything
+#Sometimes it changes some values in the dataframe, let's check it doesn't change anything
 df_test = pd.DataFrame()
 df_opt = reduce_mem_usage(df)
 for col in df:
@@ -79,6 +79,11 @@ for col in df:
 df_test.describe().loc['mean']
 df_test.describe().loc['max']
 df_test.describe().loc['min']
+
+#Save dataframe as h5
+df.to_hdf('df.h5', key='df', mode='w')
+#Read dataframe from h5
+df = pd.read_hdf('df.h5', 'df')
 
 #Improve execution speed of your code by adding these decorators:
 @numba.jit
@@ -91,6 +96,14 @@ def f(x):
 #Speed-up pandas apply time:
 import swifter
 df.swifter.apply(lambda x: x.sum() - x.min())
+
+#Speed-up pandas using GPU with cudf. Install using:
+#conda install -c nvidia -c rapidsai -c numba -c conda-forge -c defaults cudf
+import cudf
+cudf_df = cudf.DataFrame.from_pandas(df)
+#we can use all the same methods as we use in pandas
+cudf_df['col1'].mean()
+cudf_df.merge(cudf_df2, on='b')
 
 #Styling pandas DataFrame visualization https://pbpython.com/styling-pandas.html
 #https://pandas.pydata.org/pandas-docs/stable/user_guide/style.html
@@ -132,6 +145,10 @@ skf = StratifiedKFold(n_splits=5, random_state=101)
 for train_index, val_index in skf.split(X, y):
 	X_train, X_val = X[train_index], X[val_index]
 	y_train, y_val = y[train_index], y[val_index]
+
+#Select columns of a certain type
+df_bool = df.select_dtypes(include='bool')
+df_noint = df.select_dtypes(exclude='int')
 
 #Check for missing data
 total_null = df.isna().sum().sort_values(ascending=False)
