@@ -1575,3 +1575,8 @@ X = gdf.geometry.x #For points
 y = gdf.geometry.y #For points
 l = gdf.geometry.length #For lines
 a = gdf.geometry.area #For polygons
+
+#Get paths from a list of points
+path_df = df.groupby("identifier")['geometry'].apply(list).apply(lambda x: LineString(x)).reset_index()
+path_gdf = gpd.GeoDataFrame(path_df, geometry=path_df.geometry)
+path_gdf.crs = {'init' :'epsg:4326'}
