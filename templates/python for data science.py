@@ -155,7 +155,7 @@ total_null = df.isna().sum().sort_values(ascending=False)
 percent = 100*(df.isna().sum()/df.isna().count()).sort_values(ascending=False)
 missing_data = pd.concat([total_null, percent], axis=1, keys=['Total', 'Percent'])
 #Generate new features with missing data
-nanf = ['1']
+nanf = ['feature1', 'feature2', 'feature3']
 for feature in nanf:
     df[feature + '_nan'] = df[nanf].isna()
 #Also look for infinite data, recommended to check it also after feature engineering
