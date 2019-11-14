@@ -24,6 +24,17 @@ print("Pandas version:", pd.__version__)
 print("Seaborn version:", sns.__version__)
 print("Numba version:", numba.__version__)
 
+#Manage dependencies with pipenv
+#install pip env with: pip install --user pipenv 	Follow the online documentation for installing if there's any error, specially with Windows.
+pipenv install package
+pipenv lock
+#Activate virtual environment
+pipenv shell
+#Run a command inside the virtual environment
+pipenv run xxxxx
+#Install dependencies in another computer
+pipenv install --ignore-pipfile
+
 #Load data
 df = pd.read_csv('file.csv')
 df = pd.read_excel('file.xlsx')
