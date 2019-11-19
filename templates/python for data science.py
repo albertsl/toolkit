@@ -1666,8 +1666,12 @@ def my_geocoder(row):
 df[['Latitude', 'Longitude', 'geometry']] = df.apply(lambda x: my_geocoder(x['Name']), axis=1)
 print("{}% of addresses were geocoded!".format(
     (1 - sum(np.isnan(df["Latitude"])) / len(df)) * 100))
-
-# Drop universities that were not successfully geocoded
+#Drop universities that were not successfully geocoded
 df = df.loc[~np.isnan(df["Latitude"])]
 df = gpd.GeoDataFrame(df, geometry=df['geometry'])
 df.crs = {'init': 'epsg:4326'}
+
+#Join geodataframes
+gdf_joined = gdf.merge(df, on='name')
+#spatial join
+gdf_joined = gpd.sjoin(gdf1, gdf2) #looks at the geometry column in each GeoDataFrame.
