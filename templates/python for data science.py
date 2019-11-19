@@ -1649,3 +1649,25 @@ m_5 = folium.Map(location=[42.32,-71.0589], tiles='cartodbpositron', zoom_start=
 HeatMap(data=df[['Lat', 'Long']], radius=10).add_to(m_5)
 # Display the map
 embed_map(m_5, 'm_5.html')
+
+#GeoCoding: Given the name of a place, get its coordinates
+from geopandas.tools import geocode
+result = geocode("The Great Pyramid of Giza", provider="nominatim") #Nominatim from OpenStreetMap. Returns 2 columns, geometry and address.
+latitude = result['geometry'].iloc[0].y
+longitude = result['geometry'].iloc[0].x
+#Geocode every row in a DataFrame
+def my_geocoder(row):
+    try:
+        point = geocode(row, provider='nominatim')['geometry'].iloc[0]
+        return pd.Series({'Latitude': point.y, 'Longitude': point.x, 'geometry': point})
+    except:
+        return None
+
+df[['Latitude', 'Longitude', 'geometry']] = df.apply(lambda x: my_geocoder(x['Name']), axis=1)
+print("{}% of addresses were geocoded!".format(
+    (1 - sum(np.isnan(df["Latitude"])) / len(df)) * 100))
+
+# Drop universities that were not successfully geocoded
+df = df.loc[~np.isnan(df["Latitude"])]
+df = gpd.GeoDataFrame(df, geometry=df['geometry'])
+df.crs = {'init': 'epsg:4326'}
