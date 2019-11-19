@@ -1675,3 +1675,13 @@ df.crs = {'init': 'epsg:4326'}
 gdf_joined = gdf.merge(df, on='name')
 #spatial join
 gdf_joined = gpd.sjoin(gdf1, gdf2) #looks at the geometry column in each GeoDataFrame.
+
+#Proximity analysis
+#Measuring distance between points. First make sure they use the same coordinate reference system (CRS). Also check units of the CRS.
+print(gdf1.crs)
+print(gdf2.crs)
+gdf1_row0 = gdf1.iloc[0]
+distances = gdf2['geometry'].distance(gdf1_row0['geometry'])
+
+#Create a buffer. Get all points within a certain radius from a point.
+gdf2['geometry'].buffer(2000)
