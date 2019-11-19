@@ -1590,3 +1590,62 @@ a = gdf.geometry.area #For polygons
 path_df = df.groupby("identifier")['geometry'].apply(list).apply(lambda x: LineString(x)).reset_index()
 path_gdf = gpd.GeoDataFrame(path_df, geometry=path_df.geometry)
 path_gdf.crs = {'init' :'epsg:4326'}
+
+#Interactive Maps with Folium
+import folium
+from folium import Choropleth, Circle, Marker
+from folium.plugins import HeatMap, MarkerCluster
+
+#function for dsiplaying maps in all browsers
+def embed_map(m, file_name):
+    from IPython.display import IFrame
+    m.save(file_name)
+    return IFrame(file_name, width='100%', height='500px')
+
+#Create a map
+m_1 = folium.Map(location=[42.32,-71.0589], tiles='openstreetmap', zoom_start=10)
+#Display the map
+embed_map(m_1, 'm_1.html')
+
+#Show markers in a map
+m_2 = folium.Map(location=[42.32,-71.0589], tiles='cartodbpositron', zoom_start=13)
+#Add points to the map
+for idx, row in df.iterrows():
+    Marker([row['Lat'], row['Long']]).add_to(m_2)
+#Display the map
+embed_map(m_2, 'm_2.html')
+
+#MarkerCluster for a lot of markers in the map
+m_3 = folium.Map(location=[42.32,-71.0589], tiles='cartodbpositron', zoom_start=13)
+#Add points to the map
+mc = MarkerCluster()
+for idx, row in df.iterrows():
+    if not math.isnan(row['Long']) and not math.isnan(row['Lat']):
+        mc.add_child(Marker([row['Lat'], row['Long']]))
+m_3.add_child(mc)
+#Display the map
+embed_map(m_3, 'm_3.html')
+
+#Bubble map. Circles in the map with varying size and color to show relationship between location and two other variables.
+m_4 = folium.Map(location=[42.32,-71.0589], tiles='cartodbpositron', zoom_start=13)
+#Decide colour according to the value of a variable
+def color_producer(val):
+    if val <= 12:
+        return 'forestgreen'
+    else:
+        return 'darkred'
+#Add a bubble map to the base map
+for i in range(0,len(df)):
+    Circle(
+        location=[df.iloc[i]['Lat'], df.iloc[i]['Long']],
+        radius=20,
+        color=color_producer(df.iloc[i]['HOUR'])).add_to(m_4)
+#Display the map
+embed_map(m_4, 'm_4.html')
+
+#Heatmap. Shows density of occurrence in the map
+m_5 = folium.Map(location=[42.32,-71.0589], tiles='cartodbpositron', zoom_start=12)
+#Add a heatmap to the base map
+HeatMap(data=df[['Lat', 'Long']], radius=10).add_to(m_5)
+# Display the map
+embed_map(m_5, 'm_5.html')
