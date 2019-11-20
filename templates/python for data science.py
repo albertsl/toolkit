@@ -882,6 +882,26 @@ for trees in range(100, 5000, 50):
 pd.DataFrame({'trees': trl, 'score':scl}).sort_values('score')
 plt.plot(trl, scl)
 
+#Confidence intervals
+from sklearn.utils import resample
+n_bootstraps = 1000
+bootstrap_X = []
+bootstrap_y = []
+for _ in range(n_bootstraps):
+    sample_X, sample_y = resample(scaled_df, target)
+    bootstrap_X.append(sample_X)
+    bootstrap_y.append(sample_y)
+from sklearn.linear_model import SGDRegressor
+linear_regression_model = SGDRegressor(tol=.0001, eta0=.01)
+coeffs = []
+for i, data in enumerate(bootstrap_X):
+    linear_regression_model.fit(data, bootstrap_y[i])
+    coeffs.append(linear_regression_model.coef_)
+#Analyze coeffs to view 
+coeffs = pd.DataFrame(coeffs)
+coeffs.describe()
+plt.boxplot(coeffs)
+
 #Try Ensemble methods. Combining your best models will often perform better than running them individually
 #Max Voting
 model1 = tree.DecisionTreeClassifier()
