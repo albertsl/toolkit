@@ -393,6 +393,14 @@ from category_encoders.hashing import HashingEncoder
 he = HashingEncoder(cols = ['var'])
 df = he.fit_transform(df)
 
+#Resampling Methods for Unbalanced Datasets https://towardsdatascience.com/https-towardsdatascience-com-resampling-methods-for-unbalanced-datasets-5b565d0a247d
+#Undersampling the majority class is taking random draws of the dominating class out of the dataset to match the amount of non-dominating class. As a general rule, this is usually the least desirable approach as it causes us to lose some valuable data by throwing it away, but when you have a large dataset, it might prove to be computationally better to undersample.
+#Oversampling the minority class is the opposite. Instead of the previous approach, we take random draws of the non-dominating class and create “fake” copies to match the amount of cases in the dominating class. In this case, we are in essence creating duplicates of the data and training our model on such. This may not be an ideal approach when our non-dominating class is not scattered across the dataset. Duplication will effectively only recreate similar instances without a “synthetic” variety.
+#Synthetic Minority Oversampling Technique (SMOTE) is another type of minority oversampling technique, except that this one takes into account characteristics of existing cases of non dominating class, and creates synthetic duplicates in a “nearest neighbors” fashion
+from imblearn.over_sampling import SMOTE
+method = SMOTE(kind='regular')
+X_resampled, y_resampled = method.fit_sample(X_train, y_train)
+
 #Feature selection: Drop attributes that provide no useful information for the task
 #Unsupervised Feature selection before training a model
 from sklearn.feature_selection import SelectKBest, chi2
