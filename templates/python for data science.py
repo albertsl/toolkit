@@ -43,6 +43,10 @@ df = pd.read_csv('file.csv', nrows=50000)
 #Load mat file
 from scipy.io import loadmat
 data = loadmat('file.mat')
+
+#Get memory usage
+df.memory_usage().sum() / 1024**2 #MB
+
 #Reduce dataframe memory usage
 def reduce_mem_usage(df):
 	""" iterate through all the columns of a dataframe and modify the data type
