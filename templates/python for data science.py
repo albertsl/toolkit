@@ -141,6 +141,10 @@ from pandas_profiling import ProfileReport
 prof = ProfileReport(df)
 prof.to_file(output_file='output.html')
 
+#Add rows from Series to a DataFrame
+s = pd.Series([data], index=df.columns)
+df = df.append(s, ignore_index=True)
+
 #Define Validation method
 #Train and validation set split
 from sklearn.model_selection import train_test_split
