@@ -44,6 +44,15 @@ df = pd.read_csv('file.csv', nrows=50000)
 from scipy.io import loadmat
 data = loadmat('file.mat')
 
+#Get all files from a folder
+from os import listdir
+from os import path
+main_folders = ['f1', 'f2']
+for folder in main_folders:
+	lfolder = listdir(folder)
+	for f in lfolder:
+		path.join(folder, f)
+
 #Get memory usage
 df.memory_usage().sum() / 1024**2 #MB
 
