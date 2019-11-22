@@ -36,7 +36,7 @@ pipenv run xxxxx
 pipenv install --ignore-pipfile
 
 #Load data
-df = pd.read_csv('file.csv')
+df = pd.read_csv('file.csv', sep=',', skiprows=0)
 df = pd.read_excel('file.xlsx')
 #If data is too big, take a sample of it
 df = pd.read_csv('file.csv', nrows=50000)
