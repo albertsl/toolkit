@@ -934,6 +934,22 @@ coeffs = pd.DataFrame(coeffs)
 coeffs.describe()
 plt.boxplot(coeffs)
 
+#Determine if two distributions are significantly different using the Mann Whitney U Test. https://towardsdatascience.com/determine-if-two-distributions-are-significantly-different-using-the-mann-whitney-u-test-1f79aa249ffb
+def mann_whitney_u_test(distribution_1, distribution_2):
+    """
+    Perform the Mann-Whitney U Test, comparing two different distributions.
+    Args:
+       distribution_1: List. 
+       distribution_2: List.
+    Outputs:
+        u_statistic: Float. U statisitic for the test.
+        p_value: Float.
+    """
+    u_statistic, p_value = stats.mannwhitneyu(distribution_1, distribution_2)
+    return u_statistic, p_value
+mann_whitney_u_test(list(df['col1']), list(df['col2']))
+#As a general rule of thumb, when the p-value is below 0.05, the null hypothesis can be rejected. This means with statistical significance that the two distributions are different.
+
 #Try Ensemble methods. Combining your best models will often perform better than running them individually
 #Max Voting
 model1 = tree.DecisionTreeClassifier()
