@@ -420,6 +420,10 @@ df = he.fit_transform(df)
 from imblearn.over_sampling import SMOTE
 method = SMOTE(kind='regular')
 X_resampled, y_resampled = method.fit_sample(X_train, y_train)
+#Undersampling with Tomek Links. Tomek links are pairs of examples of opposite classes in close vicinity. https://towardsdatascience.com/the-5-most-useful-techniques-to-handle-imbalanced-datasets-6cdba096d55a
+from imblearn.under_sampling import TomekLinks
+tl = TomekLinks(return_indices=True, ratio='majority')
+X_tl, y_tl, id_tl = tl.fit_sample(X, y)
 
 #Feature selection: Drop attributes that provide no useful information for the task
 #Unsupervised Feature selection before training a model
