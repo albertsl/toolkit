@@ -2,7 +2,14 @@ from urllib.request import urlopen
 import re
 
 def download_page(url):
-    return urlopen(url).read().decode('utf-8')
+    return urlopen(url).read()#.decode('utf-8')
+
+def download_and_save_page(url, file):
+    html_code = urlopen(url).read()#.decode('utf-8')
+    f = open(file, 'wb')
+    f.write(html_code)
+    f.close()
+    return html_code
 
 def extract_links(page):
     link_regex = re.compile('<a[^>]+href=["\'](.*?)["\']', re.IGNORECASE)
