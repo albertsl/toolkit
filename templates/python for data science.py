@@ -150,6 +150,8 @@ df.head()
 df.describe()
 df.info()
 df.columns
+df.nunique()
+df.unique()
 #For a categorical dataset we want to see how many instances of each category there are
 df['categorical_var'].value_counts()
 #Automated data visualization
