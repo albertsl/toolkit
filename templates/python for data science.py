@@ -643,6 +643,15 @@ y_pred = logmodel.predict(X_val)
 acc_log = round(logmodel.score(X_val, y_val) * 100, 2)
 
 #########
+# Linear SVC
+#########
+from sklearn.svm import LinearSVC
+lSVC = LinearSVC()
+lSVC.fit(X_train, y_train)
+
+y_pred = lSVC.predict(X_val)
+
+#########
 # KNN
 #########
 from sklearn.neighbors import KNeighborsClassifier
