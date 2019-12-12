@@ -217,8 +217,8 @@ df.dropna(how='any', inplace=True)
 
 #Fix Skewed features
 from scipy.stats import skew
-numeric_feats = all_data.dtypes[all_data.dtypes != "object"].index
-skewed_feats = all_data[numeric_feats].apply(lambda x: skew(x.dropna())).sort_values(ascending=False)
+numeric_feats = df.dtypes[df.dtypes != "object"].index
+skewed_feats = df[numeric_feats].apply(lambda x: skew(x.dropna())).sort_values(ascending=False)
 skewness = pd.DataFrame({'Skew' :skewed_feats})
 #Box Cox Transformation of (highly) skewed features. We use the scipy function boxcox1p which computes the Box-Cox transformation of 1+x
 #Note that setting λ=0 is equivalent to log1p
@@ -226,7 +226,7 @@ from scipy.special import boxcox1p
 skewed_features = skewness.index
 lambd = 0.15
 for feat in skewed_features:
-    all_data[feat] = boxcox1p(all_data[feat], lambd)
+    df[feat] = boxcox1p(df[feat], lambd)
 #check different approaches to fix skewness:
 skewed_features = skewness.index
 for feature in skewed_features:
