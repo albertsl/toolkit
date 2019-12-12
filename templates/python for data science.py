@@ -612,6 +612,7 @@ acc_lr = round(lr.score(X_val, y_val) * 100, 2)
 #########
 # Lasso Regression
 #########
+#Reduces the sum of the absolute values of the coefficients, so every variable has less influence. Some coefficients will be zero, removing some variables from the model. Reduces overfitting compared to linear regression
 from sklearn.linear_model import Lasso
 ls = Lasso(alpha=0.0005, random_state=101)
 ls.fit(X_train,y_train)
@@ -621,6 +622,7 @@ y_pred = ls.predict(X_val)
 #########
 # Ridge Regression
 #########
+#Makes coefficients smaller, so every variable has less influence. Reduces overfitting compared to linear regression
 from sklearn.linear_model import Ridge
 rdg = Ridge(alpha=0.002, random_state=101)
 rdg.fit(X_train,y_train)
