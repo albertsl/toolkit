@@ -871,6 +871,18 @@ MLPr = MLPRegressor(solver='sgd', learning_rate_init=lr, hidden_layer_sizes=tupl
 MLPr.fit(X_train, y_train)
 MLPr.predict(X_val)
 
+#########
+# Multi-layer Perceptron Classifier (Neural Network)
+#########
+from sklearn.neural_network import MLPClassifier
+
+lr = 0.01 #Learning rate
+nn = [2, 16, 8, 1] #Neurons by layer
+
+MLPc = MLPClassifier(solver='sgd', learning_rate_init=lr, hidden_layer_sizes=tuple(nn[1:]), verbose=True, n_iter_no_change=1000, batch_size = 64)
+MLPc.fit(X_train, y_train)
+MLPc.predict(X_val)
+
 #Analyze the most significant variables for each algorithm.
 #Analyze the types of errors the models make.
 #What data would a human have used to avoid these errors?
