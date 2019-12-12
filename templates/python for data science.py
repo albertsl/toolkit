@@ -655,7 +655,11 @@ y_pred = lSVC.predict(X_val)
 # KNN
 #########
 from sklearn.neighbors import KNeighborsClassifier
-knn = KNeighborsClassifier(n_neighbors = 5)
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+#For regression
+from sklearn.neighbors import KNeighborsRegressor
+knn = KNeighborsRegressor(n_neighbors=5)
 knn.fit(X_train, y_train)
 
 #Use model to predict
