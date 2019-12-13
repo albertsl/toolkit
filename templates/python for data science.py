@@ -1143,6 +1143,12 @@ X_train_PCA.index = X_train.index
 X_test_PCA = pca.transform(X_test)
 X_test_PCA = pd.DataFrame(X_test_PCA)
 X_test_PCA.index = X_test.index
+#NMF
+from sklearn.decomposition import NMF
+nmf = NMF(n_components=15, random_state=101)
+nmf.fit(X_train)
+X_train_nmf = nmf.transform(X_train)
+X_val_nmf = nmf.transform(X_val)
 
 #ONLY FOR KAGGLE, NOT FOR REAL LIFE PROBLEMS
 #If both train and test data come from the same distribution use this, we can use the target variable averaged over different categorical variables as a feature.
