@@ -178,6 +178,10 @@ skf = StratifiedKFold(n_splits=5, random_state=101)
 for train_index, val_index in skf.split(X, y):
 	X_train, X_val = X[train_index], X[val_index]
 	y_train, y_val = y[train_index], y[val_index]
+#Leave-One-Out Cross validation
+from sklearn.model_selection import LeaveOneOut
+loo = LeaveOneOut()
+scores = cross_val_score(model, X, y, cv=loo)
 
 #Select columns of a certain type
 df_bool = df.select_dtypes(include='bool')
