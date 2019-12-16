@@ -850,6 +850,13 @@ kmeans.fit(df)
 kmeans.cluster_centers_
 kmeans.labels_
 
+#########
+# DBSCAN
+#########
+from sklearn.cluster import DBSCAN
+dbscan = DBSCAN()
+clusters = dbscan.fit_predict(X)
+
 #Measure and compare their performance
 #Big thank you to Uxue Lazcano (https://github.com/uxuelazkano) for code on model comparison
 models = pd.DataFrame({
