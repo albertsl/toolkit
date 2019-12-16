@@ -431,14 +431,19 @@ X_tl, y_tl, id_tl = tl.fit_sample(X, y)
 #Unsupervised Feature selection before training a model
 from sklearn.feature_selection import SelectKBest, chi2
 bestfeatures = SelectKBest(score_func=chi2, k='all')
-fit = bestfeatures.fit(X_train, y_train)
+selected = bestfeatures.fit(X_train, y_train)
 
-dfscores = pd.DataFrame(fit.scores_)
+dfscores = pd.DataFrame(selected.scores_)
 dfcolumns = pd.DataFrame(X_train.columns)
 featureScores = pd.concat([dfcolumns,dfscores],axis=1)
 featureScores.columns = ['Specs','Score']
 
 featureScores.sort_values('Score', ascending=False) #The highest the number, the more irrelevant the variable is
+#Select Percentile
+from sklearn.feature_selection import SelectPercentile
+bestfeatures = SelectPercentile(percentile=50)
+selected = bestfeatures.fit(X_train, y_train)
+X_train_selected = selected.transform(X_train)
 
 #Feature engineering. Create new features by transforming the data
 #Discretize continuous features
