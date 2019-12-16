@@ -163,6 +163,25 @@ prof.to_file(output_file='output.html')
 s = pd.Series([data], index=df.columns)
 df = df.append(s, ignore_index=True)
 
+#Define a pipeline
+from sklearn.pipeline import pipeline
+prepare_and_train = Pipeline([()'scaler', MinMaxScaler()), ('svm', SVC())])
+prepare_and_train.fit(X_train, y_train)
+prepare_and_train.score(X_val, y_val)
+#Pipeline with Cross-validation
+feat_selection_and_train = Pipeline([("select", SelectPercentile(percentile=5)), ("ridge", Ridge())])
+np.mean(cross_val_score(feat_selection_and_train, X, y, cv=5))
+#Pipeline for Grid Search
+param_grid = {'svm__C': [0.001, 0.01, 0.1, 1, 10, 100],
+              'svm__gamma': [0.001, 0.01, 0.1, 1, 10, 100]}
+from sklearn.model_selection import GridSearchCV
+gs = GridSearchCV(pipe, param_grid=param_grid, cv=5)
+gs.fit(X_train, y_train)
+
+gs.best_score_
+gs.score(X_val, y_val)
+gs.best_params_
+
 #Define Validation method
 #Train and validation set split
 from sklearn.model_selection import train_test_split
