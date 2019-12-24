@@ -589,6 +589,15 @@ df['EI'] = pd.Series(lEI)
 #Create new column, dividing the dataset in groups of the same number of events
 df['group'] = pd.cut(df['Age'], 3, labels=['kids', 'adults', 'senior'])
 
+#NLP
+#Bag-of-words
+from sklearn.feature_extraction.text import CountVectorizer
+vect = CountVectorizer()
+vect.fit(train_data) #train_data should be a list of sentences, paragraphs or texts
+vect.vocabulary_
+
+bag_of_words = vect.transform(train_data)
+
 #Scaling features
 #Standard Scaler: The StandardScaler assumes your data is normally distributed within each feature and will scale them such that the distribution is now centred around 0, with a standard deviation of 1.
 #If data is not normally distributed, this is not the best scaler to use.
