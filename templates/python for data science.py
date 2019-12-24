@@ -592,7 +592,7 @@ df['group'] = pd.cut(df['Age'], 3, labels=['kids', 'adults', 'senior'])
 #NLP
 #Bag-of-words
 from sklearn.feature_extraction.text import CountVectorizer
-vect = CountVectorizer()
+vect = CountVectorizer(min_df=3)
 vect.fit(train_data) #train_data should be a list of sentences, paragraphs or texts
 vect.vocabulary_
 
