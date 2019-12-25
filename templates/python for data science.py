@@ -602,6 +602,9 @@ from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 vect = CountVectorizer(min_df=3, stop_words="english")
 #2 Delete words that appear very frequently.
 vect = CountVectorizer(max_df=100)
+#TF-IDF (term frequency - inverse document frequency): Give high weight to a word that appears frequently in a specific document but not in many documents
+from sklearn.feature_extraction.text import TfidfVectorizer
+vect = TfidfVectorizer(min_df=3) #Important to apply the same transformation to train and test set.
 
 #Scaling features
 #Standard Scaler: The StandardScaler assumes your data is normally distributed within each feature and will scale them such that the distribution is now centred around 0, with a standard deviation of 1.
