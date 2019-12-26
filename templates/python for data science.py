@@ -610,6 +610,11 @@ import spacy
 import nltk
 en_nlp = spacy.load('en')
 stemmer = nltk.stem.PorterStemmer()
+#Topic Modeling and Document Clustering: LDA (Latent Dirichlet Allocation)
+from sklearn.decomposition import LatentDirichletAllocation
+lda = LatentDirichletAllocation(n_topics=5)
+doc_topics = lda.fit_transform(X_train)
+lda.components_
 
 #Scaling features
 #Standard Scaler: The StandardScaler assumes your data is normally distributed within each feature and will scale them such that the distribution is now centred around 0, with a standard deviation of 1.
