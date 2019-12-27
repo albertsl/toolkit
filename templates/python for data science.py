@@ -979,6 +979,8 @@ from sklearn import metrics
 metrics.mean_absolute_error(y_val, y_pred)
 metrics.mean_squared_error(y_val, y_pred)
 np.sqrt(metrics.mean_squared_error(y_val, y_pred))
+#MAPE, note this metric is not implemented in sklearn, it can be problematic because it can cause division by zero errors
+np.mean(np.abs((y_true-y_pred)/y_true))*100
 #Classification report
 from sklearn.metrics import classification_report
 print(classification_report(y_val,y_pred))
