@@ -1199,7 +1199,7 @@ importance = S/S.sum()
 varinace_explained = importance.cumsum()*100
 #PCA: Decompose the data in a defined number of variables keeping the most variance possible.
 from sklearn.decomposition import PCA
-pca = PCA(n_components=2, svd_solver='full')
+pca = PCA(n_components=2, svd_solver='full') #Choose number of components so that 99% of the variance is retained
 X_train_PCA = pca.fit_transform(X_train)
 X_train_PCA = pd.DataFrame(X_train_PCA)
 X_train_PCA.index = X_train.index
