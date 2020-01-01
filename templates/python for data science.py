@@ -1266,7 +1266,907 @@ new_df = targetc.fit_transform(df)
 
 new_df[['column_Kfold_Target_Enc','column']]
 
+#########
+# Deep Learning (Coursera Specialization)
+#########
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+#Initialize parameters
+def layer_sizes(X, Y):
+    """
+    Arguments:
+    X -- input dataset of shape (input size, number of examples)
+    Y -- labels of shape (output size, number of examples)
+    
+    Returns:
+    n_x -- the size of the input layer
+    n_h -- the size of the hidden layer
+    n_y -- the size of the output layer
+    """
+    n_x = X.shape[0] # size of input layer
+    n_h = 4
+    n_y = Y.shape[1] # size of output layer
+    return (n_x, n_h, n_y)
+def initialize_parameters(layer_dims):
+    """
+    Arguments:
+    layer_dims -- python array (list) containing the dimensions of each layer in our network
+    
+    Returns:
+    parameters -- python dictionary containing your parameters "W1", "b1", ..., "WL", "bL":
+                    Wl -- weight matrix of shape (layer_dims[l], layer_dims[l-1])
+                    bl -- bias vector of shape (layer_dims[l], 1)
+    """
+    parameters = {}
+    L = len(layer_dims)            # number of layers in the network
 
+    for l in range(1, L):
+        #Random initialization, not the best
+        #parameters['W' + str(l)] = np.random.randn(layer_dims[l], layer_dims[l-1]) * 0.01
+
+        #He initialization (recommended)
+        parameters['W' + str(l)] = np.random.randn(layer_dims[l], layer_dims[l-1])*np.sqrt(2/layer_dims[l-1])
+        parameters['b' + str(l)] = np.zeros((layer_dims[l], 1))
+        
+        assert(parameters['W' + str(l)].shape == (layer_dims[l], layer_dims[l-1]))
+        assert(parameters['b' + str(l)].shape == (layer_dims[l], 1))
+        
+    return parameters
+#Forward propagation
+def linear_forward(A, W, b):
+    """
+    Implement the linear part of a layer's forward propagation.
+
+    Arguments:
+    A -- activations from previous layer (or input data): (size of previous layer, number of examples)
+    W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
+    b -- bias vector, numpy array of shape (size of the current layer, 1)
+
+    Returns:
+    Z -- the input of the activation function, also called pre-activation parameter 
+    cache -- a python tuple containing "A", "W" and "b" ; stored for computing the backward pass efficiently
+    """
+    Z = np.dot(W, A)+b
+    
+    assert(Z.shape == (W.shape[0], A.shape[1]))
+    cache = (A, W, b)
+    
+    return Z, cache
+def linear_activation_forward(A_prev, W, b, activation):
+    """
+    Implement the forward propagation for the LINEAR->ACTIVATION layer
+
+    Arguments:
+    A_prev -- activations from previous layer (or input data): (size of previous layer, number of examples)
+    W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
+    b -- bias vector, numpy array of shape (size of the current layer, 1)
+    activation -- the activation to be used in this layer, stored as a text string: "sigmoid" or "relu"
+
+    Returns:
+    A -- the output of the activation function, also called the post-activation value 
+    cache -- a python tuple containing "linear_cache" and "activation_cache";
+             stored for computing the backward pass efficiently
+    """
+    
+    if activation == "sigmoid":
+        # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
+        Z, linear_cache = linear_forward(A_prev, W, b)
+        A, activation_cache = sigmoid(Z)
+    
+    elif activation == "relu":
+        # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
+        Z, linear_cache = linear_forward(A_prev, W, b)
+        A, activation_cache = relu(Z)
+    
+    assert (A.shape == (W.shape[0], A_prev.shape[1]))
+    cache = (linear_cache, activation_cache)
+
+    return A, cache
+def forward_propagation(X, parameters):
+    """
+    Implement forward propagation for the [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID computation
+    
+    Arguments:
+    X -- data, numpy array of shape (input size, number of examples)
+    parameters -- output of initialize_parameters_deep()
+    
+    Returns:
+    AL -- last post-activation value
+    caches -- list of caches containing:
+                every cache of linear_activation_forward() (there are L-1 of them, indexed from 0 to L-1)
+    """
+    caches = []
+    A = X
+    L = len(parameters) // 2                  # number of layers in the neural network
+    
+    # Implement [LINEAR -> RELU]*(L-1). Add "cache" to the "caches" list.
+    for l in range(1, L):
+        A_prev = A 
+        A, cache = linear_activation_forward(A_prev, parameters['W' + str(l)], parameters['b' + str(l)], "relu")
+        caches.append(cache)
+    
+    # Implement LINEAR -> SIGMOID. Add "cache" to the "caches" list.
+    AL, cache = linear_activation_forward(A_prev, parameters['W' + str(L)], parameters['b' + str(L)], "sigmoid")
+    caches.append(cache)
+    
+    assert(AL.shape == (1,X.shape[1]))
+            
+    return AL, caches
+def forward_propagation_with_dropout(X, parameters, keep_prob = 0.5):
+    """
+    Implements the forward propagation: LINEAR -> RELU + DROPOUT -> LINEAR -> RELU + DROPOUT -> LINEAR -> SIGMOID.
+    
+    Arguments:
+    X -- input dataset, of shape (2, number of examples)
+    parameters -- python dictionary containing your parameters "W1", "b1", "W2", "b2", "W3", "b3":
+                    W1 -- weight matrix of shape (20, 2)
+                    b1 -- bias vector of shape (20, 1)
+                    W2 -- weight matrix of shape (3, 20)
+                    b2 -- bias vector of shape (3, 1)
+                    W3 -- weight matrix of shape (1, 3)
+                    b3 -- bias vector of shape (1, 1)
+    keep_prob - probability of keeping a neuron active during drop-out, scalar
+    
+    Returns:
+    A3 -- last activation value, output of the forward propagation, of shape (1,1)
+    cache -- tuple, information stored for computing the backward propagation
+    """
+    # retrieve parameters
+    W1 = parameters["W1"]
+    b1 = parameters["b1"]
+    W2 = parameters["W2"]
+    b2 = parameters["b2"]
+    W3 = parameters["W3"]
+    b3 = parameters["b3"]
+    
+    # LINEAR -> RELU -> LINEAR -> RELU -> LINEAR -> SIGMOID
+    Z1 = np.dot(W1, X) + b1
+    A1 = relu(Z1)
+    D1 = np.random.randn(A1.shape[0], A1.shape[1])      # Step 1: initialize matrix D1 = np.random.rand(..., ...)
+    D1 = D1 < keep_prob                                 # Step 2: convert entries of D1 to 0 or 1 (using keep_prob as the threshold)
+    A1 = A1*D1                                          # Step 3: shut down some neurons of A1
+    A1 = A1/keep_prob                                   # Step 4: scale the value of neurons that haven't been shut down
+    Z2 = np.dot(W2, A1) + b2
+    A2 = relu(Z2)
+    D2 = np.random.rand(A2.shape[0], A2.shape[1])       # Step 1: initialize matrix D2 = np.random.rand(..., ...)
+    D2 = D2 < keep_prob                                 # Step 2: convert entries of D2 to 0 or 1 (using keep_prob as the threshold)
+    A2 = A2*D2                                          # Step 3: shut down some neurons of A2
+    A2 = A2/keep_prob                                   # Step 4: scale the value of neurons that haven't been shut down
+    Z3 = np.dot(W3, A2) + b3
+    A3 = sigmoid(Z3)
+    
+    cache = (Z1, D1, A1, W1, b1, Z2, D2, A2, W2, b2, Z3, A3, W3, b3)
+    
+    return A3, cache
+#Cost function
+def compute_cost(AL, Y):
+    """
+    Implement the cost function defined by equation (7).
+
+    Arguments:
+    AL -- probability vector corresponding to your label predictions, shape (1, number of examples)
+    Y -- true "label" vector (for example: containing 0 if non-cat, 1 if cat), shape (1, number of examples)
+
+    Returns:
+    cost -- cross-entropy cost
+    """
+    m = Y.shape[1]
+
+    # Compute loss from aL and y.
+    cost = (-1 / m) * np.sum(np.multiply(Y, np.log(AL)) + np.multiply(1 - Y, np.log(1 - AL)))
+    
+    cost = np.squeeze(cost)      # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).
+    assert(cost.shape == ())
+    
+    return cost
+def compute_cost_with_regularization(A3, Y, parameters, lambd):
+    """
+    Implement the cost function with L2 regularization. See formula (2) above.
+    
+    Arguments:
+    A3 -- post-activation, output of forward propagation, of shape (output size, number of examples)
+    Y -- "true" labels vector, of shape (output size, number of examples)
+    parameters -- python dictionary containing parameters of the model
+    
+    Returns:
+    cost - value of the regularized loss function (formula (2))
+    """
+    m = Y.shape[1]
+    W1 = parameters["W1"]
+    W2 = parameters["W2"]
+    W3 = parameters["W3"]
+    
+    cross_entropy_cost = compute_cost(A3, Y) # This gives you the cross-entropy part of the cost
+    
+    ### START CODE HERE ### (approx. 1 line)
+    L2_regularization_cost = lambd * (np.sum(np.square(W1)) + np.sum(np.square(W2)) + np.sum(np.square(W3))) / (2 * m)
+    ### END CODER HERE ###
+    
+    cost = cross_entropy_cost + L2_regularization_cost
+    
+    return cost
+#Backward propagation
+def linear_backward(dZ, cache):
+    """
+    Implement the linear portion of backward propagation for a single layer (layer l)
+
+    Arguments:
+    dZ -- Gradient of the cost with respect to the linear output (of current layer l)
+    cache -- tuple of values (A_prev, W, b) coming from the forward propagation in the current layer
+
+    Returns:
+    dA_prev -- Gradient of the cost with respect to the activation (of the previous layer l-1), same shape as A_prev
+    dW -- Gradient of the cost with respect to W (current layer l), same shape as W
+    db -- Gradient of the cost with respect to b (current layer l), same shape as b
+    """
+    A_prev, W, b = cache
+    m = A_prev.shape[1]
+
+    dW = np.dot(dZ, cache[0].T) / m
+    db = np.squeeze(np.sum(dZ, axis=1, keepdims=True)) / m
+    dA_prev = np.dot(cache[1].T, dZ)
+    
+    assert (dA_prev.shape == A_prev.shape)
+    assert (dW.shape == W.shape)
+    assert (isinstance(db, float))
+    
+    return dA_prev, dW, db
+def linear_activation_backward(dA, cache, activation):
+    """
+    Implement the backward propagation for the LINEAR->ACTIVATION layer.
+    
+    Arguments:
+    dA -- post-activation gradient for current layer l 
+    cache -- tuple of values (linear_cache, activation_cache) we store for computing backward propagation efficiently
+    activation -- the activation to be used in this layer, stored as a text string: "sigmoid" or "relu"
+    
+    Returns:
+    dA_prev -- Gradient of the cost with respect to the activation (of the previous layer l-1), same shape as A_prev
+    dW -- Gradient of the cost with respect to W (current layer l), same shape as W
+    db -- Gradient of the cost with respect to b (current layer l), same shape as b
+    """
+    linear_cache, activation_cache = cache
+    
+    if activation == "relu":
+        dZ = relu_backward(dA, activation_cache)
+    elif activation == "sigmoid":
+        dZ = sigmoid_backward(dA, activation_cache)
+    dA_prev, dW, db = linear_backward(dZ, linear_cache)
+    
+    return dA_prev, dW, db
+def backward_propagation(AL, Y, caches):
+    """
+    Implement the backward propagation for the [LINEAR->RELU] * (L-1) -> LINEAR -> SIGMOID group
+    
+    Arguments:
+    AL -- probability vector, output of the forward propagation (L_model_forward())
+    Y -- true "label" vector (containing 0 if non-cat, 1 if cat)
+    caches -- list of caches containing:
+                every cache of linear_activation_forward() with "relu" (it's caches[l], for l in range(L-1) i.e l = 0...L-2)
+                the cache of linear_activation_forward() with "sigmoid" (it's caches[L-1])
+    
+    Returns:
+    grads -- A dictionary with the gradients
+             grads["dA" + str(l)] = ... 
+             grads["dW" + str(l)] = ...
+             grads["db" + str(l)] = ... 
+    """
+    grads = {}
+    L = len(caches) # the number of layers
+    m = AL.shape[1]
+    Y = Y.reshape(AL.shape) # after this line, Y is the same shape as AL
+    
+    # Initializing the backpropagation
+    dAL = -(np.divide(Y, AL) - np.divide(1 - Y, 1 - AL))
+    
+    # Lth layer (SIGMOID -> LINEAR) gradients. Inputs: "dAL, current_cache". Outputs: "grads["dAL-1"], grads["dWL"], grads["dbL"]
+    current_cache = caches[-1]
+    grads["dA" + str(L)], grads["dW" + str(L)], grads["db" + str(L)] = linear_backward(sigmoid_backward(dAL, current_cache[1]), current_cache[0])
+    
+    # Loop from l=L-2 to l=0
+    for l in reversed(range(L-1)):
+        # lth layer: (RELU -> LINEAR) gradients.
+        # Inputs: "grads["dA" + str(l + 1)], current_cache". Outputs: "grads["dA" + str(l)] , grads["dW" + str(l + 1)] , grads["db" + str(l + 1)] 
+        current_cache = caches[l]
+        dA_prev_temp, dW_temp, db_temp = linear_backward(sigmoid_backward(dAL, current_cache[1]), current_cache[0])
+        grads["dA" + str(l + 1)] = dA_prev_temp
+        grads["dW" + str(l + 1)] = dW_temp
+        grads["db" + str(l + 1)] = db_temp
+
+    return grads
+def backward_propagation_with_regularization(X, Y, cache, lambd):
+    """
+    Implements the backward propagation of our baseline model to which we added an L2 regularization.
+    
+    Arguments:
+    X -- input dataset, of shape (input size, number of examples)
+    Y -- "true" labels vector, of shape (output size, number of examples)
+    cache -- cache output from forward_propagation()
+    lambd -- regularization hyperparameter, scalar
+    
+    Returns:
+    gradients -- A dictionary with the gradients with respect to each parameter, activation and pre-activation variables
+    """
+    
+    m = X.shape[1]
+    (Z1, A1, W1, b1, Z2, A2, W2, b2, Z3, A3, W3, b3) = cache
+    dZ3 = A3 - Y
+    
+    dW3 = 1./m * np.dot(dZ3, A2.T) + (lambd/m)*W3
+    db3 = 1./m * np.sum(dZ3, axis=1, keepdims = True)
+    
+    dA2 = np.dot(W3.T, dZ3)
+    dZ2 = np.multiply(dA2, np.int64(A2 > 0))
+    dW2 = 1./m * np.dot(dZ2, A1.T) + (lambd/m)*W2
+    db2 = 1./m * np.sum(dZ2, axis=1, keepdims = True)
+    
+    dA1 = np.dot(W2.T, dZ2)
+    dZ1 = np.multiply(dA1, np.int64(A1 > 0))
+    dW1 = 1./m * np.dot(dZ1, X.T) + (lambd/m)*W1
+    db1 = 1./m * np.sum(dZ1, axis=1, keepdims = True)
+    
+    gradients = {"dZ3": dZ3, "dW3": dW3, "db3": db3,"dA2": dA2,
+                 "dZ2": dZ2, "dW2": dW2, "db2": db2, "dA1": dA1, 
+                 "dZ1": dZ1, "dW1": dW1, "db1": db1}
+    
+    return gradients
+# GRADED FUNCTION: backward_propagation_with_dropout
+
+def backward_propagation_with_dropout(X, Y, cache, keep_prob):
+    """
+    Implements the backward propagation of our baseline model to which we added dropout.
+    
+    Arguments:
+    X -- input dataset, of shape (2, number of examples)
+    Y -- "true" labels vector, of shape (output size, number of examples)
+    cache -- cache output from forward_propagation_with_dropout()
+    keep_prob - probability of keeping a neuron active during drop-out, scalar
+    
+    Returns:
+    gradients -- A dictionary with the gradients with respect to each parameter, activation and pre-activation variables
+    """
+    m = X.shape[1]
+    (Z1, D1, A1, W1, b1, Z2, D2, A2, W2, b2, Z3, A3, W3, b3) = cache
+    
+    dZ3 = A3 - Y
+    dW3 = 1./m * np.dot(dZ3, A2.T)
+    db3 = 1./m * np.sum(dZ3, axis=1, keepdims = True)
+    dA2 = np.dot(W3.T, dZ3)
+    dA2 = dA2*D2            # Step 1: Apply mask D2 to shut down the same neurons as during the forward propagation
+    dA2 = dA2/keep_prob     # Step 2: Scale the value of neurons that haven't been shut down
+    ### END CODE HERE ###
+    dZ2 = np.multiply(dA2, np.int64(A2 > 0))
+    dW2 = 1./m * np.dot(dZ2, A1.T)
+    db2 = 1./m * np.sum(dZ2, axis=1, keepdims = True)
+    
+    dA1 = np.dot(W2.T, dZ2)
+    dA1 = dA1*D1                # Step 1: Apply mask D1 to shut down the same neurons as during the forward propagation
+    dA1 = dA1/keep_prob         # Step 2: Scale the value of neurons that haven't been shut down
+    dZ1 = np.multiply(dA1, np.int64(A1 > 0))
+    dW1 = 1./m * np.dot(dZ1, X.T)
+    db1 = 1./m * np.sum(dZ1, axis=1, keepdims = True)
+    
+    gradients = {"dZ3": dZ3, "dW3": dW3, "db3": db3,"dA2": dA2,
+                 "dZ2": dZ2, "dW2": dW2, "db2": db2, "dA1": dA1, 
+                 "dZ1": dZ1, "dW1": dW1, "db1": db1}
+    
+    return gradients
+#Optimization
+def update_parameters_gradient_descent(parameters, grads, learning_rate):
+    """
+    Update parameters using gradient descent
+    
+    Arguments:
+    parameters -- python dictionary containing your parameters 
+    grads -- python dictionary containing your gradients, output of L_model_backward
+    
+    Returns:
+    parameters -- python dictionary containing your updated parameters 
+                  parameters["W" + str(l)] = ... 
+                  parameters["b" + str(l)] = ...
+    """
+    L = len(parameters) // 2 # number of layers in the neural network
+
+    # Update rule for each parameter. Use a for loop.
+    for l in range(L):
+        parameters["W" + str(l + 1)] = parameters["W" + str(l + 1)] - learning_rate * grads["dW" + str(l + 1)]
+        parameters["b" + str(l + 1)] = parameters["b" + str(l + 1)] - learning_rate * grads["db" + str(l + 1)]
+    return parameters
+def random_mini_batches(X, Y, mini_batch_size = 64):
+    """
+    Creates a list of random minibatches from (X, Y)
+    
+    Arguments:
+    X -- input data, of shape (input size, number of examples)
+    Y -- true "label" vector (1 for blue dot / 0 for red dot), of shape (1, number of examples)
+    mini_batch_size -- size of the mini-batches, integer
+    
+    Returns:
+    mini_batches -- list of synchronous (mini_batch_X, mini_batch_Y)
+    """
+    m = X.shape[1]                  # number of training examples
+    mini_batches = []
+        
+    # Step 1: Shuffle (X, Y)
+    permutation = list(np.random.permutation(m))
+    shuffled_X = X[:, permutation]
+    shuffled_Y = Y[:, permutation].reshape((1,m))
+
+    # Step 2: Partition (shuffled_X, shuffled_Y). Minus the end case.
+    num_complete_minibatches = math.floor(m/mini_batch_size) # number of mini batches of size mini_batch_size in your partitionning
+    for k in range(0, num_complete_minibatches):
+        mini_batch_X = shuffled_X[:, k*mini_batch_size : (k+1)*mini_batch_size]
+        mini_batch_Y = shuffled_Y[:, k*mini_batch_size : (k+1)*mini_batch_size]
+        mini_batch = (mini_batch_X, mini_batch_Y)
+        mini_batches.append(mini_batch)
+    
+    # Handling the end case (last mini-batch < mini_batch_size)
+    if m % mini_batch_size != 0:
+        mini_batch_X = shuffled_X[:, num_complete_minibatches*mini_batch_size : ]
+        mini_batch_Y = shuffled_Y[:, num_complete_minibatches*mini_batch_size : ]
+        mini_batch = (mini_batch_X, mini_batch_Y)
+        mini_batches.append(mini_batch)
+    
+    return mini_batches
+def initialize_velocity(parameters):
+    """
+    Initializes the velocity as a python dictionary with:
+                - keys: "dW1", "db1", ..., "dWL", "dbL" 
+                - values: numpy arrays of zeros of the same shape as the corresponding gradients/parameters.
+    Arguments:
+    parameters -- python dictionary containing your parameters.
+                    parameters['W' + str(l)] = Wl
+                    parameters['b' + str(l)] = bl
+    
+    Returns:
+    v -- python dictionary containing the current velocity.
+                    v['dW' + str(l)] = velocity of dWl
+                    v['db' + str(l)] = velocity of dbl
+    """
+    L = len(parameters) // 2 # number of layers in the neural networks
+    v = {}
+    
+    # Initialize velocity
+    for l in range(L):
+        v["dW" + str(l+1)] = np.zeros(parameters["W" + str(l+1)].shape)
+        v["db" + str(l+1)] = np.zeros(parameters["b" + str(l+1)].shape)
+        
+    return v
+def update_parameters_with_momentum(parameters, grads, v, beta, learning_rate):
+    """
+    Update parameters using Momentum
+    
+    Arguments:
+    parameters -- python dictionary containing your parameters:
+                    parameters['W' + str(l)] = Wl
+                    parameters['b' + str(l)] = bl
+    grads -- python dictionary containing your gradients for each parameters:
+                    grads['dW' + str(l)] = dWl
+                    grads['db' + str(l)] = dbl
+    v -- python dictionary containing the current velocity:
+                    v['dW' + str(l)] = ...
+                    v['db' + str(l)] = ...
+    beta -- the momentum hyperparameter, scalar
+    learning_rate -- the learning rate, scalar
+    
+    Returns:
+    parameters -- python dictionary containing your updated parameters 
+    v -- python dictionary containing your updated velocities
+    """
+    L = len(parameters) // 2 # number of layers in the neural networks
+    
+    # Momentum update for each parameter
+    for l in range(L):
+        # compute velocities
+        v["dW" + str(l+1)] = beta*v["dW" + str(l+1)]+(1-beta)*grads["dW" + str(l+1)]
+        v["db" + str(l+1)] = beta*v["db" + str(l+1)]+(1-beta)*grads["db" + str(l+1)]
+        # update parameters
+        parameters["W" + str(l+1)] = parameters["W" + str(l+1)] - learning_rate*v["dW" + str(l+1)]
+        parameters["b" + str(l+1)] = parameters["b" + str(l+1)] - learning_rate*v["db" + str(l+1)]
+        
+    return parameters, v
+def initialize_adam(parameters) :
+    """
+    Initializes v and s as two python dictionaries with:
+                - keys: "dW1", "db1", ..., "dWL", "dbL" 
+                - values: numpy arrays of zeros of the same shape as the corresponding gradients/parameters.
+    
+    Arguments:
+    parameters -- python dictionary containing your parameters.
+                    parameters["W" + str(l)] = Wl
+                    parameters["b" + str(l)] = bl
+    
+    Returns: 
+    v -- python dictionary that will contain the exponentially weighted average of the gradient.
+                    v["dW" + str(l)] = ...
+                    v["db" + str(l)] = ...
+    s -- python dictionary that will contain the exponentially weighted average of the squared gradient.
+                    s["dW" + str(l)] = ...
+                    s["db" + str(l)] = ...
+
+    """
+    L = len(parameters) // 2 # number of layers in the neural networks
+    v = {}
+    s = {}
+    
+    # Initialize v, s. Input: "parameters". Outputs: "v, s".
+    for l in range(L):
+        v["dW" + str(l+1)] = np.zeros(parameters["W" + str(l+1)].shape)
+        v["db" + str(l+1)] = np.zeros(parameters["b" + str(l+1)].shape)
+        s["dW" + str(l+1)] = np.zeros(parameters["W" + str(l+1)].shape)
+        s["db" + str(l+1)] = np.zeros(parameters["b" + str(l+1)].shape)
+    
+    return v, s
+def update_parameters_with_adam(parameters, grads, v, s, t, learning_rate = 0.01,
+                                beta1 = 0.9, beta2 = 0.999,  epsilon = 1e-8):
+    """
+    Update parameters using Adam
+    
+    Arguments:
+    parameters -- python dictionary containing your parameters:
+                    parameters['W' + str(l)] = Wl
+                    parameters['b' + str(l)] = bl
+    grads -- python dictionary containing your gradients for each parameters:
+                    grads['dW' + str(l)] = dWl
+                    grads['db' + str(l)] = dbl
+    v -- Adam variable, moving average of the first gradient, python dictionary
+    s -- Adam variable, moving average of the squared gradient, python dictionary
+    learning_rate -- the learning rate, scalar.
+    beta1 -- Exponential decay hyperparameter for the first moment estimates 
+    beta2 -- Exponential decay hyperparameter for the second moment estimates 
+    epsilon -- hyperparameter preventing division by zero in Adam updates
+
+    Returns:
+    parameters -- python dictionary containing your updated parameters 
+    v -- Adam variable, moving average of the first gradient, python dictionary
+    s -- Adam variable, moving average of the squared gradient, python dictionary
+    """
+    L = len(parameters) // 2                 # number of layers in the neural networks
+    v_corrected = {}                         # Initializing first moment estimate, python dictionary
+    s_corrected = {}                         # Initializing second moment estimate, python dictionary
+    
+    # Perform Adam update on all parameters
+    for l in range(L):
+        # Moving average of the gradients. Inputs: "v, grads, beta1". Output: "v".
+        v["dW" + str(l+1)] = beta1*v["dW" + str(l + 1)]+(1-beta1)*grads['dW' + str(l + 1)]
+        v["db" + str(l+1)] = beta1*v["db" + str(l + 1)]+(1-beta1)*grads['db' + str(l + 1)]
+
+        # Compute bias-corrected first moment estimate. Inputs: "v, beta1, t". Output: "v_corrected".
+        v_corrected["dW" + str(l+1)] = v["dW" + str(l + 1)]/(1-np.power(beta1, t))
+        v_corrected["db" + str(l+1)] = v["db" + str(l + 1)]/(1-np.power(beta1, t))
+
+        # Moving average of the squared gradients. Inputs: "s, grads, beta2". Output: "s".
+        s["dW" + str(l+1)] = beta2*s["dW" + str(l+1)]+(1-beta2)*np.power(grads['dW' + str(l+1)], 2)
+        s["db" + str(l+1)] = beta2*s["db" + str(l+1)]+(1-beta2)*np.power(grads['db' + str(l+1)], 2)
+
+        # Compute bias-corrected second raw moment estimate. Inputs: "s, beta2, t". Output: "s_corrected".
+        s_corrected["dW" + str(l+1)] = s["dW" + str(l+1)]/(1-np.power(beta2, t))
+        s_corrected["db" + str(l+1)] = s["db" + str(l+1)]/(1-np.power(beta2, t))
+
+        # Update parameters. Inputs: "parameters, learning_rate, v_corrected, s_corrected, epsilon". Output: "parameters".
+        parameters["W" + str(l+1)] = parameters["W" + str(l+1)]-learning_rate*v_corrected["dW" + str(l+1)]/np.sqrt(s_corrected["dW" + str(l+1)]+epsilon)
+        parameters["b" + str(l+1)] = parameters["b" + str(l+1)]-learning_rate*v_corrected["db" + str(l+1)]/np.sqrt(s_corrected["db" + str(l+1)]+epsilon)
+
+    return parameters, v, s
+#Model
+def nn_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 3000, print_cost=False, lambd = 0, keep_prob = 1, optimizer='adam', mini_batch_size = 64, beta = 0.9, beta1 = 0.9, beta2 = 0.999,  epsilon = 1e-8):
+    """
+    Implements a L-layer neural network: [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID.
+    
+    Arguments:
+    X -- data, numpy array of shape (num_px * num_px * 3, number of examples)
+    Y -- true "label" vector (containing 0 if cat, 1 if non-cat), of shape (1, number of examples)
+    layers_dims -- list containing the input size and each layer size, of length (number of layers + 1).
+    learning_rate -- learning rate of the gradient descent update rule
+    num_iterations -- number of iterations of the optimization loop
+    print_cost -- if True, it prints the cost every 100 steps
+    lambd -- regularization hyperparameter, scalar
+    keep_prob - probability of keeping a neuron active during drop-out, scalar.
+    
+    Returns:
+    parameters -- parameters learnt by the model. They can then be used to predict.
+    """
+    grads = {}
+    costs = []          # keep track of cost
+    m = X.shape[1]      # number of examples
+    
+    # Parameters initialization. (≈ 1 line of code)
+    parameters = initialize_parameters(layers_dims)
+
+    # Initialize the optimizer
+    if optimizer == "gd":
+        pass # no initialization required for gradient descent
+    elif optimizer == "momentum":
+        v = initialize_velocity(parameters)
+    elif optimizer == "adam":
+        v, s = initialize_adam(parameters)
+    
+    # Loop (gradient descent)
+    for i in range(0, num_iterations):
+        minibatches = random_mini_batches(X, Y, mini_batch_size, seed)
+        cost_total = 0
+        
+        for minibatch in minibatches:
+            # Select a minibatch
+            (minibatch_X, minibatch_Y) = minibatch
+
+            # Forward propagation: [LINEAR -> RELU]*(L-1) -> LINEAR -> SIGMOID.
+            if keep_prob == 1:
+                AL, caches = forward_propagation(X, parameters)
+            elif keep_prob < 1:
+                AL, caches = forward_propagation_with_dropout(X, parameters, keep_prob)
+
+            # Compute cost and add to the cost total
+            if lambd == 0:
+                cost_total += compute_cost(AL, Y)
+            else:
+                cost_total += compute_cost_with_regularization(AL, Y, parameters, lambd)
+
+            # Backward propagation
+            assert(lambd==0 or keep_prob==1)    # it is possible to use both L2 regularization and dropout, 
+                                                # but this assignment will only explore one at a time
+            if lambd == 0 and keep_prob == 1:
+                grads = backward_propagation(minibatch_X, minibatch_Y, caches)
+            elif lambd != 0:
+                grads = backward_propagation_with_regularization(minibatch_X, minibatch_Y, caches, lambd)
+            elif keep_prob < 1:
+                grads = backward_propagation_with_dropout(minibatch_X, minibatch_Y, caches, keep_prob)
+
+            # Update parameters
+            if optimizer == "gd":
+                parameters = update_parameters_gradient_descent(parameters, grads, learning_rate)
+            elif optimizer == "momentum":
+                parameters, v = update_parameters_with_momentum(parameters, grads, v, beta, learning_rate)
+            elif optimizer == "adam":
+                t = t + 1 # Adam counter
+                parameters, v, s = update_parameters_with_adam(parameters, grads, v, s,
+                                                               t, learning_rate, beta1, beta2,  epsilon)
+        cost_avg = cost_total / m
+                
+        # Print the cost every 100 training example
+        if print_cost and i % 100 == 0:
+            print ("Cost after iteration %i: %f" %(i, cost))
+        if print_cost and i % 100 == 0:
+            costs.append(cost)
+            
+    # plot the cost
+    plt.plot(np.squeeze(costs))
+    plt.ylabel('cost')
+    plt.xlabel('iterations (per hundreds)')
+    plt.title("Learning rate =" + str(learning_rate))
+    plt.show()
+    
+    return parameters
+#Predictions
+def predict(parameters, X):
+    """
+    Using the learned parameters, predicts a class for each example in X
+    
+    Arguments:
+    parameters -- python dictionary containing your parameters 
+    X -- input data of size (n_x, m)
+    
+    Returns
+    predictions -- vector of predictions of our model (red: 0 / blue: 1)
+    """
+    # Computes probabilities using forward propagation, and classifies to 0/1 using 0.5 as the threshold.
+    A2, cache = forward_propagation(X, parameters)
+    predictions = np.round(A2)    
+    return predictions
+
+#########
+# Deep Learning with TensorFlow
+#########
+import tensorflow as tf
+y_hat = tf.constant(36, name='y_hat')            # Define y_hat constant. Set to 36.
+y = tf.constant(39, name='y')                    # Define y. Set to 39
+loss = tf.Variable((y - y_hat)**2, name='loss')  # Create a variable for the loss
+init = tf.global_variables_initializer()         # When init is run later (session.run(init)),
+                                                 # the loss variable will be initialized and ready to be computed
+with tf.Session() as session:                    # Create a session and print the output
+    session.run(init)                            # Initializes the variables
+    print(session.run(loss))                     # Prints the loss
+
+#Use placeholder, then give values
+x = tf.placeholder(tf.int64, name = 'x')
+print(sess.run(2 * x, feed_dict = {x: 3}))
+sess.close()
+
+#Example of cost function
+z = tf.placeholder(tf.float32, name='z')
+y = tf.placeholder(tf.float32, name='y')
+cost = tf.nn.sigmoid_cross_entropy_with_logits(logits=z, labels=y)
+sess = tf.Session()
+cost = sess.run(cost, feed_dict={z: logits, y: labels}) #logits and labels defined somewhere else
+
+#One-hot encoding with TensorFlow
+C = tf.constant(C, name='C')
+one_hot_matrix = tf.one_hot(indices=labels, depth=C, axis=0)
+sess = tf.Session()
+one_hot = sess.run(one_hot_matrix)
+
+#Create matrix full of ones or zeros
+ones = tf.ones(shape)
+zeros = tf.zeros(shape)
+
+#Build a Neural Network with  TensorFlow
+def create_placeholders(n_x, n_y):
+    """
+    Creates the placeholders for the tensorflow session.
+    
+    Arguments:
+    n_x -- scalar, size of an image vector (num_px * num_px = 64 * 64 * 3 = 12288)
+    n_y -- scalar, number of classes (from 0 to 5, so -> 6)
+    
+    Returns:
+    X -- placeholder for the data input, of shape [n_x, None] and dtype "tf.float32"
+    Y -- placeholder for the input labels, of shape [n_y, None] and dtype "tf.float32"
+    
+    Tips:
+    - You will use None because it let's us be flexible on the number of examples you will for the placeholders.
+      In fact, the number of examples during test/train is different.
+    """
+    X = tf.placeholder(tf.float32, [n_x, None], name="X")
+    Y = tf.placeholder(tf.float32, [n_y, None], name='Y')
+    
+    return X, Y
+def initialize_parameters():
+    """
+    Initializes parameters to build a neural network with tensorflow. The shapes are:
+                        W1 : [25, 12288]
+                        b1 : [25, 1]
+                        W2 : [12, 25]
+                        b2 : [12, 1]
+                        W3 : [6, 12]
+                        b3 : [6, 1]
+    
+    Returns:
+    parameters -- a dictionary of tensors containing W1, b1, W2, b2, W3, b3
+    """
+    W1 = tf.get_variable("W1", [25,12288], initializer = tf.contrib.layers.xavier_initializer(seed = 1))
+    b1 = tf.get_variable("b1", [25,1], initializer = tf.zeros_initializer())
+    W2 = tf.get_variable("W2", [12,25], initializer = tf.contrib.layers.xavier_initializer(seed = 1))
+    b2 = tf.get_variable("b2", [12,1], initializer = tf.zeros_initializer())
+    W3 = tf.get_variable("W3", [6,12], initializer = tf.contrib.layers.xavier_initializer(seed = 1))
+    b3 = tf.get_variable("b3", [6,1], initializer = tf.zeros_initializer())
+
+    parameters = {"W1": W1,
+                  "b1": b1,
+                  "W2": W2,
+                  "b2": b2,
+                  "W3": W3,
+                  "b3": b3}
+    
+    return parameters
+def forward_propagation(X, parameters):
+    """
+    Implements the forward propagation for the model: LINEAR -> RELU -> LINEAR -> RELU -> LINEAR -> SOFTMAX
+    
+    Arguments:
+    X -- input dataset placeholder, of shape (input size, number of examples)
+    parameters -- python dictionary containing your parameters "W1", "b1", "W2", "b2", "W3", "b3"
+                  the shapes are given in initialize_parameters
+
+    Returns:
+    Z3 -- the output of the last LINEAR unit
+    """
+    # Retrieve the parameters from the dictionary "parameters" 
+    W1 = parameters['W1']
+    b1 = parameters['b1']
+    W2 = parameters['W2']
+    b2 = parameters['b2']
+    W3 = parameters['W3']
+    b3 = parameters['b3']
+    
+    Z1 = tf.add(tf.matmul(W1, X), b1)
+    A1 = tf.nn.relu(Z1)
+    Z2 = tf.add(tf.matmul(W2, A1), b2)
+    A2 = tf.nn.relu(Z2)
+    Z3 = tf.add(tf.matmul(W3, A2), b3)
+    
+    return Z3
+def compute_cost(Z3, Y):
+    """
+    Computes the cost
+    
+    Arguments:
+    Z3 -- output of forward propagation (output of the last LINEAR unit), of shape (6, number of examples)
+    Y -- "true" labels vector placeholder, same shape as Z3
+    
+    Returns:
+    cost - Tensor of the cost function
+    """
+    # to fit the tensorflow requirement for tf.nn.softmax_cross_entropy_with_logits(...,...)
+    logits = tf.transpose(Z3)
+    labels = tf.transpose(Y)
+    
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels))
+    
+    return cost
+def model(X_train, Y_train, X_test, Y_test, learning_rate = 0.0001, num_epochs = 1500, minibatch_size = 32, print_cost = True):
+    """
+    Implements a three-layer tensorflow neural network: LINEAR->RELU->LINEAR->RELU->LINEAR->SOFTMAX.
+    
+    Arguments:
+    X_train -- training set, of shape (input size = 12288, number of training examples = 1080)
+    Y_train -- test set, of shape (output size = 6, number of training examples = 1080)
+    X_test -- training set, of shape (input size = 12288, number of training examples = 120)
+    Y_test -- test set, of shape (output size = 6, number of test examples = 120)
+    learning_rate -- learning rate of the optimization
+    num_epochs -- number of epochs of the optimization loop
+    minibatch_size -- size of a minibatch
+    print_cost -- True to print the cost every 100 epochs
+    
+    Returns:
+    parameters -- parameters learnt by the model. They can then be used to predict.
+    """
+    (n_x, m) = X_train.shape                          # (n_x: input size, m : number of examples in the train set)
+    n_y = Y_train.shape[0]                            # n_y : output size
+    costs = []                                        # To keep track of the cost
+    
+    # Create Placeholders of shape (n_x, n_y)
+    X, Y = create_placeholders(n_x, n_y)
+
+    # Initialize parameters
+    parameters = initialize_parameters()
+    
+    # Forward propagation: Build the forward propagation in the tensorflow graph
+    Z3 = forward_propagation(X, parameters)
+    
+    # Cost function: Add cost function to tensorflow graph
+    cost = compute_cost(Z3, Y)
+    
+    # Backpropagation: Define the tensorflow optimizer. Use an AdamOptimizer.
+    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+    
+    # Initialize all the variables
+    init = tf.global_variables_initializer()
+
+    # Start the session to compute the tensorflow graph
+    with tf.Session() as sess:
+        sess.run(init)
+        
+        # Do the training loop
+        for epoch in range(num_epochs):
+            epoch_cost = 0.                       # Defines a cost related to an epoch
+            num_minibatches = int(m / minibatch_size) # number of minibatches of size minibatch_size in the train set
+            minibatches = random_mini_batches(X_train, Y_train, minibatch_size)
+
+            for minibatch in minibatches:
+                # Select a minibatch
+                (minibatch_X, minibatch_Y) = minibatch
+                # IMPORTANT: The line that runs the graph on a minibatch.
+                # Run the session to execute the "optimizer" and the "cost", the feedict should contain a minibatch for (X,Y).
+                _ , minibatch_cost = sess.run([optimizer, cost], feed_dict={X: minibatch_X, Y: minibatch_Y})
+                epoch_cost += minibatch_cost / num_minibatches
+
+            # Print the cost every epoch
+            if print_cost == True and epoch % 100 == 0:
+                print ("Cost after epoch %i: %f" % (epoch, epoch_cost))
+            if print_cost == True and epoch % 5 == 0:
+                costs.append(epoch_cost)
+                
+        # plot the cost
+        plt.plot(np.squeeze(costs))
+        plt.ylabel('cost')
+        plt.xlabel('iterations (per fives)')
+        plt.title("Learning rate =" + str(learning_rate))
+        plt.show()
+
+        # lets save the parameters in a variable
+        parameters = sess.run(parameters)
+        print ("Parameters have been trained!")
+
+        # Calculate the correct predictions
+        correct_prediction = tf.equal(tf.argmax(Z3), tf.argmax(Y))
+
+        # Calculate accuracy on the test set
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+
+        print ("Train Accuracy:", accuracy.eval({X: X_train, Y: Y_train}))
+        print ("Test Accuracy:", accuracy.eval({X: X_test, Y: Y_test}))
+        
+        return parameters
 #########
 # Deep learning with Pytorch (extracted from the Udacity Secure and Private AI course)
 #########
