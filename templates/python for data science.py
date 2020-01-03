@@ -2435,6 +2435,57 @@ def model(X_train, Y_train, X_test, Y_test, learning_rate = 0.009,
                 
         return train_accuracy, test_accuracy, parameters
 #########
+# Deep learning with Keras
+#########
+from keras import layers
+from keras.layers import Input, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D
+from keras.layers import AveragePooling2D, MaxPooling2D, Dropout, GlobalMaxPooling2D, GlobalAveragePooling2D
+from keras.models import Model
+from keras.preprocessing import image
+from keras.utils import layer_utils
+from keras.utils.data_utils import get_file
+from keras.applications.imagenet_utils import preprocess_input
+from keras.utils.vis_utils import model_to_dot
+from keras.utils import plot_model
+def model(input_shape):
+    """
+    input_shape: The height, width and channels as a tuple.  
+        Note that this does not include the 'batch' as a dimension.
+        If you have a batch like 'X_train', 
+        then you can provide the input_shape using
+        X_train.shape[1:]
+    """
+    # Define the input placeholder as a tensor with shape input_shape. Think of this as your input image!
+    X_input = Input(input_shape)
+
+    # Zero-Padding: pads the border of X_input with zeroes
+    X = ZeroPadding2D((3, 3))(X_input)
+
+    # CONV -> BN -> RELU Block applied to X
+    X = Conv2D(32, (7, 7), strides = (1, 1), name = 'conv0')(X)
+    X = BatchNormalization(axis = 3, name = 'bn0')(X)
+    X = Activation('relu')(X)
+
+    # MAXPOOL
+    X = MaxPooling2D((2, 2), name='max_pool')(X)
+
+    # FLATTEN X (means convert it to a vector) + FULLYCONNECTED
+    X = Flatten()(X)
+    X = Dense(1, activation='sigmoid', name='fc')(X)
+
+    # Create model. This creates your Keras model instance, you'll use this instance to train/test the model.
+    model = Model(inputs = X_input, outputs = X, name='nn')
+
+    return model
+nn = model(X_train.shape[1:])
+nn.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
+nn.fit(X_train, Y_train, epochs=40, batch_size=50)
+preds = nn.evaluate(X_test, Y_test, batch_size=32, verbose=1, sample_weight=None)
+print ("Loss = " + str(preds[0]))
+print ("Test Accuracy = " + str(preds[1]))
+nn.summary()
+plot_model(nn, to_file='nn.png')
+#########
 # Deep learning with Pytorch (extracted from the Udacity Secure and Private AI course)
 #########
 import torch
