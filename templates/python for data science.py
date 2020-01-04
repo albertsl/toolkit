@@ -98,7 +98,7 @@ def reduce_mem_usage(df):
 df_test = pd.DataFrame()
 df_opt = reduce_mem_usage(df)
 for col in df:
-    df_test[col] = df[col] - df_opt[col]
+	df_test[col] = df[col] - df_opt[col]
 #Mean, max and min for all columns should be 0
 df_test.describe().loc['mean']
 df_test.describe().loc['max']
@@ -173,7 +173,7 @@ feat_selection_and_train = Pipeline([("select", SelectPercentile(percentile=5)),
 np.mean(cross_val_score(feat_selection_and_train, X, y, cv=5))
 #Pipeline for Grid Search
 param_grid = {'svm__C': [0.001, 0.01, 0.1, 1, 10, 100],
-              'svm__gamma': [0.001, 0.01, 0.1, 1, 10, 100]}
+			  'svm__gamma': [0.001, 0.01, 0.1, 1, 10, 100]}
 from sklearn.model_selection import GridSearchCV
 gs = GridSearchCV(pipe, param_grid=param_grid, cv=5)
 gs.fit(X_train, y_train)
@@ -213,7 +213,7 @@ missing_data = pd.concat([total_null, percent], axis=1, keys=['Total', 'Percent'
 #Generate new features with missing data
 nanf = ['feature1', 'feature2', 'feature3']
 for feature in nanf:
-    df[feature + '_nan'] = df[nanf].isna()
+	df[feature + '_nan'] = df[nanf].isna()
 #Also look for infinite data, recommended to check it also after feature engineering
 df.replace(np.inf,0,inplace=True)
 df.replace(-np.inf,0,inplace=True)
@@ -249,16 +249,16 @@ from scipy.special import boxcox1p
 skewed_features = skewness.index
 lambd = 0.15
 for feat in skewed_features:
-    df[feat] = boxcox1p(df[feat], lambd)
+	df[feat] = boxcox1p(df[feat], lambd)
 #check different approaches to fix skewness:
 skewed_features = skewness.index
 for feature in skewed_features:
-    original_skewness = skewness.loc[feature]['Skew']
-    try:
-        log_transform = skew(df[feature].apply(log1p))
-        lambd = 0.15
-        boxcox_transform = skew(boxcox1p(df[feature], lambd))
-        print(f'{feature}')
+	original_skewness = skewness.loc[feature]['Skew']
+	try:
+		log_transform = skew(df[feature].apply(log1p))
+		lambd = 0.15
+		boxcox_transform = skew(boxcox1p(df[feature], lambd))
+		print(f'{feature}')
 		print(f'Original skewness: {original_skewness}')
 		print(f'log1p transform skewness: {log_transform}')
 		print(f'boxcox1p transform: {boxcox_transform}')
@@ -294,14 +294,14 @@ sns.boxplot(df['feature2'])
 plt.scatter('var1', 'y') #Do this for all variables against y
 
 def replace_outlier(df, column, value, threshold, direction='max'): #value could be the mean
-        if direction == 'max':
-            df[column] = df[column].apply(lambda x: value if x > threshold else x)
-            for item in df[df[column] > threshold].index:
-                df.loc[item, (column+'_nan')] = 1
-        elif direction == 'min':
-            df[column] = df[column].apply(lambda x: value if x < threshold else x)
-            for item in df[df[column] < threshold].index:
-                df.loc[item, (column+'_nan')] = 1
+		if direction == 'max':
+			df[column] = df[column].apply(lambda x: value if x > threshold else x)
+			for item in df[df[column] > threshold].index:
+				df.loc[item, (column+'_nan')] = 1
+		elif direction == 'min':
+			df[column] = df[column].apply(lambda x: value if x < threshold else x)
+			for item in df[df[column] < threshold].index:
+				df.loc[item, (column+'_nan')] = 1
 
 #Outlier detection with Isolation Forest
 from sklearn.ensemble import IsolationForest
@@ -373,23 +373,23 @@ correlations = correlations[correlations['level_0'] != correlations['level_1']]
 #Colinearity
 from statsmodels.stats.outliers_influence import variance_inflation_factor    
 def calculate_vif_(X, thresh=5.0):
-    variables = list(range(X.shape[1]))
-    dropped = True
-    while dropped:
-        dropped = False
-        vif = [variance_inflation_factor(X.iloc[:, variables].values, ix)
-               for ix in range(X.iloc[:, variables].shape[1])]
+	variables = list(range(X.shape[1]))
+	dropped = True
+	while dropped:
+		dropped = False
+		vif = [variance_inflation_factor(X.iloc[:, variables].values, ix)
+			   for ix in range(X.iloc[:, variables].shape[1])]
 
-        maxloc = vif.index(max(vif))
-        if max(vif) > thresh:
-            print('vif ' + vif + ' dropping \'' + X.iloc[:, variables].columns[maxloc] +
-                  '\' at index: ' + str(maxloc))
-            del variables[maxloc]
-            dropped = True
+		maxloc = vif.index(max(vif))
+		if max(vif) > thresh:
+			print('vif ' + vif + ' dropping \'' + X.iloc[:, variables].columns[maxloc] +
+				  '\' at index: ' + str(maxloc))
+			del variables[maxloc]
+			dropped = True
 
-    print('Remaining variables:')
-    print(X.columns[variables])
-    return X.iloc[:, variables]
+	print('Remaining variables:')
+	print(X.columns[variables])
+	return X.iloc[:, variables]
 
 #Encode categorical variables
 #Encoding for target variable (categorical variable)
@@ -998,11 +998,11 @@ grid.best_estimator_
 trl = []
 scl = []
 for trees in range(100, 5000, 50):
-    rfr = RandomForestRegressor(n_estimators=trees, random_state=101, n_jobs=-1, verbose=3, criterion='mse')
-    rfr.fit(X_train, y_train)
-    sc = eval_model(rfr, X_val, y_val)
-    trl.append(trees)
-    scl.append(sc)
+	rfr = RandomForestRegressor(n_estimators=trees, random_state=101, n_jobs=-1, verbose=3, criterion='mse')
+	rfr.fit(X_train, y_train)
+	sc = eval_model(rfr, X_val, y_val)
+	trl.append(trees)
+	scl.append(sc)
 
 pd.DataFrame({'trees': trl, 'score':scl}).sort_values('score')
 plt.plot(trl, scl)
@@ -1013,15 +1013,15 @@ n_bootstraps = 1000
 bootstrap_X = []
 bootstrap_y = []
 for _ in range(n_bootstraps):
-    sample_X, sample_y = resample(scaled_df, target)
-    bootstrap_X.append(sample_X)
-    bootstrap_y.append(sample_y)
+	sample_X, sample_y = resample(scaled_df, target)
+	bootstrap_X.append(sample_X)
+	bootstrap_y.append(sample_y)
 from sklearn.linear_model import SGDRegressor
 linear_regression_model = SGDRegressor(tol=.0001, eta0=.01)
 coeffs = []
 for i, data in enumerate(bootstrap_X):
-    linear_regression_model.fit(data, bootstrap_y[i])
-    coeffs.append(linear_regression_model.coef_)
+	linear_regression_model.fit(data, bootstrap_y[i])
+	coeffs.append(linear_regression_model.coef_)
 #Analyze coeffs to view 
 coeffs = pd.DataFrame(coeffs)
 coeffs.describe()
@@ -1029,17 +1029,17 @@ plt.boxplot(coeffs)
 
 #Determine if two distributions are significantly different using the Mann Whitney U Test. https://towardsdatascience.com/determine-if-two-distributions-are-significantly-different-using-the-mann-whitney-u-test-1f79aa249ffb
 def mann_whitney_u_test(distribution_1, distribution_2):
-    """
-    Perform the Mann-Whitney U Test, comparing two different distributions.
-    Args:
-       distribution_1: List. 
-       distribution_2: List.
-    Outputs:
-        u_statistic: Float. U statisitic for the test.
-        p_value: Float.
-    """
-    u_statistic, p_value = stats.mannwhitneyu(distribution_1, distribution_2)
-    return u_statistic, p_value
+	"""
+	Perform the Mann-Whitney U Test, comparing two different distributions.
+	Args:
+	   distribution_1: List. 
+	   distribution_2: List.
+	Outputs:
+		u_statistic: Float. U statisitic for the test.
+		p_value: Float.
+	"""
+	u_statistic, p_value = stats.mannwhitneyu(distribution_1, distribution_2)
+	return u_statistic, p_value
 mann_whitney_u_test(list(df['col1']), list(df['col2']))
 #As a general rule of thumb, when the p-value is below 0.05, the null hypothesis can be rejected. This means with statistical significance that the two distributions are different.
 
@@ -1059,7 +1059,7 @@ pred3=model3.predict(X_test)
 
 final_pred = np.array([])
 for i in range(len(X_test)):
-    final_pred = np.append(final_pred, mode([pred1[i], pred2[i], pred3[i]]))
+	final_pred = np.append(final_pred, mode([pred1[i], pred2[i], pred3[i]]))
 
 #We can also use VotingClassifier from sklearn
 from sklearn.ensemble import VotingClassifier
@@ -1270,822 +1270,822 @@ new_df[['column_Kfold_Target_Enc','column']]
 # Deep Learning (Coursera Specialization)
 #########
 def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+	return 1 / (1 + np.exp(-x))
 #Initialize parameters
 def layer_sizes(X, Y):
-    """
-    Arguments:
-    X -- input dataset of shape (input size, number of examples)
-    Y -- labels of shape (output size, number of examples)
-    
-    Returns:
-    n_x -- the size of the input layer
-    n_h -- the size of the hidden layer
-    n_y -- the size of the output layer
-    """
-    n_x = X.shape[0] # size of input layer
-    n_h = 4
-    n_y = Y.shape[1] # size of output layer
-    return (n_x, n_h, n_y)
+	"""
+	Arguments:
+	X -- input dataset of shape (input size, number of examples)
+	Y -- labels of shape (output size, number of examples)
+	
+	Returns:
+	n_x -- the size of the input layer
+	n_h -- the size of the hidden layer
+	n_y -- the size of the output layer
+	"""
+	n_x = X.shape[0] # size of input layer
+	n_h = 4
+	n_y = Y.shape[1] # size of output layer
+	return (n_x, n_h, n_y)
 def initialize_parameters(layer_dims):
-    """
-    Arguments:
-    layer_dims -- python array (list) containing the dimensions of each layer in our network
-    
-    Returns:
-    parameters -- python dictionary containing your parameters "W1", "b1", ..., "WL", "bL":
-                    Wl -- weight matrix of shape (layer_dims[l], layer_dims[l-1])
-                    bl -- bias vector of shape (layer_dims[l], 1)
-    """
-    parameters = {}
-    L = len(layer_dims)            # number of layers in the network
+	"""
+	Arguments:
+	layer_dims -- python array (list) containing the dimensions of each layer in our network
+	
+	Returns:
+	parameters -- python dictionary containing your parameters "W1", "b1", ..., "WL", "bL":
+					Wl -- weight matrix of shape (layer_dims[l], layer_dims[l-1])
+					bl -- bias vector of shape (layer_dims[l], 1)
+	"""
+	parameters = {}
+	L = len(layer_dims)            # number of layers in the network
 
-    for l in range(1, L):
-        #Random initialization, not the best
-        #parameters['W' + str(l)] = np.random.randn(layer_dims[l], layer_dims[l-1]) * 0.01
+	for l in range(1, L):
+		#Random initialization, not the best
+		#parameters['W' + str(l)] = np.random.randn(layer_dims[l], layer_dims[l-1]) * 0.01
 
-        #He initialization (recommended)
-        parameters['W' + str(l)] = np.random.randn(layer_dims[l], layer_dims[l-1])*np.sqrt(2/layer_dims[l-1])
-        parameters['b' + str(l)] = np.zeros((layer_dims[l], 1))
-        
-        assert(parameters['W' + str(l)].shape == (layer_dims[l], layer_dims[l-1]))
-        assert(parameters['b' + str(l)].shape == (layer_dims[l], 1))
-        
-    return parameters
+		#He initialization (recommended)
+		parameters['W' + str(l)] = np.random.randn(layer_dims[l], layer_dims[l-1])*np.sqrt(2/layer_dims[l-1])
+		parameters['b' + str(l)] = np.zeros((layer_dims[l], 1))
+		
+		assert(parameters['W' + str(l)].shape == (layer_dims[l], layer_dims[l-1]))
+		assert(parameters['b' + str(l)].shape == (layer_dims[l], 1))
+		
+	return parameters
 #Forward propagation
 def linear_forward(A, W, b):
-    """
-    Implement the linear part of a layer's forward propagation.
+	"""
+	Implement the linear part of a layer's forward propagation.
 
-    Arguments:
-    A -- activations from previous layer (or input data): (size of previous layer, number of examples)
-    W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
-    b -- bias vector, numpy array of shape (size of the current layer, 1)
+	Arguments:
+	A -- activations from previous layer (or input data): (size of previous layer, number of examples)
+	W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
+	b -- bias vector, numpy array of shape (size of the current layer, 1)
 
-    Returns:
-    Z -- the input of the activation function, also called pre-activation parameter 
-    cache -- a python tuple containing "A", "W" and "b" ; stored for computing the backward pass efficiently
-    """
-    Z = np.dot(W, A)+b
-    
-    assert(Z.shape == (W.shape[0], A.shape[1]))
-    cache = (A, W, b)
-    
-    return Z, cache
+	Returns:
+	Z -- the input of the activation function, also called pre-activation parameter 
+	cache -- a python tuple containing "A", "W" and "b" ; stored for computing the backward pass efficiently
+	"""
+	Z = np.dot(W, A)+b
+	
+	assert(Z.shape == (W.shape[0], A.shape[1]))
+	cache = (A, W, b)
+	
+	return Z, cache
 def linear_activation_forward(A_prev, W, b, activation):
-    """
-    Implement the forward propagation for the LINEAR->ACTIVATION layer
+	"""
+	Implement the forward propagation for the LINEAR->ACTIVATION layer
 
-    Arguments:
-    A_prev -- activations from previous layer (or input data): (size of previous layer, number of examples)
-    W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
-    b -- bias vector, numpy array of shape (size of the current layer, 1)
-    activation -- the activation to be used in this layer, stored as a text string: "sigmoid" or "relu"
+	Arguments:
+	A_prev -- activations from previous layer (or input data): (size of previous layer, number of examples)
+	W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
+	b -- bias vector, numpy array of shape (size of the current layer, 1)
+	activation -- the activation to be used in this layer, stored as a text string: "sigmoid" or "relu"
 
-    Returns:
-    A -- the output of the activation function, also called the post-activation value 
-    cache -- a python tuple containing "linear_cache" and "activation_cache";
-             stored for computing the backward pass efficiently
-    """
-    
-    if activation == "sigmoid":
-        # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
-        Z, linear_cache = linear_forward(A_prev, W, b)
-        A, activation_cache = sigmoid(Z)
-    
-    elif activation == "relu":
-        # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
-        Z, linear_cache = linear_forward(A_prev, W, b)
-        A, activation_cache = relu(Z)
-    
-    assert (A.shape == (W.shape[0], A_prev.shape[1]))
-    cache = (linear_cache, activation_cache)
+	Returns:
+	A -- the output of the activation function, also called the post-activation value 
+	cache -- a python tuple containing "linear_cache" and "activation_cache";
+			 stored for computing the backward pass efficiently
+	"""
+	
+	if activation == "sigmoid":
+		# Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
+		Z, linear_cache = linear_forward(A_prev, W, b)
+		A, activation_cache = sigmoid(Z)
+	
+	elif activation == "relu":
+		# Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
+		Z, linear_cache = linear_forward(A_prev, W, b)
+		A, activation_cache = relu(Z)
+	
+	assert (A.shape == (W.shape[0], A_prev.shape[1]))
+	cache = (linear_cache, activation_cache)
 
-    return A, cache
+	return A, cache
 def forward_propagation(X, parameters):
-    """
-    Implement forward propagation for the [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID computation
-    
-    Arguments:
-    X -- data, numpy array of shape (input size, number of examples)
-    parameters -- output of initialize_parameters_deep()
-    
-    Returns:
-    AL -- last post-activation value
-    caches -- list of caches containing:
-                every cache of linear_activation_forward() (there are L-1 of them, indexed from 0 to L-1)
-    """
-    caches = []
-    A = X
-    L = len(parameters) // 2                  # number of layers in the neural network
-    
-    # Implement [LINEAR -> RELU]*(L-1). Add "cache" to the "caches" list.
-    for l in range(1, L):
-        A_prev = A 
-        A, cache = linear_activation_forward(A_prev, parameters['W' + str(l)], parameters['b' + str(l)], "relu")
-        caches.append(cache)
-    
-    # Implement LINEAR -> SIGMOID. Add "cache" to the "caches" list.
-    AL, cache = linear_activation_forward(A_prev, parameters['W' + str(L)], parameters['b' + str(L)], "sigmoid")
-    caches.append(cache)
-    
-    assert(AL.shape == (1,X.shape[1]))
-            
-    return AL, caches
+	"""
+	Implement forward propagation for the [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID computation
+	
+	Arguments:
+	X -- data, numpy array of shape (input size, number of examples)
+	parameters -- output of initialize_parameters_deep()
+	
+	Returns:
+	AL -- last post-activation value
+	caches -- list of caches containing:
+				every cache of linear_activation_forward() (there are L-1 of them, indexed from 0 to L-1)
+	"""
+	caches = []
+	A = X
+	L = len(parameters) // 2                  # number of layers in the neural network
+	
+	# Implement [LINEAR -> RELU]*(L-1). Add "cache" to the "caches" list.
+	for l in range(1, L):
+		A_prev = A 
+		A, cache = linear_activation_forward(A_prev, parameters['W' + str(l)], parameters['b' + str(l)], "relu")
+		caches.append(cache)
+	
+	# Implement LINEAR -> SIGMOID. Add "cache" to the "caches" list.
+	AL, cache = linear_activation_forward(A_prev, parameters['W' + str(L)], parameters['b' + str(L)], "sigmoid")
+	caches.append(cache)
+	
+	assert(AL.shape == (1,X.shape[1]))
+			
+	return AL, caches
 def forward_propagation_with_dropout(X, parameters, keep_prob = 0.5):
-    """
-    Implements the forward propagation: LINEAR -> RELU + DROPOUT -> LINEAR -> RELU + DROPOUT -> LINEAR -> SIGMOID.
-    
-    Arguments:
-    X -- input dataset, of shape (2, number of examples)
-    parameters -- python dictionary containing your parameters "W1", "b1", "W2", "b2", "W3", "b3":
-                    W1 -- weight matrix of shape (20, 2)
-                    b1 -- bias vector of shape (20, 1)
-                    W2 -- weight matrix of shape (3, 20)
-                    b2 -- bias vector of shape (3, 1)
-                    W3 -- weight matrix of shape (1, 3)
-                    b3 -- bias vector of shape (1, 1)
-    keep_prob - probability of keeping a neuron active during drop-out, scalar
-    
-    Returns:
-    A3 -- last activation value, output of the forward propagation, of shape (1,1)
-    cache -- tuple, information stored for computing the backward propagation
-    """
-    # retrieve parameters
-    W1 = parameters["W1"]
-    b1 = parameters["b1"]
-    W2 = parameters["W2"]
-    b2 = parameters["b2"]
-    W3 = parameters["W3"]
-    b3 = parameters["b3"]
-    
-    # LINEAR -> RELU -> LINEAR -> RELU -> LINEAR -> SIGMOID
-    Z1 = np.dot(W1, X) + b1
-    A1 = relu(Z1)
-    D1 = np.random.randn(A1.shape[0], A1.shape[1])      # Step 1: initialize matrix D1 = np.random.rand(..., ...)
-    D1 = D1 < keep_prob                                 # Step 2: convert entries of D1 to 0 or 1 (using keep_prob as the threshold)
-    A1 = A1*D1                                          # Step 3: shut down some neurons of A1
-    A1 = A1/keep_prob                                   # Step 4: scale the value of neurons that haven't been shut down
-    Z2 = np.dot(W2, A1) + b2
-    A2 = relu(Z2)
-    D2 = np.random.rand(A2.shape[0], A2.shape[1])       # Step 1: initialize matrix D2 = np.random.rand(..., ...)
-    D2 = D2 < keep_prob                                 # Step 2: convert entries of D2 to 0 or 1 (using keep_prob as the threshold)
-    A2 = A2*D2                                          # Step 3: shut down some neurons of A2
-    A2 = A2/keep_prob                                   # Step 4: scale the value of neurons that haven't been shut down
-    Z3 = np.dot(W3, A2) + b3
-    A3 = sigmoid(Z3)
-    
-    cache = (Z1, D1, A1, W1, b1, Z2, D2, A2, W2, b2, Z3, A3, W3, b3)
-    
-    return A3, cache
+	"""
+	Implements the forward propagation: LINEAR -> RELU + DROPOUT -> LINEAR -> RELU + DROPOUT -> LINEAR -> SIGMOID.
+	
+	Arguments:
+	X -- input dataset, of shape (2, number of examples)
+	parameters -- python dictionary containing your parameters "W1", "b1", "W2", "b2", "W3", "b3":
+					W1 -- weight matrix of shape (20, 2)
+					b1 -- bias vector of shape (20, 1)
+					W2 -- weight matrix of shape (3, 20)
+					b2 -- bias vector of shape (3, 1)
+					W3 -- weight matrix of shape (1, 3)
+					b3 -- bias vector of shape (1, 1)
+	keep_prob - probability of keeping a neuron active during drop-out, scalar
+	
+	Returns:
+	A3 -- last activation value, output of the forward propagation, of shape (1,1)
+	cache -- tuple, information stored for computing the backward propagation
+	"""
+	# retrieve parameters
+	W1 = parameters["W1"]
+	b1 = parameters["b1"]
+	W2 = parameters["W2"]
+	b2 = parameters["b2"]
+	W3 = parameters["W3"]
+	b3 = parameters["b3"]
+	
+	# LINEAR -> RELU -> LINEAR -> RELU -> LINEAR -> SIGMOID
+	Z1 = np.dot(W1, X) + b1
+	A1 = relu(Z1)
+	D1 = np.random.randn(A1.shape[0], A1.shape[1])      # Step 1: initialize matrix D1 = np.random.rand(..., ...)
+	D1 = D1 < keep_prob                                 # Step 2: convert entries of D1 to 0 or 1 (using keep_prob as the threshold)
+	A1 = A1*D1                                          # Step 3: shut down some neurons of A1
+	A1 = A1/keep_prob                                   # Step 4: scale the value of neurons that haven't been shut down
+	Z2 = np.dot(W2, A1) + b2
+	A2 = relu(Z2)
+	D2 = np.random.rand(A2.shape[0], A2.shape[1])       # Step 1: initialize matrix D2 = np.random.rand(..., ...)
+	D2 = D2 < keep_prob                                 # Step 2: convert entries of D2 to 0 or 1 (using keep_prob as the threshold)
+	A2 = A2*D2                                          # Step 3: shut down some neurons of A2
+	A2 = A2/keep_prob                                   # Step 4: scale the value of neurons that haven't been shut down
+	Z3 = np.dot(W3, A2) + b3
+	A3 = sigmoid(Z3)
+	
+	cache = (Z1, D1, A1, W1, b1, Z2, D2, A2, W2, b2, Z3, A3, W3, b3)
+	
+	return A3, cache
 #Cost function
 def compute_cost(AL, Y):
-    """
-    Implement the cost function defined by equation (7).
+	"""
+	Implement the cost function defined by equation (7).
 
-    Arguments:
-    AL -- probability vector corresponding to your label predictions, shape (1, number of examples)
-    Y -- true "label" vector (for example: containing 0 if non-cat, 1 if cat), shape (1, number of examples)
+	Arguments:
+	AL -- probability vector corresponding to your label predictions, shape (1, number of examples)
+	Y -- true "label" vector (for example: containing 0 if non-cat, 1 if cat), shape (1, number of examples)
 
-    Returns:
-    cost -- cross-entropy cost
-    """
-    m = Y.shape[1]
+	Returns:
+	cost -- cross-entropy cost
+	"""
+	m = Y.shape[1]
 
-    # Compute loss from aL and y.
-    cost = (-1 / m) * np.sum(np.multiply(Y, np.log(AL)) + np.multiply(1 - Y, np.log(1 - AL)))
-    
-    cost = np.squeeze(cost)      # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).
-    assert(cost.shape == ())
-    
-    return cost
+	# Compute loss from aL and y.
+	cost = (-1 / m) * np.sum(np.multiply(Y, np.log(AL)) + np.multiply(1 - Y, np.log(1 - AL)))
+	
+	cost = np.squeeze(cost)      # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).
+	assert(cost.shape == ())
+	
+	return cost
 def compute_cost_with_regularization(A3, Y, parameters, lambd):
-    """
-    Implement the cost function with L2 regularization. See formula (2) above.
-    
-    Arguments:
-    A3 -- post-activation, output of forward propagation, of shape (output size, number of examples)
-    Y -- "true" labels vector, of shape (output size, number of examples)
-    parameters -- python dictionary containing parameters of the model
-    
-    Returns:
-    cost - value of the regularized loss function (formula (2))
-    """
-    m = Y.shape[1]
-    W1 = parameters["W1"]
-    W2 = parameters["W2"]
-    W3 = parameters["W3"]
-    
-    cross_entropy_cost = compute_cost(A3, Y) # This gives you the cross-entropy part of the cost
-    
-    ### START CODE HERE ### (approx. 1 line)
-    L2_regularization_cost = lambd * (np.sum(np.square(W1)) + np.sum(np.square(W2)) + np.sum(np.square(W3))) / (2 * m)
-    ### END CODER HERE ###
-    
-    cost = cross_entropy_cost + L2_regularization_cost
-    
-    return cost
+	"""
+	Implement the cost function with L2 regularization. See formula (2) above.
+	
+	Arguments:
+	A3 -- post-activation, output of forward propagation, of shape (output size, number of examples)
+	Y -- "true" labels vector, of shape (output size, number of examples)
+	parameters -- python dictionary containing parameters of the model
+	
+	Returns:
+	cost - value of the regularized loss function (formula (2))
+	"""
+	m = Y.shape[1]
+	W1 = parameters["W1"]
+	W2 = parameters["W2"]
+	W3 = parameters["W3"]
+	
+	cross_entropy_cost = compute_cost(A3, Y) # This gives you the cross-entropy part of the cost
+	
+	### START CODE HERE ### (approx. 1 line)
+	L2_regularization_cost = lambd * (np.sum(np.square(W1)) + np.sum(np.square(W2)) + np.sum(np.square(W3))) / (2 * m)
+	### END CODER HERE ###
+	
+	cost = cross_entropy_cost + L2_regularization_cost
+	
+	return cost
 #Backward propagation
 def linear_backward(dZ, cache):
-    """
-    Implement the linear portion of backward propagation for a single layer (layer l)
+	"""
+	Implement the linear portion of backward propagation for a single layer (layer l)
 
-    Arguments:
-    dZ -- Gradient of the cost with respect to the linear output (of current layer l)
-    cache -- tuple of values (A_prev, W, b) coming from the forward propagation in the current layer
+	Arguments:
+	dZ -- Gradient of the cost with respect to the linear output (of current layer l)
+	cache -- tuple of values (A_prev, W, b) coming from the forward propagation in the current layer
 
-    Returns:
-    dA_prev -- Gradient of the cost with respect to the activation (of the previous layer l-1), same shape as A_prev
-    dW -- Gradient of the cost with respect to W (current layer l), same shape as W
-    db -- Gradient of the cost with respect to b (current layer l), same shape as b
-    """
-    A_prev, W, b = cache
-    m = A_prev.shape[1]
+	Returns:
+	dA_prev -- Gradient of the cost with respect to the activation (of the previous layer l-1), same shape as A_prev
+	dW -- Gradient of the cost with respect to W (current layer l), same shape as W
+	db -- Gradient of the cost with respect to b (current layer l), same shape as b
+	"""
+	A_prev, W, b = cache
+	m = A_prev.shape[1]
 
-    dW = np.dot(dZ, cache[0].T) / m
-    db = np.squeeze(np.sum(dZ, axis=1, keepdims=True)) / m
-    dA_prev = np.dot(cache[1].T, dZ)
-    
-    assert (dA_prev.shape == A_prev.shape)
-    assert (dW.shape == W.shape)
-    assert (isinstance(db, float))
-    
-    return dA_prev, dW, db
+	dW = np.dot(dZ, cache[0].T) / m
+	db = np.squeeze(np.sum(dZ, axis=1, keepdims=True)) / m
+	dA_prev = np.dot(cache[1].T, dZ)
+	
+	assert (dA_prev.shape == A_prev.shape)
+	assert (dW.shape == W.shape)
+	assert (isinstance(db, float))
+	
+	return dA_prev, dW, db
 def linear_activation_backward(dA, cache, activation):
-    """
-    Implement the backward propagation for the LINEAR->ACTIVATION layer.
-    
-    Arguments:
-    dA -- post-activation gradient for current layer l 
-    cache -- tuple of values (linear_cache, activation_cache) we store for computing backward propagation efficiently
-    activation -- the activation to be used in this layer, stored as a text string: "sigmoid" or "relu"
-    
-    Returns:
-    dA_prev -- Gradient of the cost with respect to the activation (of the previous layer l-1), same shape as A_prev
-    dW -- Gradient of the cost with respect to W (current layer l), same shape as W
-    db -- Gradient of the cost with respect to b (current layer l), same shape as b
-    """
-    linear_cache, activation_cache = cache
-    
-    if activation == "relu":
-        dZ = relu_backward(dA, activation_cache)
-    elif activation == "sigmoid":
-        dZ = sigmoid_backward(dA, activation_cache)
-    dA_prev, dW, db = linear_backward(dZ, linear_cache)
-    
-    return dA_prev, dW, db
+	"""
+	Implement the backward propagation for the LINEAR->ACTIVATION layer.
+	
+	Arguments:
+	dA -- post-activation gradient for current layer l 
+	cache -- tuple of values (linear_cache, activation_cache) we store for computing backward propagation efficiently
+	activation -- the activation to be used in this layer, stored as a text string: "sigmoid" or "relu"
+	
+	Returns:
+	dA_prev -- Gradient of the cost with respect to the activation (of the previous layer l-1), same shape as A_prev
+	dW -- Gradient of the cost with respect to W (current layer l), same shape as W
+	db -- Gradient of the cost with respect to b (current layer l), same shape as b
+	"""
+	linear_cache, activation_cache = cache
+	
+	if activation == "relu":
+		dZ = relu_backward(dA, activation_cache)
+	elif activation == "sigmoid":
+		dZ = sigmoid_backward(dA, activation_cache)
+	dA_prev, dW, db = linear_backward(dZ, linear_cache)
+	
+	return dA_prev, dW, db
 def backward_propagation(AL, Y, caches):
-    """
-    Implement the backward propagation for the [LINEAR->RELU] * (L-1) -> LINEAR -> SIGMOID group
-    
-    Arguments:
-    AL -- probability vector, output of the forward propagation (L_model_forward())
-    Y -- true "label" vector (containing 0 if non-cat, 1 if cat)
-    caches -- list of caches containing:
-                every cache of linear_activation_forward() with "relu" (it's caches[l], for l in range(L-1) i.e l = 0...L-2)
-                the cache of linear_activation_forward() with "sigmoid" (it's caches[L-1])
-    
-    Returns:
-    grads -- A dictionary with the gradients
-             grads["dA" + str(l)] = ... 
-             grads["dW" + str(l)] = ...
-             grads["db" + str(l)] = ... 
-    """
-    grads = {}
-    L = len(caches) # the number of layers
-    m = AL.shape[1]
-    Y = Y.reshape(AL.shape) # after this line, Y is the same shape as AL
-    
-    # Initializing the backpropagation
-    dAL = -(np.divide(Y, AL) - np.divide(1 - Y, 1 - AL))
-    
-    # Lth layer (SIGMOID -> LINEAR) gradients. Inputs: "dAL, current_cache". Outputs: "grads["dAL-1"], grads["dWL"], grads["dbL"]
-    current_cache = caches[-1]
-    grads["dA" + str(L)], grads["dW" + str(L)], grads["db" + str(L)] = linear_backward(sigmoid_backward(dAL, current_cache[1]), current_cache[0])
-    
-    # Loop from l=L-2 to l=0
-    for l in reversed(range(L-1)):
-        # lth layer: (RELU -> LINEAR) gradients.
-        # Inputs: "grads["dA" + str(l + 1)], current_cache". Outputs: "grads["dA" + str(l)] , grads["dW" + str(l + 1)] , grads["db" + str(l + 1)] 
-        current_cache = caches[l]
-        dA_prev_temp, dW_temp, db_temp = linear_backward(sigmoid_backward(dAL, current_cache[1]), current_cache[0])
-        grads["dA" + str(l + 1)] = dA_prev_temp
-        grads["dW" + str(l + 1)] = dW_temp
-        grads["db" + str(l + 1)] = db_temp
+	"""
+	Implement the backward propagation for the [LINEAR->RELU] * (L-1) -> LINEAR -> SIGMOID group
+	
+	Arguments:
+	AL -- probability vector, output of the forward propagation (L_model_forward())
+	Y -- true "label" vector (containing 0 if non-cat, 1 if cat)
+	caches -- list of caches containing:
+				every cache of linear_activation_forward() with "relu" (it's caches[l], for l in range(L-1) i.e l = 0...L-2)
+				the cache of linear_activation_forward() with "sigmoid" (it's caches[L-1])
+	
+	Returns:
+	grads -- A dictionary with the gradients
+			 grads["dA" + str(l)] = ... 
+			 grads["dW" + str(l)] = ...
+			 grads["db" + str(l)] = ... 
+	"""
+	grads = {}
+	L = len(caches) # the number of layers
+	m = AL.shape[1]
+	Y = Y.reshape(AL.shape) # after this line, Y is the same shape as AL
+	
+	# Initializing the backpropagation
+	dAL = -(np.divide(Y, AL) - np.divide(1 - Y, 1 - AL))
+	
+	# Lth layer (SIGMOID -> LINEAR) gradients. Inputs: "dAL, current_cache". Outputs: "grads["dAL-1"], grads["dWL"], grads["dbL"]
+	current_cache = caches[-1]
+	grads["dA" + str(L)], grads["dW" + str(L)], grads["db" + str(L)] = linear_backward(sigmoid_backward(dAL, current_cache[1]), current_cache[0])
+	
+	# Loop from l=L-2 to l=0
+	for l in reversed(range(L-1)):
+		# lth layer: (RELU -> LINEAR) gradients.
+		# Inputs: "grads["dA" + str(l + 1)], current_cache". Outputs: "grads["dA" + str(l)] , grads["dW" + str(l + 1)] , grads["db" + str(l + 1)] 
+		current_cache = caches[l]
+		dA_prev_temp, dW_temp, db_temp = linear_backward(sigmoid_backward(dAL, current_cache[1]), current_cache[0])
+		grads["dA" + str(l + 1)] = dA_prev_temp
+		grads["dW" + str(l + 1)] = dW_temp
+		grads["db" + str(l + 1)] = db_temp
 
-    return grads
+	return grads
 def backward_propagation_with_regularization(X, Y, cache, lambd):
-    """
-    Implements the backward propagation of our baseline model to which we added an L2 regularization.
-    
-    Arguments:
-    X -- input dataset, of shape (input size, number of examples)
-    Y -- "true" labels vector, of shape (output size, number of examples)
-    cache -- cache output from forward_propagation()
-    lambd -- regularization hyperparameter, scalar
-    
-    Returns:
-    gradients -- A dictionary with the gradients with respect to each parameter, activation and pre-activation variables
-    """
-    
-    m = X.shape[1]
-    (Z1, A1, W1, b1, Z2, A2, W2, b2, Z3, A3, W3, b3) = cache
-    dZ3 = A3 - Y
-    
-    dW3 = 1./m * np.dot(dZ3, A2.T) + (lambd/m)*W3
-    db3 = 1./m * np.sum(dZ3, axis=1, keepdims = True)
-    
-    dA2 = np.dot(W3.T, dZ3)
-    dZ2 = np.multiply(dA2, np.int64(A2 > 0))
-    dW2 = 1./m * np.dot(dZ2, A1.T) + (lambd/m)*W2
-    db2 = 1./m * np.sum(dZ2, axis=1, keepdims = True)
-    
-    dA1 = np.dot(W2.T, dZ2)
-    dZ1 = np.multiply(dA1, np.int64(A1 > 0))
-    dW1 = 1./m * np.dot(dZ1, X.T) + (lambd/m)*W1
-    db1 = 1./m * np.sum(dZ1, axis=1, keepdims = True)
-    
-    gradients = {"dZ3": dZ3, "dW3": dW3, "db3": db3,"dA2": dA2,
-                 "dZ2": dZ2, "dW2": dW2, "db2": db2, "dA1": dA1, 
-                 "dZ1": dZ1, "dW1": dW1, "db1": db1}
-    
-    return gradients
+	"""
+	Implements the backward propagation of our baseline model to which we added an L2 regularization.
+	
+	Arguments:
+	X -- input dataset, of shape (input size, number of examples)
+	Y -- "true" labels vector, of shape (output size, number of examples)
+	cache -- cache output from forward_propagation()
+	lambd -- regularization hyperparameter, scalar
+	
+	Returns:
+	gradients -- A dictionary with the gradients with respect to each parameter, activation and pre-activation variables
+	"""
+	
+	m = X.shape[1]
+	(Z1, A1, W1, b1, Z2, A2, W2, b2, Z3, A3, W3, b3) = cache
+	dZ3 = A3 - Y
+	
+	dW3 = 1./m * np.dot(dZ3, A2.T) + (lambd/m)*W3
+	db3 = 1./m * np.sum(dZ3, axis=1, keepdims = True)
+	
+	dA2 = np.dot(W3.T, dZ3)
+	dZ2 = np.multiply(dA2, np.int64(A2 > 0))
+	dW2 = 1./m * np.dot(dZ2, A1.T) + (lambd/m)*W2
+	db2 = 1./m * np.sum(dZ2, axis=1, keepdims = True)
+	
+	dA1 = np.dot(W2.T, dZ2)
+	dZ1 = np.multiply(dA1, np.int64(A1 > 0))
+	dW1 = 1./m * np.dot(dZ1, X.T) + (lambd/m)*W1
+	db1 = 1./m * np.sum(dZ1, axis=1, keepdims = True)
+	
+	gradients = {"dZ3": dZ3, "dW3": dW3, "db3": db3,"dA2": dA2,
+				 "dZ2": dZ2, "dW2": dW2, "db2": db2, "dA1": dA1, 
+				 "dZ1": dZ1, "dW1": dW1, "db1": db1}
+	
+	return gradients
 # GRADED FUNCTION: backward_propagation_with_dropout
 
 def backward_propagation_with_dropout(X, Y, cache, keep_prob):
-    """
-    Implements the backward propagation of our baseline model to which we added dropout.
-    
-    Arguments:
-    X -- input dataset, of shape (2, number of examples)
-    Y -- "true" labels vector, of shape (output size, number of examples)
-    cache -- cache output from forward_propagation_with_dropout()
-    keep_prob - probability of keeping a neuron active during drop-out, scalar
-    
-    Returns:
-    gradients -- A dictionary with the gradients with respect to each parameter, activation and pre-activation variables
-    """
-    m = X.shape[1]
-    (Z1, D1, A1, W1, b1, Z2, D2, A2, W2, b2, Z3, A3, W3, b3) = cache
-    
-    dZ3 = A3 - Y
-    dW3 = 1./m * np.dot(dZ3, A2.T)
-    db3 = 1./m * np.sum(dZ3, axis=1, keepdims = True)
-    dA2 = np.dot(W3.T, dZ3)
-    dA2 = dA2*D2            # Step 1: Apply mask D2 to shut down the same neurons as during the forward propagation
-    dA2 = dA2/keep_prob     # Step 2: Scale the value of neurons that haven't been shut down
-    ### END CODE HERE ###
-    dZ2 = np.multiply(dA2, np.int64(A2 > 0))
-    dW2 = 1./m * np.dot(dZ2, A1.T)
-    db2 = 1./m * np.sum(dZ2, axis=1, keepdims = True)
-    
-    dA1 = np.dot(W2.T, dZ2)
-    dA1 = dA1*D1                # Step 1: Apply mask D1 to shut down the same neurons as during the forward propagation
-    dA1 = dA1/keep_prob         # Step 2: Scale the value of neurons that haven't been shut down
-    dZ1 = np.multiply(dA1, np.int64(A1 > 0))
-    dW1 = 1./m * np.dot(dZ1, X.T)
-    db1 = 1./m * np.sum(dZ1, axis=1, keepdims = True)
-    
-    gradients = {"dZ3": dZ3, "dW3": dW3, "db3": db3,"dA2": dA2,
-                 "dZ2": dZ2, "dW2": dW2, "db2": db2, "dA1": dA1, 
-                 "dZ1": dZ1, "dW1": dW1, "db1": db1}
-    
-    return gradients
+	"""
+	Implements the backward propagation of our baseline model to which we added dropout.
+	
+	Arguments:
+	X -- input dataset, of shape (2, number of examples)
+	Y -- "true" labels vector, of shape (output size, number of examples)
+	cache -- cache output from forward_propagation_with_dropout()
+	keep_prob - probability of keeping a neuron active during drop-out, scalar
+	
+	Returns:
+	gradients -- A dictionary with the gradients with respect to each parameter, activation and pre-activation variables
+	"""
+	m = X.shape[1]
+	(Z1, D1, A1, W1, b1, Z2, D2, A2, W2, b2, Z3, A3, W3, b3) = cache
+	
+	dZ3 = A3 - Y
+	dW3 = 1./m * np.dot(dZ3, A2.T)
+	db3 = 1./m * np.sum(dZ3, axis=1, keepdims = True)
+	dA2 = np.dot(W3.T, dZ3)
+	dA2 = dA2*D2            # Step 1: Apply mask D2 to shut down the same neurons as during the forward propagation
+	dA2 = dA2/keep_prob     # Step 2: Scale the value of neurons that haven't been shut down
+	### END CODE HERE ###
+	dZ2 = np.multiply(dA2, np.int64(A2 > 0))
+	dW2 = 1./m * np.dot(dZ2, A1.T)
+	db2 = 1./m * np.sum(dZ2, axis=1, keepdims = True)
+	
+	dA1 = np.dot(W2.T, dZ2)
+	dA1 = dA1*D1                # Step 1: Apply mask D1 to shut down the same neurons as during the forward propagation
+	dA1 = dA1/keep_prob         # Step 2: Scale the value of neurons that haven't been shut down
+	dZ1 = np.multiply(dA1, np.int64(A1 > 0))
+	dW1 = 1./m * np.dot(dZ1, X.T)
+	db1 = 1./m * np.sum(dZ1, axis=1, keepdims = True)
+	
+	gradients = {"dZ3": dZ3, "dW3": dW3, "db3": db3,"dA2": dA2,
+				 "dZ2": dZ2, "dW2": dW2, "db2": db2, "dA1": dA1, 
+				 "dZ1": dZ1, "dW1": dW1, "db1": db1}
+	
+	return gradients
 #Optimization
 def update_parameters_gradient_descent(parameters, grads, learning_rate):
-    """
-    Update parameters using gradient descent
-    
-    Arguments:
-    parameters -- python dictionary containing your parameters 
-    grads -- python dictionary containing your gradients, output of L_model_backward
-    
-    Returns:
-    parameters -- python dictionary containing your updated parameters 
-                  parameters["W" + str(l)] = ... 
-                  parameters["b" + str(l)] = ...
-    """
-    L = len(parameters) // 2 # number of layers in the neural network
+	"""
+	Update parameters using gradient descent
+	
+	Arguments:
+	parameters -- python dictionary containing your parameters 
+	grads -- python dictionary containing your gradients, output of L_model_backward
+	
+	Returns:
+	parameters -- python dictionary containing your updated parameters 
+				  parameters["W" + str(l)] = ... 
+				  parameters["b" + str(l)] = ...
+	"""
+	L = len(parameters) // 2 # number of layers in the neural network
 
-    # Update rule for each parameter. Use a for loop.
-    for l in range(L):
-        parameters["W" + str(l + 1)] = parameters["W" + str(l + 1)] - learning_rate * grads["dW" + str(l + 1)]
-        parameters["b" + str(l + 1)] = parameters["b" + str(l + 1)] - learning_rate * grads["db" + str(l + 1)]
-    return parameters
+	# Update rule for each parameter. Use a for loop.
+	for l in range(L):
+		parameters["W" + str(l + 1)] = parameters["W" + str(l + 1)] - learning_rate * grads["dW" + str(l + 1)]
+		parameters["b" + str(l + 1)] = parameters["b" + str(l + 1)] - learning_rate * grads["db" + str(l + 1)]
+	return parameters
 def random_mini_batches(X, Y, mini_batch_size = 64):
-    """
-    Creates a list of random minibatches from (X, Y)
-    
-    Arguments:
-    X -- input data, of shape (input size, number of examples)
-    Y -- true "label" vector (1 for blue dot / 0 for red dot), of shape (1, number of examples)
-    mini_batch_size -- size of the mini-batches, integer
-    
-    Returns:
-    mini_batches -- list of synchronous (mini_batch_X, mini_batch_Y)
-    """
-    m = X.shape[1]                  # number of training examples
-    mini_batches = []
-        
-    # Step 1: Shuffle (X, Y)
-    permutation = list(np.random.permutation(m))
-    shuffled_X = X[:, permutation]
-    shuffled_Y = Y[:, permutation].reshape((1,m))
+	"""
+	Creates a list of random minibatches from (X, Y)
+	
+	Arguments:
+	X -- input data, of shape (input size, number of examples)
+	Y -- true "label" vector (1 for blue dot / 0 for red dot), of shape (1, number of examples)
+	mini_batch_size -- size of the mini-batches, integer
+	
+	Returns:
+	mini_batches -- list of synchronous (mini_batch_X, mini_batch_Y)
+	"""
+	m = X.shape[1]                  # number of training examples
+	mini_batches = []
+		
+	# Step 1: Shuffle (X, Y)
+	permutation = list(np.random.permutation(m))
+	shuffled_X = X[:, permutation]
+	shuffled_Y = Y[:, permutation].reshape((1,m))
 
-    # Step 2: Partition (shuffled_X, shuffled_Y). Minus the end case.
-    num_complete_minibatches = math.floor(m/mini_batch_size) # number of mini batches of size mini_batch_size in your partitionning
-    for k in range(0, num_complete_minibatches):
-        mini_batch_X = shuffled_X[:, k*mini_batch_size : (k+1)*mini_batch_size]
-        mini_batch_Y = shuffled_Y[:, k*mini_batch_size : (k+1)*mini_batch_size]
-        mini_batch = (mini_batch_X, mini_batch_Y)
-        mini_batches.append(mini_batch)
-    
-    # Handling the end case (last mini-batch < mini_batch_size)
-    if m % mini_batch_size != 0:
-        mini_batch_X = shuffled_X[:, num_complete_minibatches*mini_batch_size : ]
-        mini_batch_Y = shuffled_Y[:, num_complete_minibatches*mini_batch_size : ]
-        mini_batch = (mini_batch_X, mini_batch_Y)
-        mini_batches.append(mini_batch)
-    
-    return mini_batches
+	# Step 2: Partition (shuffled_X, shuffled_Y). Minus the end case.
+	num_complete_minibatches = math.floor(m/mini_batch_size) # number of mini batches of size mini_batch_size in your partitionning
+	for k in range(0, num_complete_minibatches):
+		mini_batch_X = shuffled_X[:, k*mini_batch_size : (k+1)*mini_batch_size]
+		mini_batch_Y = shuffled_Y[:, k*mini_batch_size : (k+1)*mini_batch_size]
+		mini_batch = (mini_batch_X, mini_batch_Y)
+		mini_batches.append(mini_batch)
+	
+	# Handling the end case (last mini-batch < mini_batch_size)
+	if m % mini_batch_size != 0:
+		mini_batch_X = shuffled_X[:, num_complete_minibatches*mini_batch_size : ]
+		mini_batch_Y = shuffled_Y[:, num_complete_minibatches*mini_batch_size : ]
+		mini_batch = (mini_batch_X, mini_batch_Y)
+		mini_batches.append(mini_batch)
+	
+	return mini_batches
 def initialize_velocity(parameters):
-    """
-    Initializes the velocity as a python dictionary with:
-                - keys: "dW1", "db1", ..., "dWL", "dbL" 
-                - values: numpy arrays of zeros of the same shape as the corresponding gradients/parameters.
-    Arguments:
-    parameters -- python dictionary containing your parameters.
-                    parameters['W' + str(l)] = Wl
-                    parameters['b' + str(l)] = bl
-    
-    Returns:
-    v -- python dictionary containing the current velocity.
-                    v['dW' + str(l)] = velocity of dWl
-                    v['db' + str(l)] = velocity of dbl
-    """
-    L = len(parameters) // 2 # number of layers in the neural networks
-    v = {}
-    
-    # Initialize velocity
-    for l in range(L):
-        v["dW" + str(l+1)] = np.zeros(parameters["W" + str(l+1)].shape)
-        v["db" + str(l+1)] = np.zeros(parameters["b" + str(l+1)].shape)
-        
-    return v
+	"""
+	Initializes the velocity as a python dictionary with:
+				- keys: "dW1", "db1", ..., "dWL", "dbL" 
+				- values: numpy arrays of zeros of the same shape as the corresponding gradients/parameters.
+	Arguments:
+	parameters -- python dictionary containing your parameters.
+					parameters['W' + str(l)] = Wl
+					parameters['b' + str(l)] = bl
+	
+	Returns:
+	v -- python dictionary containing the current velocity.
+					v['dW' + str(l)] = velocity of dWl
+					v['db' + str(l)] = velocity of dbl
+	"""
+	L = len(parameters) // 2 # number of layers in the neural networks
+	v = {}
+	
+	# Initialize velocity
+	for l in range(L):
+		v["dW" + str(l+1)] = np.zeros(parameters["W" + str(l+1)].shape)
+		v["db" + str(l+1)] = np.zeros(parameters["b" + str(l+1)].shape)
+		
+	return v
 def update_parameters_with_momentum(parameters, grads, v, beta, learning_rate):
-    """
-    Update parameters using Momentum
-    
-    Arguments:
-    parameters -- python dictionary containing your parameters:
-                    parameters['W' + str(l)] = Wl
-                    parameters['b' + str(l)] = bl
-    grads -- python dictionary containing your gradients for each parameters:
-                    grads['dW' + str(l)] = dWl
-                    grads['db' + str(l)] = dbl
-    v -- python dictionary containing the current velocity:
-                    v['dW' + str(l)] = ...
-                    v['db' + str(l)] = ...
-    beta -- the momentum hyperparameter, scalar
-    learning_rate -- the learning rate, scalar
-    
-    Returns:
-    parameters -- python dictionary containing your updated parameters 
-    v -- python dictionary containing your updated velocities
-    """
-    L = len(parameters) // 2 # number of layers in the neural networks
-    
-    # Momentum update for each parameter
-    for l in range(L):
-        # compute velocities
-        v["dW" + str(l+1)] = beta*v["dW" + str(l+1)]+(1-beta)*grads["dW" + str(l+1)]
-        v["db" + str(l+1)] = beta*v["db" + str(l+1)]+(1-beta)*grads["db" + str(l+1)]
-        # update parameters
-        parameters["W" + str(l+1)] = parameters["W" + str(l+1)] - learning_rate*v["dW" + str(l+1)]
-        parameters["b" + str(l+1)] = parameters["b" + str(l+1)] - learning_rate*v["db" + str(l+1)]
-        
-    return parameters, v
+	"""
+	Update parameters using Momentum
+	
+	Arguments:
+	parameters -- python dictionary containing your parameters:
+					parameters['W' + str(l)] = Wl
+					parameters['b' + str(l)] = bl
+	grads -- python dictionary containing your gradients for each parameters:
+					grads['dW' + str(l)] = dWl
+					grads['db' + str(l)] = dbl
+	v -- python dictionary containing the current velocity:
+					v['dW' + str(l)] = ...
+					v['db' + str(l)] = ...
+	beta -- the momentum hyperparameter, scalar
+	learning_rate -- the learning rate, scalar
+	
+	Returns:
+	parameters -- python dictionary containing your updated parameters 
+	v -- python dictionary containing your updated velocities
+	"""
+	L = len(parameters) // 2 # number of layers in the neural networks
+	
+	# Momentum update for each parameter
+	for l in range(L):
+		# compute velocities
+		v["dW" + str(l+1)] = beta*v["dW" + str(l+1)]+(1-beta)*grads["dW" + str(l+1)]
+		v["db" + str(l+1)] = beta*v["db" + str(l+1)]+(1-beta)*grads["db" + str(l+1)]
+		# update parameters
+		parameters["W" + str(l+1)] = parameters["W" + str(l+1)] - learning_rate*v["dW" + str(l+1)]
+		parameters["b" + str(l+1)] = parameters["b" + str(l+1)] - learning_rate*v["db" + str(l+1)]
+		
+	return parameters, v
 def initialize_adam(parameters) :
-    """
-    Initializes v and s as two python dictionaries with:
-                - keys: "dW1", "db1", ..., "dWL", "dbL" 
-                - values: numpy arrays of zeros of the same shape as the corresponding gradients/parameters.
-    
-    Arguments:
-    parameters -- python dictionary containing your parameters.
-                    parameters["W" + str(l)] = Wl
-                    parameters["b" + str(l)] = bl
-    
-    Returns: 
-    v -- python dictionary that will contain the exponentially weighted average of the gradient.
-                    v["dW" + str(l)] = ...
-                    v["db" + str(l)] = ...
-    s -- python dictionary that will contain the exponentially weighted average of the squared gradient.
-                    s["dW" + str(l)] = ...
-                    s["db" + str(l)] = ...
+	"""
+	Initializes v and s as two python dictionaries with:
+				- keys: "dW1", "db1", ..., "dWL", "dbL" 
+				- values: numpy arrays of zeros of the same shape as the corresponding gradients/parameters.
+	
+	Arguments:
+	parameters -- python dictionary containing your parameters.
+					parameters["W" + str(l)] = Wl
+					parameters["b" + str(l)] = bl
+	
+	Returns: 
+	v -- python dictionary that will contain the exponentially weighted average of the gradient.
+					v["dW" + str(l)] = ...
+					v["db" + str(l)] = ...
+	s -- python dictionary that will contain the exponentially weighted average of the squared gradient.
+					s["dW" + str(l)] = ...
+					s["db" + str(l)] = ...
 
-    """
-    L = len(parameters) // 2 # number of layers in the neural networks
-    v = {}
-    s = {}
-    
-    # Initialize v, s. Input: "parameters". Outputs: "v, s".
-    for l in range(L):
-        v["dW" + str(l+1)] = np.zeros(parameters["W" + str(l+1)].shape)
-        v["db" + str(l+1)] = np.zeros(parameters["b" + str(l+1)].shape)
-        s["dW" + str(l+1)] = np.zeros(parameters["W" + str(l+1)].shape)
-        s["db" + str(l+1)] = np.zeros(parameters["b" + str(l+1)].shape)
-    
-    return v, s
+	"""
+	L = len(parameters) // 2 # number of layers in the neural networks
+	v = {}
+	s = {}
+	
+	# Initialize v, s. Input: "parameters". Outputs: "v, s".
+	for l in range(L):
+		v["dW" + str(l+1)] = np.zeros(parameters["W" + str(l+1)].shape)
+		v["db" + str(l+1)] = np.zeros(parameters["b" + str(l+1)].shape)
+		s["dW" + str(l+1)] = np.zeros(parameters["W" + str(l+1)].shape)
+		s["db" + str(l+1)] = np.zeros(parameters["b" + str(l+1)].shape)
+	
+	return v, s
 def update_parameters_with_adam(parameters, grads, v, s, t, learning_rate = 0.01,
-                                beta1 = 0.9, beta2 = 0.999,  epsilon = 1e-8):
-    """
-    Update parameters using Adam
-    
-    Arguments:
-    parameters -- python dictionary containing your parameters:
-                    parameters['W' + str(l)] = Wl
-                    parameters['b' + str(l)] = bl
-    grads -- python dictionary containing your gradients for each parameters:
-                    grads['dW' + str(l)] = dWl
-                    grads['db' + str(l)] = dbl
-    v -- Adam variable, moving average of the first gradient, python dictionary
-    s -- Adam variable, moving average of the squared gradient, python dictionary
-    learning_rate -- the learning rate, scalar.
-    beta1 -- Exponential decay hyperparameter for the first moment estimates 
-    beta2 -- Exponential decay hyperparameter for the second moment estimates 
-    epsilon -- hyperparameter preventing division by zero in Adam updates
+								beta1 = 0.9, beta2 = 0.999,  epsilon = 1e-8):
+	"""
+	Update parameters using Adam
+	
+	Arguments:
+	parameters -- python dictionary containing your parameters:
+					parameters['W' + str(l)] = Wl
+					parameters['b' + str(l)] = bl
+	grads -- python dictionary containing your gradients for each parameters:
+					grads['dW' + str(l)] = dWl
+					grads['db' + str(l)] = dbl
+	v -- Adam variable, moving average of the first gradient, python dictionary
+	s -- Adam variable, moving average of the squared gradient, python dictionary
+	learning_rate -- the learning rate, scalar.
+	beta1 -- Exponential decay hyperparameter for the first moment estimates 
+	beta2 -- Exponential decay hyperparameter for the second moment estimates 
+	epsilon -- hyperparameter preventing division by zero in Adam updates
 
-    Returns:
-    parameters -- python dictionary containing your updated parameters 
-    v -- Adam variable, moving average of the first gradient, python dictionary
-    s -- Adam variable, moving average of the squared gradient, python dictionary
-    """
-    L = len(parameters) // 2                 # number of layers in the neural networks
-    v_corrected = {}                         # Initializing first moment estimate, python dictionary
-    s_corrected = {}                         # Initializing second moment estimate, python dictionary
-    
-    # Perform Adam update on all parameters
-    for l in range(L):
-        # Moving average of the gradients. Inputs: "v, grads, beta1". Output: "v".
-        v["dW" + str(l+1)] = beta1*v["dW" + str(l + 1)]+(1-beta1)*grads['dW' + str(l + 1)]
-        v["db" + str(l+1)] = beta1*v["db" + str(l + 1)]+(1-beta1)*grads['db' + str(l + 1)]
+	Returns:
+	parameters -- python dictionary containing your updated parameters 
+	v -- Adam variable, moving average of the first gradient, python dictionary
+	s -- Adam variable, moving average of the squared gradient, python dictionary
+	"""
+	L = len(parameters) // 2                 # number of layers in the neural networks
+	v_corrected = {}                         # Initializing first moment estimate, python dictionary
+	s_corrected = {}                         # Initializing second moment estimate, python dictionary
+	
+	# Perform Adam update on all parameters
+	for l in range(L):
+		# Moving average of the gradients. Inputs: "v, grads, beta1". Output: "v".
+		v["dW" + str(l+1)] = beta1*v["dW" + str(l + 1)]+(1-beta1)*grads['dW' + str(l + 1)]
+		v["db" + str(l+1)] = beta1*v["db" + str(l + 1)]+(1-beta1)*grads['db' + str(l + 1)]
 
-        # Compute bias-corrected first moment estimate. Inputs: "v, beta1, t". Output: "v_corrected".
-        v_corrected["dW" + str(l+1)] = v["dW" + str(l + 1)]/(1-np.power(beta1, t))
-        v_corrected["db" + str(l+1)] = v["db" + str(l + 1)]/(1-np.power(beta1, t))
+		# Compute bias-corrected first moment estimate. Inputs: "v, beta1, t". Output: "v_corrected".
+		v_corrected["dW" + str(l+1)] = v["dW" + str(l + 1)]/(1-np.power(beta1, t))
+		v_corrected["db" + str(l+1)] = v["db" + str(l + 1)]/(1-np.power(beta1, t))
 
-        # Moving average of the squared gradients. Inputs: "s, grads, beta2". Output: "s".
-        s["dW" + str(l+1)] = beta2*s["dW" + str(l+1)]+(1-beta2)*np.power(grads['dW' + str(l+1)], 2)
-        s["db" + str(l+1)] = beta2*s["db" + str(l+1)]+(1-beta2)*np.power(grads['db' + str(l+1)], 2)
+		# Moving average of the squared gradients. Inputs: "s, grads, beta2". Output: "s".
+		s["dW" + str(l+1)] = beta2*s["dW" + str(l+1)]+(1-beta2)*np.power(grads['dW' + str(l+1)], 2)
+		s["db" + str(l+1)] = beta2*s["db" + str(l+1)]+(1-beta2)*np.power(grads['db' + str(l+1)], 2)
 
-        # Compute bias-corrected second raw moment estimate. Inputs: "s, beta2, t". Output: "s_corrected".
-        s_corrected["dW" + str(l+1)] = s["dW" + str(l+1)]/(1-np.power(beta2, t))
-        s_corrected["db" + str(l+1)] = s["db" + str(l+1)]/(1-np.power(beta2, t))
+		# Compute bias-corrected second raw moment estimate. Inputs: "s, beta2, t". Output: "s_corrected".
+		s_corrected["dW" + str(l+1)] = s["dW" + str(l+1)]/(1-np.power(beta2, t))
+		s_corrected["db" + str(l+1)] = s["db" + str(l+1)]/(1-np.power(beta2, t))
 
-        # Update parameters. Inputs: "parameters, learning_rate, v_corrected, s_corrected, epsilon". Output: "parameters".
-        parameters["W" + str(l+1)] = parameters["W" + str(l+1)]-learning_rate*v_corrected["dW" + str(l+1)]/np.sqrt(s_corrected["dW" + str(l+1)]+epsilon)
-        parameters["b" + str(l+1)] = parameters["b" + str(l+1)]-learning_rate*v_corrected["db" + str(l+1)]/np.sqrt(s_corrected["db" + str(l+1)]+epsilon)
+		# Update parameters. Inputs: "parameters, learning_rate, v_corrected, s_corrected, epsilon". Output: "parameters".
+		parameters["W" + str(l+1)] = parameters["W" + str(l+1)]-learning_rate*v_corrected["dW" + str(l+1)]/np.sqrt(s_corrected["dW" + str(l+1)]+epsilon)
+		parameters["b" + str(l+1)] = parameters["b" + str(l+1)]-learning_rate*v_corrected["db" + str(l+1)]/np.sqrt(s_corrected["db" + str(l+1)]+epsilon)
 
-    return parameters, v, s
+	return parameters, v, s
 #Model
 def nn_model(X, Y, layers_dims, learning_rate = 0.0075, num_iterations = 3000, print_cost=False, lambd = 0, keep_prob = 1, optimizer='adam', mini_batch_size = 64, beta = 0.9, beta1 = 0.9, beta2 = 0.999,  epsilon = 1e-8):
-    """
-    Implements a L-layer neural network: [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID.
-    
-    Arguments:
-    X -- data, numpy array of shape (num_px * num_px * 3, number of examples)
-    Y -- true "label" vector (containing 0 if cat, 1 if non-cat), of shape (1, number of examples)
-    layers_dims -- list containing the input size and each layer size, of length (number of layers + 1).
-    learning_rate -- learning rate of the gradient descent update rule
-    num_iterations -- number of iterations of the optimization loop
-    print_cost -- if True, it prints the cost every 100 steps
-    lambd -- regularization hyperparameter, scalar
-    keep_prob - probability of keeping a neuron active during drop-out, scalar.
-    
-    Returns:
-    parameters -- parameters learnt by the model. They can then be used to predict.
-    """
-    grads = {}
-    costs = []          # keep track of cost
-    m = X.shape[1]      # number of examples
-    
-    # Parameters initialization. (≈ 1 line of code)
-    parameters = initialize_parameters(layers_dims)
+	"""
+	Implements a L-layer neural network: [LINEAR->RELU]*(L-1)->LINEAR->SIGMOID.
+	
+	Arguments:
+	X -- data, numpy array of shape (num_px * num_px * 3, number of examples)
+	Y -- true "label" vector (containing 0 if cat, 1 if non-cat), of shape (1, number of examples)
+	layers_dims -- list containing the input size and each layer size, of length (number of layers + 1).
+	learning_rate -- learning rate of the gradient descent update rule
+	num_iterations -- number of iterations of the optimization loop
+	print_cost -- if True, it prints the cost every 100 steps
+	lambd -- regularization hyperparameter, scalar
+	keep_prob - probability of keeping a neuron active during drop-out, scalar.
+	
+	Returns:
+	parameters -- parameters learnt by the model. They can then be used to predict.
+	"""
+	grads = {}
+	costs = []          # keep track of cost
+	m = X.shape[1]      # number of examples
+	
+	# Parameters initialization. (≈ 1 line of code)
+	parameters = initialize_parameters(layers_dims)
 
-    # Initialize the optimizer
-    if optimizer == "gd":
-        pass # no initialization required for gradient descent
-    elif optimizer == "momentum":
-        v = initialize_velocity(parameters)
-    elif optimizer == "adam":
-        v, s = initialize_adam(parameters)
-    
-    # Loop (gradient descent)
-    for i in range(0, num_iterations):
-        minibatches = random_mini_batches(X, Y, mini_batch_size, seed)
-        cost_total = 0
-        
-        for minibatch in minibatches:
-            # Select a minibatch
-            (minibatch_X, minibatch_Y) = minibatch
+	# Initialize the optimizer
+	if optimizer == "gd":
+		pass # no initialization required for gradient descent
+	elif optimizer == "momentum":
+		v = initialize_velocity(parameters)
+	elif optimizer == "adam":
+		v, s = initialize_adam(parameters)
+	
+	# Loop (gradient descent)
+	for i in range(0, num_iterations):
+		minibatches = random_mini_batches(X, Y, mini_batch_size, seed)
+		cost_total = 0
+		
+		for minibatch in minibatches:
+			# Select a minibatch
+			(minibatch_X, minibatch_Y) = minibatch
 
-            # Forward propagation: [LINEAR -> RELU]*(L-1) -> LINEAR -> SIGMOID.
-            if keep_prob == 1:
-                AL, caches = forward_propagation(X, parameters)
-            elif keep_prob < 1:
-                AL, caches = forward_propagation_with_dropout(X, parameters, keep_prob)
+			# Forward propagation: [LINEAR -> RELU]*(L-1) -> LINEAR -> SIGMOID.
+			if keep_prob == 1:
+				AL, caches = forward_propagation(X, parameters)
+			elif keep_prob < 1:
+				AL, caches = forward_propagation_with_dropout(X, parameters, keep_prob)
 
-            # Compute cost and add to the cost total
-            if lambd == 0:
-                cost_total += compute_cost(AL, Y)
-            else:
-                cost_total += compute_cost_with_regularization(AL, Y, parameters, lambd)
+			# Compute cost and add to the cost total
+			if lambd == 0:
+				cost_total += compute_cost(AL, Y)
+			else:
+				cost_total += compute_cost_with_regularization(AL, Y, parameters, lambd)
 
-            # Backward propagation
-            assert(lambd==0 or keep_prob==1)    # it is possible to use both L2 regularization and dropout, 
-                                                # but this assignment will only explore one at a time
-            if lambd == 0 and keep_prob == 1:
-                grads = backward_propagation(minibatch_X, minibatch_Y, caches)
-            elif lambd != 0:
-                grads = backward_propagation_with_regularization(minibatch_X, minibatch_Y, caches, lambd)
-            elif keep_prob < 1:
-                grads = backward_propagation_with_dropout(minibatch_X, minibatch_Y, caches, keep_prob)
+			# Backward propagation
+			assert(lambd==0 or keep_prob==1)    # it is possible to use both L2 regularization and dropout, 
+												# but this assignment will only explore one at a time
+			if lambd == 0 and keep_prob == 1:
+				grads = backward_propagation(minibatch_X, minibatch_Y, caches)
+			elif lambd != 0:
+				grads = backward_propagation_with_regularization(minibatch_X, minibatch_Y, caches, lambd)
+			elif keep_prob < 1:
+				grads = backward_propagation_with_dropout(minibatch_X, minibatch_Y, caches, keep_prob)
 
-            # Update parameters
-            if optimizer == "gd":
-                parameters = update_parameters_gradient_descent(parameters, grads, learning_rate)
-            elif optimizer == "momentum":
-                parameters, v = update_parameters_with_momentum(parameters, grads, v, beta, learning_rate)
-            elif optimizer == "adam":
-                t = t + 1 # Adam counter
-                parameters, v, s = update_parameters_with_adam(parameters, grads, v, s,
-                                                               t, learning_rate, beta1, beta2,  epsilon)
-        cost_avg = cost_total / m
-                
-        # Print the cost every 100 training example
-        if print_cost and i % 100 == 0:
-            print ("Cost after iteration %i: %f" %(i, cost))
-        if print_cost and i % 100 == 0:
-            costs.append(cost)
-            
-    # plot the cost
-    plt.plot(np.squeeze(costs))
-    plt.ylabel('cost')
-    plt.xlabel('iterations (per hundreds)')
-    plt.title("Learning rate =" + str(learning_rate))
-    plt.show()
-    
-    return parameters
+			# Update parameters
+			if optimizer == "gd":
+				parameters = update_parameters_gradient_descent(parameters, grads, learning_rate)
+			elif optimizer == "momentum":
+				parameters, v = update_parameters_with_momentum(parameters, grads, v, beta, learning_rate)
+			elif optimizer == "adam":
+				t = t + 1 # Adam counter
+				parameters, v, s = update_parameters_with_adam(parameters, grads, v, s,
+															   t, learning_rate, beta1, beta2,  epsilon)
+		cost_avg = cost_total / m
+				
+		# Print the cost every 100 training example
+		if print_cost and i % 100 == 0:
+			print ("Cost after iteration %i: %f" %(i, cost))
+		if print_cost and i % 100 == 0:
+			costs.append(cost)
+			
+	# plot the cost
+	plt.plot(np.squeeze(costs))
+	plt.ylabel('cost')
+	plt.xlabel('iterations (per hundreds)')
+	plt.title("Learning rate =" + str(learning_rate))
+	plt.show()
+	
+	return parameters
 #Predictions
 def predict(parameters, X):
-    """
-    Using the learned parameters, predicts a class for each example in X
-    
-    Arguments:
-    parameters -- python dictionary containing your parameters 
-    X -- input data of size (n_x, m)
-    
-    Returns
-    predictions -- vector of predictions of our model (red: 0 / blue: 1)
-    """
-    # Computes probabilities using forward propagation, and classifies to 0/1 using 0.5 as the threshold.
-    A2, cache = forward_propagation(X, parameters)
-    predictions = np.round(A2)    
-    return predictions
+	"""
+	Using the learned parameters, predicts a class for each example in X
+	
+	Arguments:
+	parameters -- python dictionary containing your parameters 
+	X -- input data of size (n_x, m)
+	
+	Returns
+	predictions -- vector of predictions of our model (red: 0 / blue: 1)
+	"""
+	# Computes probabilities using forward propagation, and classifies to 0/1 using 0.5 as the threshold.
+	A2, cache = forward_propagation(X, parameters)
+	predictions = np.round(A2)    
+	return predictions
 #########
 # Convolutional Neural Networks
 #########
 #Padding a matrix
 def zero_pad(X, pad):
-    """
-    Pad with zeros all images of the dataset X. The padding is applied to the height and width of an image, 
-    as illustrated in Figure 1.
-    
-    Argument:
-    X -- python numpy array of shape (m, n_H, n_W, n_C) representing a batch of m images
-    pad -- integer, amount of padding around each image on vertical and horizontal dimensions
-    
-    Returns:
-    X_pad -- padded image of shape (m, n_H + 2*pad, n_W + 2*pad, n_C)
-    """
-    X_pad = np.pad(X, ((0,0), (pad,pad), (pad,pad), (0,0)), mode='constant', constant_values = 0)
-    
-    return X_pad
+	"""
+	Pad with zeros all images of the dataset X. The padding is applied to the height and width of an image, 
+	as illustrated in Figure 1.
+	
+	Argument:
+	X -- python numpy array of shape (m, n_H, n_W, n_C) representing a batch of m images
+	pad -- integer, amount of padding around each image on vertical and horizontal dimensions
+	
+	Returns:
+	X_pad -- padded image of shape (m, n_H + 2*pad, n_W + 2*pad, n_C)
+	"""
+	X_pad = np.pad(X, ((0,0), (pad,pad), (pad,pad), (0,0)), mode='constant', constant_values = 0)
+	
+	return X_pad
 #Apply a convolution
 def conv_single_step(a_slice_prev, W, b):
-    """
-    Apply one filter defined by parameters W on a single slice (a_slice_prev) of the output activation 
-    of the previous layer.
-    
-    Arguments:
-    a_slice_prev -- slice of input data of shape (f, f, n_C_prev)
-    W -- Weight parameters contained in a window - matrix of shape (f, f, n_C_prev)
-    b -- Bias parameters contained in a window - matrix of shape (1, 1, 1)
-    
-    Returns:
-    Z -- a scalar value, the result of convolving the sliding window (W, b) on a slice x of the input data
-    """
-    s = np.multiply(a_slice_prev, W)
-    Z = np.sum(s)
-    Z = Z + float(b)
+	"""
+	Apply one filter defined by parameters W on a single slice (a_slice_prev) of the output activation 
+	of the previous layer.
+	
+	Arguments:
+	a_slice_prev -- slice of input data of shape (f, f, n_C_prev)
+	W -- Weight parameters contained in a window - matrix of shape (f, f, n_C_prev)
+	b -- Bias parameters contained in a window - matrix of shape (1, 1, 1)
+	
+	Returns:
+	Z -- a scalar value, the result of convolving the sliding window (W, b) on a slice x of the input data
+	"""
+	s = np.multiply(a_slice_prev, W)
+	Z = np.sum(s)
+	Z = Z + float(b)
 
-    return Z
+	return Z
 #Forward propagation for a convolution
 def conv_forward(A_prev, W, b, hparameters):
-    """
-    Implements the forward propagation for a convolution function
-    
-    Arguments:
-    A_prev -- output activations of the previous layer, 
-        numpy array of shape (m, n_H_prev, n_W_prev, n_C_prev)
-    W -- Weights, numpy array of shape (f, f, n_C_prev, n_C)
-    b -- Biases, numpy array of shape (1, 1, 1, n_C)
-    hparameters -- python dictionary containing "stride" and "pad"
-        
-    Returns:
-    Z -- conv output, numpy array of shape (m, n_H, n_W, n_C)
-    cache -- cache of values needed for the conv_backward() function
-    """
-    (m, n_H_prev, n_W_prev, n_C_prev) = A_prev.shape
-    (f, f, n_C_prev, n_C) = W.shape
-    stride = hparameters['stride']
-    pad = hparameters['pad']
-    
-    n_H = int((n_H_prev - f + 2 * pad) / stride) + 1
-    n_W = int((n_W_prev - f + 2 * pad) / stride) + 1
-    
-    Z = np.zeros((m, n_H, n_W, n_C))
-    A_prev_pad = zero_pad(A_prev, pad)
-    
-    for i in range(m):
-        a_prev_pad = A_prev_pad[i]
-        for h in range(n_H):
-            vert_start = h*stride
-            vert_end = vert_start + f
-            for w in range(n_W):
-                horiz_start = w*stride
-                horiz_end = horiz_start+f
-                for c in range(n_C):
-                    a_slice_prev = a_prev_pad[vert_start:vert_end, horiz_start:horiz_end, :]
+	"""
+	Implements the forward propagation for a convolution function
+	
+	Arguments:
+	A_prev -- output activations of the previous layer, 
+		numpy array of shape (m, n_H_prev, n_W_prev, n_C_prev)
+	W -- Weights, numpy array of shape (f, f, n_C_prev, n_C)
+	b -- Biases, numpy array of shape (1, 1, 1, n_C)
+	hparameters -- python dictionary containing "stride" and "pad"
+		
+	Returns:
+	Z -- conv output, numpy array of shape (m, n_H, n_W, n_C)
+	cache -- cache of values needed for the conv_backward() function
+	"""
+	(m, n_H_prev, n_W_prev, n_C_prev) = A_prev.shape
+	(f, f, n_C_prev, n_C) = W.shape
+	stride = hparameters['stride']
+	pad = hparameters['pad']
+	
+	n_H = int((n_H_prev - f + 2 * pad) / stride) + 1
+	n_W = int((n_W_prev - f + 2 * pad) / stride) + 1
+	
+	Z = np.zeros((m, n_H, n_W, n_C))
+	A_prev_pad = zero_pad(A_prev, pad)
+	
+	for i in range(m):
+		a_prev_pad = A_prev_pad[i]
+		for h in range(n_H):
+			vert_start = h*stride
+			vert_end = vert_start + f
+			for w in range(n_W):
+				horiz_start = w*stride
+				horiz_end = horiz_start+f
+				for c in range(n_C):
+					a_slice_prev = a_prev_pad[vert_start:vert_end, horiz_start:horiz_end, :]
 
-                    weights = W[...,c]
-                    biases = b[...,c]
-                    Z[i, h, w, c] = conv_single_step(a_slice_prev, weights, biases)
-    
-    # Making sure your output shape is correct
-    assert(Z.shape == (m, n_H, n_W, n_C))
-    
-    # Save information in "cache" for the backprop
-    cache = (A_prev, W, b, hparameters)
-    
-    return Z, cache
+					weights = W[...,c]
+					biases = b[...,c]
+					Z[i, h, w, c] = conv_single_step(a_slice_prev, weights, biases)
+	
+	# Making sure your output shape is correct
+	assert(Z.shape == (m, n_H, n_W, n_C))
+	
+	# Save information in "cache" for the backprop
+	cache = (A_prev, W, b, hparameters)
+	
+	return Z, cache
 #Forward propagation for a pooling
 def pool_forward(A_prev, hparameters, mode = "max"):
-    """
-    Implements the forward pass of the pooling layer
-    
-    Arguments:
-    A_prev -- Input data, numpy array of shape (m, n_H_prev, n_W_prev, n_C_prev)
-    hparameters -- python dictionary containing "f" and "stride"
-    mode -- the pooling mode you would like to use, defined as a string ("max" or "average")
-    
-    Returns:
-    A -- output of the pool layer, a numpy array of shape (m, n_H, n_W, n_C)
-    cache -- cache used in the backward pass of the pooling layer, contains the input and hparameters 
-    """
-    (m, n_H_prev, n_W_prev, n_C_prev) = A_prev.shape
-    f = hparameters["f"]
-    stride = hparameters["stride"]
-    
-    n_H = int(1 + (n_H_prev - f) / stride)
-    n_W = int(1 + (n_W_prev - f) / stride)
-    n_C = n_C_prev
-    
-    A = np.zeros((m, n_H, n_W, n_C))              
-    
-    for i in range(m):
-        for h in range(n_H):
-            vert_start = h*stride
-            vert_end = vert_start+f
-            for w in range(n_W):
-                horiz_start = w*stride
-                horiz_end = horiz_start+f
-                for c in range(n_C):
-                    a_prev_slice = A_prev[i, vert_start:vert_end, horiz_start:horiz_end, c]
-                    
-                    if mode == "max":
-                        A[i, h, w, c] = np.max(a_prev_slice)
-                    elif mode == "average":
-                        A[i, h, w, c] = np.mean(a_prev_slice)
-    
-    # Store the input and hparameters in "cache" for pool_backward()
-    cache = (A_prev, hparameters)
-    
-    # Making sure your output shape is correct
-    assert(A.shape == (m, n_H, n_W, n_C))
-    
-    return A, cache
+	"""
+	Implements the forward pass of the pooling layer
+	
+	Arguments:
+	A_prev -- Input data, numpy array of shape (m, n_H_prev, n_W_prev, n_C_prev)
+	hparameters -- python dictionary containing "f" and "stride"
+	mode -- the pooling mode you would like to use, defined as a string ("max" or "average")
+	
+	Returns:
+	A -- output of the pool layer, a numpy array of shape (m, n_H, n_W, n_C)
+	cache -- cache used in the backward pass of the pooling layer, contains the input and hparameters 
+	"""
+	(m, n_H_prev, n_W_prev, n_C_prev) = A_prev.shape
+	f = hparameters["f"]
+	stride = hparameters["stride"]
+	
+	n_H = int(1 + (n_H_prev - f) / stride)
+	n_W = int(1 + (n_W_prev - f) / stride)
+	n_C = n_C_prev
+	
+	A = np.zeros((m, n_H, n_W, n_C))              
+	
+	for i in range(m):
+		for h in range(n_H):
+			vert_start = h*stride
+			vert_end = vert_start+f
+			for w in range(n_W):
+				horiz_start = w*stride
+				horiz_end = horiz_start+f
+				for c in range(n_C):
+					a_prev_slice = A_prev[i, vert_start:vert_end, horiz_start:horiz_end, c]
+					
+					if mode == "max":
+						A[i, h, w, c] = np.max(a_prev_slice)
+					elif mode == "average":
+						A[i, h, w, c] = np.mean(a_prev_slice)
+	
+	# Store the input and hparameters in "cache" for pool_backward()
+	cache = (A_prev, hparameters)
+	
+	# Making sure your output shape is correct
+	assert(A.shape == (m, n_H, n_W, n_C))
+	
+	return A, cache
 #########
 # Deep Learning with TensorFlow
 #########
@@ -2094,10 +2094,10 @@ y_hat = tf.constant(36, name='y_hat')            # Define y_hat constant. Set to
 y = tf.constant(39, name='y')                    # Define y. Set to 39
 loss = tf.Variable((y - y_hat)**2, name='loss')  # Create a variable for the loss
 init = tf.global_variables_initializer()         # When init is run later (session.run(init)),
-                                                 # the loss variable will be initialized and ready to be computed
+												 # the loss variable will be initialized and ready to be computed
 with tf.Session() as session:                    # Create a session and print the output
-    session.run(init)                            # Initializes the variables
-    print(session.run(loss))                     # Prints the loss
+	session.run(init)                            # Initializes the variables
+	print(session.run(loss))                     # Prints the loss
 
 #Use placeholder, then give values
 x = tf.placeholder(tf.int64, name = 'x')
@@ -2123,317 +2123,317 @@ zeros = tf.zeros(shape)
 
 #Build a Neural Network with  TensorFlow
 def create_placeholders(n_x, n_y):
-    """
-    Creates the placeholders for the tensorflow session.
-    
-    Arguments:
-    n_x -- scalar, size of an image vector (num_px * num_px = 64 * 64 * 3 = 12288)
-    n_y -- scalar, number of classes (from 0 to 5, so -> 6)
-    
-    Returns:
-    X -- placeholder for the data input, of shape [n_x, None] and dtype "tf.float32"
-    Y -- placeholder for the input labels, of shape [n_y, None] and dtype "tf.float32"
-    
-    Tips:
-    - You will use None because it let's us be flexible on the number of examples you will for the placeholders.
-      In fact, the number of examples during test/train is different.
-    """
-    X = tf.placeholder(tf.float32, [n_x, None], name="X")
-    Y = tf.placeholder(tf.float32, [n_y, None], name='Y')
-    
-    return X, Y
+	"""
+	Creates the placeholders for the tensorflow session.
+	
+	Arguments:
+	n_x -- scalar, size of an image vector (num_px * num_px = 64 * 64 * 3 = 12288)
+	n_y -- scalar, number of classes (from 0 to 5, so -> 6)
+	
+	Returns:
+	X -- placeholder for the data input, of shape [n_x, None] and dtype "tf.float32"
+	Y -- placeholder for the input labels, of shape [n_y, None] and dtype "tf.float32"
+	
+	Tips:
+	- You will use None because it let's us be flexible on the number of examples you will for the placeholders.
+	  In fact, the number of examples during test/train is different.
+	"""
+	X = tf.placeholder(tf.float32, [n_x, None], name="X")
+	Y = tf.placeholder(tf.float32, [n_y, None], name='Y')
+	
+	return X, Y
 def initialize_parameters():
-    """
-    Initializes parameters to build a neural network with tensorflow. The shapes are:
-                        W1 : [25, 12288]
-                        b1 : [25, 1]
-                        W2 : [12, 25]
-                        b2 : [12, 1]
-                        W3 : [6, 12]
-                        b3 : [6, 1]
-    
-    Returns:
-    parameters -- a dictionary of tensors containing W1, b1, W2, b2, W3, b3
-    """
-    W1 = tf.get_variable("W1", [25,12288], initializer = tf.contrib.layers.xavier_initializer())
-    b1 = tf.get_variable("b1", [25,1], initializer = tf.zeros_initializer())
-    W2 = tf.get_variable("W2", [12,25], initializer = tf.contrib.layers.xavier_initializer())
-    b2 = tf.get_variable("b2", [12,1], initializer = tf.zeros_initializer())
-    W3 = tf.get_variable("W3", [6,12], initializer = tf.contrib.layers.xavier_initializer())
-    b3 = tf.get_variable("b3", [6,1], initializer = tf.zeros_initializer())
+	"""
+	Initializes parameters to build a neural network with tensorflow. The shapes are:
+						W1 : [25, 12288]
+						b1 : [25, 1]
+						W2 : [12, 25]
+						b2 : [12, 1]
+						W3 : [6, 12]
+						b3 : [6, 1]
+	
+	Returns:
+	parameters -- a dictionary of tensors containing W1, b1, W2, b2, W3, b3
+	"""
+	W1 = tf.get_variable("W1", [25,12288], initializer = tf.contrib.layers.xavier_initializer())
+	b1 = tf.get_variable("b1", [25,1], initializer = tf.zeros_initializer())
+	W2 = tf.get_variable("W2", [12,25], initializer = tf.contrib.layers.xavier_initializer())
+	b2 = tf.get_variable("b2", [12,1], initializer = tf.zeros_initializer())
+	W3 = tf.get_variable("W3", [6,12], initializer = tf.contrib.layers.xavier_initializer())
+	b3 = tf.get_variable("b3", [6,1], initializer = tf.zeros_initializer())
 
-    parameters = {"W1": W1,
-                  "b1": b1,
-                  "W2": W2,
-                  "b2": b2,
-                  "W3": W3,
-                  "b3": b3}
-    
-    return parameters
+	parameters = {"W1": W1,
+				  "b1": b1,
+				  "W2": W2,
+				  "b2": b2,
+				  "W3": W3,
+				  "b3": b3}
+	
+	return parameters
 def forward_propagation(X, parameters):
-    """
-    Implements the forward propagation for the model: LINEAR -> RELU -> LINEAR -> RELU -> LINEAR -> SOFTMAX
-    
-    Arguments:
-    X -- input dataset placeholder, of shape (input size, number of examples)
-    parameters -- python dictionary containing your parameters "W1", "b1", "W2", "b2", "W3", "b3"
-                  the shapes are given in initialize_parameters
+	"""
+	Implements the forward propagation for the model: LINEAR -> RELU -> LINEAR -> RELU -> LINEAR -> SOFTMAX
+	
+	Arguments:
+	X -- input dataset placeholder, of shape (input size, number of examples)
+	parameters -- python dictionary containing your parameters "W1", "b1", "W2", "b2", "W3", "b3"
+				  the shapes are given in initialize_parameters
 
-    Returns:
-    Z3 -- the output of the last LINEAR unit
-    """
-    # Retrieve the parameters from the dictionary "parameters" 
-    W1 = parameters['W1']
-    b1 = parameters['b1']
-    W2 = parameters['W2']
-    b2 = parameters['b2']
-    W3 = parameters['W3']
-    b3 = parameters['b3']
-    
-    Z1 = tf.add(tf.matmul(W1, X), b1)
-    A1 = tf.nn.relu(Z1)
-    Z2 = tf.add(tf.matmul(W2, A1), b2)
-    A2 = tf.nn.relu(Z2)
-    Z3 = tf.add(tf.matmul(W3, A2), b3)
-    
-    return Z3
+	Returns:
+	Z3 -- the output of the last LINEAR unit
+	"""
+	# Retrieve the parameters from the dictionary "parameters" 
+	W1 = parameters['W1']
+	b1 = parameters['b1']
+	W2 = parameters['W2']
+	b2 = parameters['b2']
+	W3 = parameters['W3']
+	b3 = parameters['b3']
+	
+	Z1 = tf.add(tf.matmul(W1, X), b1)
+	A1 = tf.nn.relu(Z1)
+	Z2 = tf.add(tf.matmul(W2, A1), b2)
+	A2 = tf.nn.relu(Z2)
+	Z3 = tf.add(tf.matmul(W3, A2), b3)
+	
+	return Z3
 def compute_cost(Z3, Y):
-    """
-    Computes the cost
-    
-    Arguments:
-    Z3 -- output of forward propagation (output of the last LINEAR unit), of shape (6, number of examples)
-    Y -- "true" labels vector placeholder, same shape as Z3
-    
-    Returns:
-    cost - Tensor of the cost function
-    """
-    # to fit the tensorflow requirement for tf.nn.softmax_cross_entropy_with_logits(...,...)
-    logits = tf.transpose(Z3)
-    labels = tf.transpose(Y)
-    
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels))
-    
-    return cost
+	"""
+	Computes the cost
+	
+	Arguments:
+	Z3 -- output of forward propagation (output of the last LINEAR unit), of shape (6, number of examples)
+	Y -- "true" labels vector placeholder, same shape as Z3
+	
+	Returns:
+	cost - Tensor of the cost function
+	"""
+	# to fit the tensorflow requirement for tf.nn.softmax_cross_entropy_with_logits(...,...)
+	logits = tf.transpose(Z3)
+	labels = tf.transpose(Y)
+	
+	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels))
+	
+	return cost
 def model(X_train, Y_train, X_test, Y_test, learning_rate = 0.0001, num_epochs = 1500, minibatch_size = 32, print_cost = True):
-    """
-    Implements a three-layer tensorflow neural network: LINEAR->RELU->LINEAR->RELU->LINEAR->SOFTMAX.
-    
-    Arguments:
-    X_train -- training set, of shape (input size = 12288, number of training examples = 1080)
-    Y_train -- test set, of shape (output size = 6, number of training examples = 1080)
-    X_test -- training set, of shape (input size = 12288, number of training examples = 120)
-    Y_test -- test set, of shape (output size = 6, number of test examples = 120)
-    learning_rate -- learning rate of the optimization
-    num_epochs -- number of epochs of the optimization loop
-    minibatch_size -- size of a minibatch
-    print_cost -- True to print the cost every 100 epochs
-    
-    Returns:
-    parameters -- parameters learnt by the model. They can then be used to predict.
-    """
-    (n_x, m) = X_train.shape                          # (n_x: input size, m : number of examples in the train set)
-    n_y = Y_train.shape[0]                            # n_y : output size
-    costs = []                                        # To keep track of the cost
-    
-    # Create Placeholders of shape (n_x, n_y)
-    X, Y = create_placeholders(n_x, n_y)
+	"""
+	Implements a three-layer tensorflow neural network: LINEAR->RELU->LINEAR->RELU->LINEAR->SOFTMAX.
+	
+	Arguments:
+	X_train -- training set, of shape (input size = 12288, number of training examples = 1080)
+	Y_train -- test set, of shape (output size = 6, number of training examples = 1080)
+	X_test -- training set, of shape (input size = 12288, number of training examples = 120)
+	Y_test -- test set, of shape (output size = 6, number of test examples = 120)
+	learning_rate -- learning rate of the optimization
+	num_epochs -- number of epochs of the optimization loop
+	minibatch_size -- size of a minibatch
+	print_cost -- True to print the cost every 100 epochs
+	
+	Returns:
+	parameters -- parameters learnt by the model. They can then be used to predict.
+	"""
+	(n_x, m) = X_train.shape                          # (n_x: input size, m : number of examples in the train set)
+	n_y = Y_train.shape[0]                            # n_y : output size
+	costs = []                                        # To keep track of the cost
+	
+	# Create Placeholders of shape (n_x, n_y)
+	X, Y = create_placeholders(n_x, n_y)
 
-    # Initialize parameters
-    parameters = initialize_parameters()
-    
-    # Forward propagation: Build the forward propagation in the tensorflow graph
-    Z3 = forward_propagation(X, parameters)
-    
-    # Cost function: Add cost function to tensorflow graph
-    cost = compute_cost(Z3, Y)
-    
-    # Backpropagation: Define the tensorflow optimizer. Use an AdamOptimizer.
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
-    
-    # Initialize all the variables
-    init = tf.global_variables_initializer()
+	# Initialize parameters
+	parameters = initialize_parameters()
+	
+	# Forward propagation: Build the forward propagation in the tensorflow graph
+	Z3 = forward_propagation(X, parameters)
+	
+	# Cost function: Add cost function to tensorflow graph
+	cost = compute_cost(Z3, Y)
+	
+	# Backpropagation: Define the tensorflow optimizer. Use an AdamOptimizer.
+	optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+	
+	# Initialize all the variables
+	init = tf.global_variables_initializer()
 
-    # Start the session to compute the tensorflow graph
-    with tf.Session() as sess:
-        sess.run(init)
-        
-        # Do the training loop
-        for epoch in range(num_epochs):
-            epoch_cost = 0.                       # Defines a cost related to an epoch
-            num_minibatches = int(m / minibatch_size) # number of minibatches of size minibatch_size in the train set
-            minibatches = random_mini_batches(X_train, Y_train, minibatch_size)
+	# Start the session to compute the tensorflow graph
+	with tf.Session() as sess:
+		sess.run(init)
+		
+		# Do the training loop
+		for epoch in range(num_epochs):
+			epoch_cost = 0.                       # Defines a cost related to an epoch
+			num_minibatches = int(m / minibatch_size) # number of minibatches of size minibatch_size in the train set
+			minibatches = random_mini_batches(X_train, Y_train, minibatch_size)
 
-            for minibatch in minibatches:
-                # Select a minibatch
-                (minibatch_X, minibatch_Y) = minibatch
-                # IMPORTANT: The line that runs the graph on a minibatch.
-                # Run the session to execute the "optimizer" and the "cost", the feedict should contain a minibatch for (X,Y).
-                _ , minibatch_cost = sess.run([optimizer, cost], feed_dict={X: minibatch_X, Y: minibatch_Y})
-                epoch_cost += minibatch_cost / num_minibatches
+			for minibatch in minibatches:
+				# Select a minibatch
+				(minibatch_X, minibatch_Y) = minibatch
+				# IMPORTANT: The line that runs the graph on a minibatch.
+				# Run the session to execute the "optimizer" and the "cost", the feedict should contain a minibatch for (X,Y).
+				_ , minibatch_cost = sess.run([optimizer, cost], feed_dict={X: minibatch_X, Y: minibatch_Y})
+				epoch_cost += minibatch_cost / num_minibatches
 
-            # Print the cost every epoch
-            if print_cost == True and epoch % 100 == 0:
-                print ("Cost after epoch %i: %f" % (epoch, epoch_cost))
-            if print_cost == True and epoch % 5 == 0:
-                costs.append(epoch_cost)
-                
-        # plot the cost
-        plt.plot(np.squeeze(costs))
-        plt.ylabel('cost')
-        plt.xlabel('iterations (per fives)')
-        plt.title("Learning rate =" + str(learning_rate))
-        plt.show()
+			# Print the cost every epoch
+			if print_cost == True and epoch % 100 == 0:
+				print ("Cost after epoch %i: %f" % (epoch, epoch_cost))
+			if print_cost == True and epoch % 5 == 0:
+				costs.append(epoch_cost)
+				
+		# plot the cost
+		plt.plot(np.squeeze(costs))
+		plt.ylabel('cost')
+		plt.xlabel('iterations (per fives)')
+		plt.title("Learning rate =" + str(learning_rate))
+		plt.show()
 
-        # lets save the parameters in a variable
-        parameters = sess.run(parameters)
-        print ("Parameters have been trained!")
+		# lets save the parameters in a variable
+		parameters = sess.run(parameters)
+		print ("Parameters have been trained!")
 
-        # Calculate the correct predictions
-        correct_prediction = tf.equal(tf.argmax(Z3), tf.argmax(Y))
+		# Calculate the correct predictions
+		correct_prediction = tf.equal(tf.argmax(Z3), tf.argmax(Y))
 
-        # Calculate accuracy on the test set
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+		# Calculate accuracy on the test set
+		accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
-        print ("Train Accuracy:", accuracy.eval({X: X_train, Y: Y_train}))
-        print ("Test Accuracy:", accuracy.eval({X: X_test, Y: Y_test}))
-        
-        return parameters
+		print ("Train Accuracy:", accuracy.eval({X: X_train, Y: Y_train}))
+		print ("Test Accuracy:", accuracy.eval({X: X_test, Y: Y_test}))
+		
+		return parameters
 #Forward propagation for CNN
 def forward_propagation(X, parameters):
-    """
-    Implements the forward propagation for the model:
-    CONV2D -> RELU -> MAXPOOL -> CONV2D -> RELU -> MAXPOOL -> FLATTEN -> FULLYCONNECTED
-    
-    Note that for simplicity and grading purposes, we'll hard-code some values
-    such as the stride and kernel (filter) sizes. 
-    Normally, functions should take these values as function parameters.
-    
-    Arguments:
-    X -- input dataset placeholder, of shape (input size, number of examples)
-    parameters -- python dictionary containing your parameters "W1", "W2"
-                  the shapes are given in initialize_parameters
+	"""
+	Implements the forward propagation for the model:
+	CONV2D -> RELU -> MAXPOOL -> CONV2D -> RELU -> MAXPOOL -> FLATTEN -> FULLYCONNECTED
+	
+	Note that for simplicity and grading purposes, we'll hard-code some values
+	such as the stride and kernel (filter) sizes. 
+	Normally, functions should take these values as function parameters.
+	
+	Arguments:
+	X -- input dataset placeholder, of shape (input size, number of examples)
+	parameters -- python dictionary containing your parameters "W1", "W2"
+				  the shapes are given in initialize_parameters
 
-    Returns:
-    Z3 -- the output of the last LINEAR unit
-    """
-    W1 = parameters['W1']
-    W2 = parameters['W2']
+	Returns:
+	Z3 -- the output of the last LINEAR unit
+	"""
+	W1 = parameters['W1']
+	W2 = parameters['W2']
 
-    # CONV2D: stride of 1, padding 'SAME'
-    Z1 = tf.nn.conv2d(X, W1, strides=[1, 1, 1, 1], padding='SAME')
-    # RELU
-    A1 = tf.nn.relu(Z1)
-    # MAXPOOL: window 8x8, stride 8, padding 'SAME'
-    P1 = tf.nn.max_pool(A1, ksize = [1, 8, 8, 1], strides = [1, 8, 8, 1], padding='SAME')
-    # CONV2D: filters W2, stride 1, padding 'SAME'
-    Z2 = tf.nn.conv2d(P1, W2, strides=[1, 1, 1, 1], padding='SAME')
-    # RELU
-    A2 = tf.nn.relu(Z2)
-    # MAXPOOL: window 4x4, stride 4, padding 'SAME'
-    P2 = tf.nn.max_pool(A2, ksize = [1, 4, 4, 1], strides = [1, 4, 4, 1], padding='SAME')
-    # FLATTEN
-    F = tf.contrib.layers.flatten(P2)
-    # FULLY-CONNECTED without non-linear activation function (not not call softmax).
-    # 6 neurons in output layer.
-    Z3 = tf.contrib.layers.fully_connected(F, 6, activation_fn=None)
+	# CONV2D: stride of 1, padding 'SAME'
+	Z1 = tf.nn.conv2d(X, W1, strides=[1, 1, 1, 1], padding='SAME')
+	# RELU
+	A1 = tf.nn.relu(Z1)
+	# MAXPOOL: window 8x8, stride 8, padding 'SAME'
+	P1 = tf.nn.max_pool(A1, ksize = [1, 8, 8, 1], strides = [1, 8, 8, 1], padding='SAME')
+	# CONV2D: filters W2, stride 1, padding 'SAME'
+	Z2 = tf.nn.conv2d(P1, W2, strides=[1, 1, 1, 1], padding='SAME')
+	# RELU
+	A2 = tf.nn.relu(Z2)
+	# MAXPOOL: window 4x4, stride 4, padding 'SAME'
+	P2 = tf.nn.max_pool(A2, ksize = [1, 4, 4, 1], strides = [1, 4, 4, 1], padding='SAME')
+	# FLATTEN
+	F = tf.contrib.layers.flatten(P2)
+	# FULLY-CONNECTED without non-linear activation function (not not call softmax).
+	# 6 neurons in output layer.
+	Z3 = tf.contrib.layers.fully_connected(F, 6, activation_fn=None)
 
-    return Z3
+	return Z3
 #Cost for CNN
 def compute_cost(Z3, Y):
-    """
-    Computes the cost
-    
-    Arguments:
-    Z3 -- output of forward propagation (output of the last LINEAR unit), of shape (number of examples, 6)
-    Y -- "true" labels vector placeholder, same shape as Z3
-    
-    Returns:
-    cost - Tensor of the cost function
-    """
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Z3, labels=Y))
-    
-    return cost
+	"""
+	Computes the cost
+	
+	Arguments:
+	Z3 -- output of forward propagation (output of the last LINEAR unit), of shape (number of examples, 6)
+	Y -- "true" labels vector placeholder, same shape as Z3
+	
+	Returns:
+	cost - Tensor of the cost function
+	"""
+	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Z3, labels=Y))
+	
+	return cost
 #CNN Model
 def model(X_train, Y_train, X_test, Y_test, learning_rate = 0.009,
-          num_epochs = 100, minibatch_size = 64, print_cost = True):
-    """
-    Implements a three-layer ConvNet in Tensorflow:
-    CONV2D -> RELU -> MAXPOOL -> CONV2D -> RELU -> MAXPOOL -> FLATTEN -> FULLYCONNECTED
-    
-    Arguments:
-    X_train -- training set, of shape (None, 64, 64, 3)
-    Y_train -- test set, of shape (None, n_y = 6)
-    X_test -- training set, of shape (None, 64, 64, 3)
-    Y_test -- test set, of shape (None, n_y = 6)
-    learning_rate -- learning rate of the optimization
-    num_epochs -- number of epochs of the optimization loop
-    minibatch_size -- size of a minibatch
-    print_cost -- True to print the cost every 100 epochs
-    
-    Returns:
-    train_accuracy -- real number, accuracy on the train set (X_train)
-    test_accuracy -- real number, testing accuracy on the test set (X_test)
-    parameters -- parameters learnt by the model. They can then be used to predict.
-    """
-    (m, n_H0, n_W0, n_C0) = X_train.shape             
-    n_y = Y_train.shape[1]                            
-    costs = []
-    
-    # Create Placeholders of the correct shape
-    X, Y = create_placeholders(n_H0, n_W0, n_C0, n_y)
-    # Initialize parameters
-    parameters = initialize_parameters()
-    # Forward propagation: Build the forward propagation in the tensorflow graph
-    Z3 = forward_propagation(X, parameters)
-    # Cost function: Add cost function to tensorflow graph
-    cost = compute_cost(Z3, Y)
-    # Backpropagation: Define the tensorflow optimizer. Use an AdamOptimizer that minimizes the cost.
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
-    # Initialize all the variables globally
-    init = tf.global_variables_initializer()
-     
-    # Start the session to compute the tensorflow graph
-    with tf.Session() as sess:
-        # Run the initialization
-        sess.run(init)
-        # Do the training loop
-        for epoch in range(num_epochs):
-            minibatch_cost = 0.
-            num_minibatches = int(m / minibatch_size) # number of minibatches of size minibatch_size in the train set
-            minibatches = random_mini_batches(X_train, Y_train, minibatch_size)
-            for minibatch in minibatches:
-                # Select a minibatch
-                (minibatch_X, minibatch_Y) = minibatch
-                _ , temp_cost = sess.run([optimizer, cost], feed_dict={X:minibatch_X, Y:minibatch_Y})
-                minibatch_cost += temp_cost / num_minibatches
+		  num_epochs = 100, minibatch_size = 64, print_cost = True):
+	"""
+	Implements a three-layer ConvNet in Tensorflow:
+	CONV2D -> RELU -> MAXPOOL -> CONV2D -> RELU -> MAXPOOL -> FLATTEN -> FULLYCONNECTED
+	
+	Arguments:
+	X_train -- training set, of shape (None, 64, 64, 3)
+	Y_train -- test set, of shape (None, n_y = 6)
+	X_test -- training set, of shape (None, 64, 64, 3)
+	Y_test -- test set, of shape (None, n_y = 6)
+	learning_rate -- learning rate of the optimization
+	num_epochs -- number of epochs of the optimization loop
+	minibatch_size -- size of a minibatch
+	print_cost -- True to print the cost every 100 epochs
+	
+	Returns:
+	train_accuracy -- real number, accuracy on the train set (X_train)
+	test_accuracy -- real number, testing accuracy on the test set (X_test)
+	parameters -- parameters learnt by the model. They can then be used to predict.
+	"""
+	(m, n_H0, n_W0, n_C0) = X_train.shape             
+	n_y = Y_train.shape[1]                            
+	costs = []
+	
+	# Create Placeholders of the correct shape
+	X, Y = create_placeholders(n_H0, n_W0, n_C0, n_y)
+	# Initialize parameters
+	parameters = initialize_parameters()
+	# Forward propagation: Build the forward propagation in the tensorflow graph
+	Z3 = forward_propagation(X, parameters)
+	# Cost function: Add cost function to tensorflow graph
+	cost = compute_cost(Z3, Y)
+	# Backpropagation: Define the tensorflow optimizer. Use an AdamOptimizer that minimizes the cost.
+	optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+	# Initialize all the variables globally
+	init = tf.global_variables_initializer()
+	 
+	# Start the session to compute the tensorflow graph
+	with tf.Session() as sess:
+		# Run the initialization
+		sess.run(init)
+		# Do the training loop
+		for epoch in range(num_epochs):
+			minibatch_cost = 0.
+			num_minibatches = int(m / minibatch_size) # number of minibatches of size minibatch_size in the train set
+			minibatches = random_mini_batches(X_train, Y_train, minibatch_size)
+			for minibatch in minibatches:
+				# Select a minibatch
+				(minibatch_X, minibatch_Y) = minibatch
+				_ , temp_cost = sess.run([optimizer, cost], feed_dict={X:minibatch_X, Y:minibatch_Y})
+				minibatch_cost += temp_cost / num_minibatches
 
-            # Print the cost every epoch
-            if print_cost == True and epoch % 5 == 0:
-                print ("Cost after epoch %i: %f" % (epoch, minibatch_cost))
-            if print_cost == True and epoch % 1 == 0:
-                costs.append(minibatch_cost)
-        
-        # plot the cost
-        plt.plot(np.squeeze(costs))
-        plt.ylabel('cost')
-        plt.xlabel('iterations (per tens)')
-        plt.title("Learning rate =" + str(learning_rate))
-        plt.show()
+			# Print the cost every epoch
+			if print_cost == True and epoch % 5 == 0:
+				print ("Cost after epoch %i: %f" % (epoch, minibatch_cost))
+			if print_cost == True and epoch % 1 == 0:
+				costs.append(minibatch_cost)
+		
+		# plot the cost
+		plt.plot(np.squeeze(costs))
+		plt.ylabel('cost')
+		plt.xlabel('iterations (per tens)')
+		plt.title("Learning rate =" + str(learning_rate))
+		plt.show()
 
-        # Calculate the correct predictions
-        predict_op = tf.argmax(Z3, 1)
-        correct_prediction = tf.equal(predict_op, tf.argmax(Y, 1))
-        
-        # Calculate accuracy on the test set
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-        print(accuracy)
-        train_accuracy = accuracy.eval({X: X_train, Y: Y_train})
-        test_accuracy = accuracy.eval({X: X_test, Y: Y_test})
-        print("Train Accuracy:", train_accuracy)
-        print("Test Accuracy:", test_accuracy)
-                
-        return train_accuracy, test_accuracy, parameters
+		# Calculate the correct predictions
+		predict_op = tf.argmax(Z3, 1)
+		correct_prediction = tf.equal(predict_op, tf.argmax(Y, 1))
+		
+		# Calculate accuracy on the test set
+		accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+		print(accuracy)
+		train_accuracy = accuracy.eval({X: X_train, Y: Y_train})
+		test_accuracy = accuracy.eval({X: X_test, Y: Y_test})
+		print("Train Accuracy:", train_accuracy)
+		print("Test Accuracy:", test_accuracy)
+				
+		return train_accuracy, test_accuracy, parameters
 #########
 # Deep learning with Keras
 #########
@@ -2448,35 +2448,35 @@ from keras.applications.imagenet_utils import preprocess_input
 from keras.utils.vis_utils import model_to_dot
 from keras.utils import plot_model
 def model(input_shape):
-    """
-    input_shape: The height, width and channels as a tuple.  
-        Note that this does not include the 'batch' as a dimension.
-        If you have a batch like 'X_train', 
-        then you can provide the input_shape using
-        X_train.shape[1:]
-    """
-    # Define the input placeholder as a tensor with shape input_shape. Think of this as your input image!
-    X_input = Input(input_shape)
+	"""
+	input_shape: The height, width and channels as a tuple.  
+		Note that this does not include the 'batch' as a dimension.
+		If you have a batch like 'X_train', 
+		then you can provide the input_shape using
+		X_train.shape[1:]
+	"""
+	# Define the input placeholder as a tensor with shape input_shape. Think of this as your input image!
+	X_input = Input(input_shape)
 
-    # Zero-Padding: pads the border of X_input with zeroes
-    X = ZeroPadding2D((3, 3))(X_input)
+	# Zero-Padding: pads the border of X_input with zeroes
+	X = ZeroPadding2D((3, 3))(X_input)
 
-    # CONV -> BN -> RELU Block applied to X
-    X = Conv2D(32, (7, 7), strides = (1, 1), name = 'conv0')(X)
-    X = BatchNormalization(axis = 3, name = 'bn0')(X)
-    X = Activation('relu')(X)
+	# CONV -> BN -> RELU Block applied to X
+	X = Conv2D(32, (7, 7), strides = (1, 1), name = 'conv0')(X)
+	X = BatchNormalization(axis = 3, name = 'bn0')(X)
+	X = Activation('relu')(X)
 
-    # MAXPOOL
-    X = MaxPooling2D((2, 2), name='max_pool')(X)
+	# MAXPOOL
+	X = MaxPooling2D((2, 2), name='max_pool')(X)
 
-    # FLATTEN X (means convert it to a vector) + FULLYCONNECTED
-    X = Flatten()(X)
-    X = Dense(1, activation='sigmoid', name='fc')(X)
+	# FLATTEN X (means convert it to a vector) + FULLYCONNECTED
+	X = Flatten()(X)
+	X = Dense(1, activation='sigmoid', name='fc')(X)
 
-    # Create model. This creates your Keras model instance, you'll use this instance to train/test the model.
-    model = Model(inputs = X_input, outputs = X, name='nn')
+	# Create model. This creates your Keras model instance, you'll use this instance to train/test the model.
+	model = Model(inputs = X_input, outputs = X, name='nn')
 
-    return model
+	return model
 nn = model(X_train.shape[1:])
 nn.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
 nn.fit(X_train, Y_train, epochs=40, batch_size=50)
@@ -2487,144 +2487,144 @@ nn.summary()
 plot_model(nn, to_file='nn.png')
 #ResNet
 def identity_block(X, f, filters, stage, block):
-    """
-    Implementation of the identity block as defined in Figure 4
-    
-    Arguments:
-    X -- input tensor of shape (m, n_H_prev, n_W_prev, n_C_prev)
-    f -- integer, specifying the shape of the middle CONV's window for the main path
-    filters -- python list of integers, defining the number of filters in the CONV layers of the main path
-    stage -- integer, used to name the layers, depending on their position in the network
-    block -- string/character, used to name the layers, depending on their position in the network
-    
-    Returns:
-    X -- output of the identity block, tensor of shape (n_H, n_W, n_C)
-    """
-    conv_name_base = 'res' + str(stage) + block + '_branch'
-    bn_name_base = 'bn' + str(stage) + block + '_branch'
-    F1, F2, F3 = filters
-    X_shortcut = X
-    
-    # First component of main path
-    X = Conv2D(filters = F1, kernel_size = (1, 1), strides = (1,1), padding = 'valid', name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0))(X)
-    X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
-    X = Activation('relu')(X)
+	"""
+	Implementation of the identity block as defined in Figure 4
+	
+	Arguments:
+	X -- input tensor of shape (m, n_H_prev, n_W_prev, n_C_prev)
+	f -- integer, specifying the shape of the middle CONV's window for the main path
+	filters -- python list of integers, defining the number of filters in the CONV layers of the main path
+	stage -- integer, used to name the layers, depending on their position in the network
+	block -- string/character, used to name the layers, depending on their position in the network
+	
+	Returns:
+	X -- output of the identity block, tensor of shape (n_H, n_W, n_C)
+	"""
+	conv_name_base = 'res' + str(stage) + block + '_branch'
+	bn_name_base = 'bn' + str(stage) + block + '_branch'
+	F1, F2, F3 = filters
+	X_shortcut = X
+	
+	# First component of main path
+	X = Conv2D(filters = F1, kernel_size = (1, 1), strides = (1,1), padding = 'valid', name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0))(X)
+	X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
+	X = Activation('relu')(X)
 
-    # Second component of main path
-    X = Conv2D(F3, (f, f), strides = (1, 1), name = conv_name_base + '2b', padding = 'same', kernel_initializer=glorot_uniform(seed=0))(X)
-    X = BatchNormalization(axis = 3, name = bn_name_base + '2b')(X)
-    X = Activation('relu')(X)
+	# Second component of main path
+	X = Conv2D(F3, (f, f), strides = (1, 1), name = conv_name_base + '2b', padding = 'same', kernel_initializer=glorot_uniform(seed=0))(X)
+	X = BatchNormalization(axis = 3, name = bn_name_base + '2b')(X)
+	X = Activation('relu')(X)
 
-    # Third component of main path
-    X = Conv2D(F3, (1, 1), strides = (1, 1), name = conv_name_base + '2c', padding = 'valid', kernel_initializer=glorot_uniform(seed=0))(X)
-    X = BatchNormalization(axis = 3, name = bn_name_base + '2c')(X)
+	# Third component of main path
+	X = Conv2D(F3, (1, 1), strides = (1, 1), name = conv_name_base + '2c', padding = 'valid', kernel_initializer=glorot_uniform(seed=0))(X)
+	X = BatchNormalization(axis = 3, name = bn_name_base + '2c')(X)
 
-    # Final step: Add shortcut value to main path, and pass it through a RELU activation
-    X = Add()([X, X_shortcut])
-    X = Activation('relu')(X)
-    
-    return X
+	# Final step: Add shortcut value to main path, and pass it through a RELU activation
+	X = Add()([X, X_shortcut])
+	X = Activation('relu')(X)
+	
+	return X
 def convolutional_block(X, f, filters, stage, block, s = 2):
-    """
-    Implementation of the convolutional block as defined in Figure 4
-    
-    Arguments:
-    X -- input tensor of shape (m, n_H_prev, n_W_prev, n_C_prev)
-    f -- integer, specifying the shape of the middle CONV's window for the main path
-    filters -- python list of integers, defining the number of filters in the CONV layers of the main path
-    stage -- integer, used to name the layers, depending on their position in the network
-    block -- string/character, used to name the layers, depending on their position in the network
-    s -- Integer, specifying the stride to be used
-    
-    Returns:
-    X -- output of the convolutional block, tensor of shape (n_H, n_W, n_C)
-    """
-    conv_name_base = 'res' + str(stage) + block + '_branch'
-    bn_name_base = 'bn' + str(stage) + block + '_branch'
-    F1, F2, F3 = filters
-    X_shortcut = X
+	"""
+	Implementation of the convolutional block as defined in Figure 4
+	
+	Arguments:
+	X -- input tensor of shape (m, n_H_prev, n_W_prev, n_C_prev)
+	f -- integer, specifying the shape of the middle CONV's window for the main path
+	filters -- python list of integers, defining the number of filters in the CONV layers of the main path
+	stage -- integer, used to name the layers, depending on their position in the network
+	block -- string/character, used to name the layers, depending on their position in the network
+	s -- Integer, specifying the stride to be used
+	
+	Returns:
+	X -- output of the convolutional block, tensor of shape (n_H, n_W, n_C)
+	"""
+	conv_name_base = 'res' + str(stage) + block + '_branch'
+	bn_name_base = 'bn' + str(stage) + block + '_branch'
+	F1, F2, F3 = filters
+	X_shortcut = X
 
-    ##### MAIN PATH #####
-    # First component of main path 
-    X = Conv2D(F1, (1, 1), strides = (s,s), name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0))(X)
-    X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
-    X = Activation('relu')(X)
+	##### MAIN PATH #####
+	# First component of main path 
+	X = Conv2D(F1, (1, 1), strides = (s,s), name = conv_name_base + '2a', kernel_initializer = glorot_uniform(seed=0))(X)
+	X = BatchNormalization(axis = 3, name = bn_name_base + '2a')(X)
+	X = Activation('relu')(X)
 
-    # Second component of main path
-    X = Conv2D(F2, (f, f), strides = (1,1), padding='same', name = conv_name_base + '2b', kernel_initializer = glorot_uniform(seed=0))(X)
-    X = BatchNormalization(axis = 3, name = bn_name_base + '2b')(X)
-    X = Activation('relu')(X)
+	# Second component of main path
+	X = Conv2D(F2, (f, f), strides = (1,1), padding='same', name = conv_name_base + '2b', kernel_initializer = glorot_uniform(seed=0))(X)
+	X = BatchNormalization(axis = 3, name = bn_name_base + '2b')(X)
+	X = Activation('relu')(X)
 
-    # Third component of main path
-    X = Conv2D(F3, (1, 1), strides = (1,1), padding='valid', name = conv_name_base + '2c', kernel_initializer = glorot_uniform(seed=0))(X)
-    X = BatchNormalization(axis = 3, name = bn_name_base + '2c')(X)
+	# Third component of main path
+	X = Conv2D(F3, (1, 1), strides = (1,1), padding='valid', name = conv_name_base + '2c', kernel_initializer = glorot_uniform(seed=0))(X)
+	X = BatchNormalization(axis = 3, name = bn_name_base + '2c')(X)
 
-    ##### SHORTCUT PATH ####
-    X_shortcut = Conv2D(F3, (1, 1), strides = (s,s), padding='valid', name = conv_name_base + '1', kernel_initializer = glorot_uniform(seed=0))(X)
-    X_shortcut = BatchNormalization(axis = 3, name = bn_name_base + '1')(X)
+	##### SHORTCUT PATH ####
+	X_shortcut = Conv2D(F3, (1, 1), strides = (s,s), padding='valid', name = conv_name_base + '1', kernel_initializer = glorot_uniform(seed=0))(X)
+	X_shortcut = BatchNormalization(axis = 3, name = bn_name_base + '1')(X)
 
-    # Final step: Add shortcut value to main path, and pass it through a RELU activation (≈2 lines)
-    X = Add()([X, X_shortcut])
-    X = Activation('relu')(X)
-    
-    return X
+	# Final step: Add shortcut value to main path, and pass it through a RELU activation (≈2 lines)
+	X = Add()([X, X_shortcut])
+	X = Activation('relu')(X)
+	
+	return X
 def ResNet50(input_shape = (64, 64, 3), classes = 6):
-    """
-    Implementation of the popular ResNet50 the following architecture:
-    CONV2D -> BATCHNORM -> RELU -> MAXPOOL -> CONVBLOCK -> IDBLOCK*2 -> CONVBLOCK -> IDBLOCK*3
-    -> CONVBLOCK -> IDBLOCK*5 -> CONVBLOCK -> IDBLOCK*2 -> AVGPOOL -> TOPLAYER
+	"""
+	Implementation of the popular ResNet50 the following architecture:
+	CONV2D -> BATCHNORM -> RELU -> MAXPOOL -> CONVBLOCK -> IDBLOCK*2 -> CONVBLOCK -> IDBLOCK*3
+	-> CONVBLOCK -> IDBLOCK*5 -> CONVBLOCK -> IDBLOCK*2 -> AVGPOOL -> TOPLAYER
 
-    Arguments:
-    input_shape -- shape of the images of the dataset
-    classes -- integer, number of classes
+	Arguments:
+	input_shape -- shape of the images of the dataset
+	classes -- integer, number of classes
 
-    Returns:
-    model -- a Model() instance in Keras
-    """
-    X_input = Input(input_shape)
-    X = ZeroPadding2D((3, 3))(X_input)
-    
-    # Stage 1
-    X = Conv2D(64, (7, 7), strides = (2, 2), name = 'conv1', kernel_initializer = glorot_uniform(seed=0))(X)
-    X = BatchNormalization(axis = 3, name = 'bn_conv1')(X)
-    X = Activation('relu')(X)
-    X = MaxPooling2D((3, 3), strides=(2, 2))(X)
+	Returns:
+	model -- a Model() instance in Keras
+	"""
+	X_input = Input(input_shape)
+	X = ZeroPadding2D((3, 3))(X_input)
+	
+	# Stage 1
+	X = Conv2D(64, (7, 7), strides = (2, 2), name = 'conv1', kernel_initializer = glorot_uniform(seed=0))(X)
+	X = BatchNormalization(axis = 3, name = 'bn_conv1')(X)
+	X = Activation('relu')(X)
+	X = MaxPooling2D((3, 3), strides=(2, 2))(X)
 
-    # Stage 2
-    X = convolutional_block(X, f = 3, filters = [64, 64, 256], stage = 2, block='a', s = 1)
-    X = identity_block(X, 3, [64, 64, 256], stage=2, block='b')
-    X = identity_block(X, 3, [64, 64, 256], stage=2, block='c')
+	# Stage 2
+	X = convolutional_block(X, f = 3, filters = [64, 64, 256], stage = 2, block='a', s = 1)
+	X = identity_block(X, 3, [64, 64, 256], stage=2, block='b')
+	X = identity_block(X, 3, [64, 64, 256], stage=2, block='c')
 
-    # Stage 3
-    X = convolutional_block(X, f = 3, filters = [128, 128, 512], stage = 3, block='a', s = 2)
-    X = identity_block(X, 3, [128, 128, 512], stage=3, block='b')
-    X = identity_block(X, 3, [128, 128, 512], stage=3, block='c')
-    X = identity_block(X, 3, [128, 128, 512], stage=3, block='d')
+	# Stage 3
+	X = convolutional_block(X, f = 3, filters = [128, 128, 512], stage = 3, block='a', s = 2)
+	X = identity_block(X, 3, [128, 128, 512], stage=3, block='b')
+	X = identity_block(X, 3, [128, 128, 512], stage=3, block='c')
+	X = identity_block(X, 3, [128, 128, 512], stage=3, block='d')
 
-    # Stage 4
-    X = convolutional_block(X, f=3, filters=[256, 256, 1024], stage=4, block='a', s=2)
-    X = identity_block(X, 3, [256, 256, 1024], stage=4, block='b')
-    X = identity_block(X, 3, [256, 256, 1024], stage=4, block='c')
-    X = identity_block(X, 3, [256, 256, 1024], stage=4, block='d')
-    X = identity_block(X, 3, [256, 256, 1024], stage=4, block='e')
-    X = identity_block(X, 3, [256, 256, 1024], stage=4, block='f')
+	# Stage 4
+	X = convolutional_block(X, f=3, filters=[256, 256, 1024], stage=4, block='a', s=2)
+	X = identity_block(X, 3, [256, 256, 1024], stage=4, block='b')
+	X = identity_block(X, 3, [256, 256, 1024], stage=4, block='c')
+	X = identity_block(X, 3, [256, 256, 1024], stage=4, block='d')
+	X = identity_block(X, 3, [256, 256, 1024], stage=4, block='e')
+	X = identity_block(X, 3, [256, 256, 1024], stage=4, block='f')
 
-    # Stage 5
-    X = X = convolutional_block(X, f=3, filters=[512, 512, 2048], stage=5, block='a', s=2)
-    X = identity_block(X, 3, [512, 512, 2048], stage=5, block='b')
-    X = identity_block(X, 3, [512, 512, 2048], stage=5, block='c')
+	# Stage 5
+	X = X = convolutional_block(X, f=3, filters=[512, 512, 2048], stage=5, block='a', s=2)
+	X = identity_block(X, 3, [512, 512, 2048], stage=5, block='b')
+	X = identity_block(X, 3, [512, 512, 2048], stage=5, block='c')
 
-    # AVGPOOL
-    X = AveragePooling2D(pool_size=(2, 2), padding='same')(X)
+	# AVGPOOL
+	X = AveragePooling2D(pool_size=(2, 2), padding='same')(X)
 
-    # output layer
-    X = Flatten()(X)
-    X = Dense(classes, activation='softmax', name='fc' + str(classes), kernel_initializer = glorot_uniform(seed=0))(X)
-    
-    # Create model
-    model = Model(inputs = X_input, outputs = X, name='ResNet50')
+	# output layer
+	X = Flatten()(X)
+	X = Dense(classes, activation='softmax', name='fc' + str(classes), kernel_initializer = glorot_uniform(seed=0))(X)
+	
+	# Create model
+	model = Model(inputs = X_input, outputs = X, name='ResNet50')
 
-    return model
+	return model
 model = ResNet50(input_shape = (64, 64, 3), classes = 6)
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 model.fit(X_train, Y_train, epochs = 2, batch_size = 32)
@@ -2641,135 +2641,208 @@ from keras.models import load_model, Model
 from yolo_utils import read_classes, read_anchors, generate_colors, preprocess_image, draw_boxes, scale_boxes
 from yad2k.models.keras_yolo import yolo_head, yolo_boxes_to_corners, preprocess_true_boxes, yolo_loss, yolo_body
 def yolo_filter_boxes(box_confidence, boxes, box_class_probs, threshold = .6):
-    """Filters YOLO boxes by thresholding on object and class confidence.
-    
-    Arguments:
-    box_confidence -- tensor of shape (19, 19, 5, 1)
-    boxes -- tensor of shape (19, 19, 5, 4)
-    box_class_probs -- tensor of shape (19, 19, 5, 80)
-    threshold -- real value, if [ highest class probability score < threshold], then get rid of the corresponding box
-    
-    Returns:
-    scores -- tensor of shape (None,), containing the class probability score for selected boxes
-    boxes -- tensor of shape (None, 4), containing (b_x, b_y, b_h, b_w) coordinates of selected boxes
-    classes -- tensor of shape (None,), containing the index of the class detected by the selected boxes
-    
-    Note: "None" is here because you don't know the exact number of selected boxes, as it depends on the threshold. 
-    For example, the actual output size of scores would be (10,) if there are 10 boxes.
-    """
-    # Step 1: Compute box scores
-    box_scores = np.multiply(box_confidence, box_class_probs)
-    
-    # Step 2: Find the box_classes using the max box_scores, keep track of the corresponding score
-    box_classes = K.argmax(box_scores, axis=-1)
-    box_class_scores = K.max(box_scores, axis=-1)
-    
-    # Step 3: Create a filtering mask based on "box_class_scores" by using "threshold". The mask should have the
-    # same dimension as box_class_scores, and be True for the boxes you want to keep (with probability >= threshold)
-    filtering_mask = K.greater_equal(box_class_scores, threshold)
-    
-    # Step 4: Apply the mask to box_class_scores, boxes and box_classes
-    scores = tf.boolean_mask(box_class_scores, filtering_mask)
-    boxes = tf.boolean_mask(boxes, filtering_mask)
-    classes = tf.boolean_mask(box_classes, filtering_mask)
-    
-    return scores, boxes, classes
+	"""Filters YOLO boxes by thresholding on object and class confidence.
+	
+	Arguments:
+	box_confidence -- tensor of shape (19, 19, 5, 1)
+	boxes -- tensor of shape (19, 19, 5, 4)
+	box_class_probs -- tensor of shape (19, 19, 5, 80)
+	threshold -- real value, if [ highest class probability score < threshold], then get rid of the corresponding box
+	
+	Returns:
+	scores -- tensor of shape (None,), containing the class probability score for selected boxes
+	boxes -- tensor of shape (None, 4), containing (b_x, b_y, b_h, b_w) coordinates of selected boxes
+	classes -- tensor of shape (None,), containing the index of the class detected by the selected boxes
+	
+	Note: "None" is here because you don't know the exact number of selected boxes, as it depends on the threshold. 
+	For example, the actual output size of scores would be (10,) if there are 10 boxes.
+	"""
+	# Step 1: Compute box scores
+	box_scores = np.multiply(box_confidence, box_class_probs)
+	
+	# Step 2: Find the box_classes using the max box_scores, keep track of the corresponding score
+	box_classes = K.argmax(box_scores, axis=-1)
+	box_class_scores = K.max(box_scores, axis=-1)
+	
+	# Step 3: Create a filtering mask based on "box_class_scores" by using "threshold". The mask should have the
+	# same dimension as box_class_scores, and be True for the boxes you want to keep (with probability >= threshold)
+	filtering_mask = K.greater_equal(box_class_scores, threshold)
+	
+	# Step 4: Apply the mask to box_class_scores, boxes and box_classes
+	scores = tf.boolean_mask(box_class_scores, filtering_mask)
+	boxes = tf.boolean_mask(boxes, filtering_mask)
+	classes = tf.boolean_mask(box_classes, filtering_mask)
+	
+	return scores, boxes, classes
 #Intersection Over Union
 # GRADED FUNCTION: iou
 
 def iou(box1, box2):
-    """Implement the intersection over union (IoU) between box1 and box2
-    
-    Arguments:
-    box1 -- first box, list object with coordinates (box1_x1, box1_y1, box1_x2, box_1_y2)
-    box2 -- second box, list object with coordinates (box2_x1, box2_y1, box2_x2, box2_y2)
-    """
-    # Assign variable names to coordinates for clarity
-    (box1_x1, box1_y1, box1_x2, box1_y2) = box1
-    (box2_x1, box2_y1, box2_x2, box2_y2) = box2
-    
-    # Calculate the (yi1, xi1, yi2, xi2) coordinates of the intersection of box1 and box2. Calculate its Area.
-    xi1 = max(box1_x1, box2_x1)
-    yi1 = max(box1_y1, box2_y1)
-    xi2 = min(box1_x2, box2_x2)
-    yi2 = min(box1_y2, box2_y2)
-    inter_width = xi2-xi1
-    inter_height = yi2-yi1
-    inter_area = inter_width*inter_height
+	"""Implement the intersection over union (IoU) between box1 and box2
+	
+	Arguments:
+	box1 -- first box, list object with coordinates (box1_x1, box1_y1, box1_x2, box_1_y2)
+	box2 -- second box, list object with coordinates (box2_x1, box2_y1, box2_x2, box2_y2)
+	"""
+	# Assign variable names to coordinates for clarity
+	(box1_x1, box1_y1, box1_x2, box1_y2) = box1
+	(box2_x1, box2_y1, box2_x2, box2_y2) = box2
+	
+	# Calculate the (yi1, xi1, yi2, xi2) coordinates of the intersection of box1 and box2. Calculate its Area.
+	xi1 = max(box1_x1, box2_x1)
+	yi1 = max(box1_y1, box2_y1)
+	xi2 = min(box1_x2, box2_x2)
+	yi2 = min(box1_y2, box2_y2)
+	inter_width = xi2-xi1
+	inter_height = yi2-yi1
+	inter_area = inter_width*inter_height
 
-    # Calculate the Union area by using Formula: Union(A,B) = A + B - Inter(A,B)
-    box1_area = (box1_x2-box1_x1)*(box1_y2-box1_y1)
-    box2_area = (box2_x2-box2_x1)*(box2_y2-box2_y1)
-    union_area = box1_area + box2_area - inter_area
-    
-    # compute the IoU
-    iou = inter_area/union_area
-    
-    return iou
+	# Calculate the Union area by using Formula: Union(A,B) = A + B - Inter(A,B)
+	box1_area = (box1_x2-box1_x1)*(box1_y2-box1_y1)
+	box2_area = (box2_x2-box2_x1)*(box2_y2-box2_y1)
+	union_area = box1_area + box2_area - inter_area
+	
+	# compute the IoU
+	iou = inter_area/union_area
+	
+	return iou
 def yolo_non_max_suppression(scores, boxes, classes, max_boxes = 10, iou_threshold = 0.5):
-    """
-    Applies Non-max suppression (NMS) to set of boxes
-    
-    Arguments:
-    scores -- tensor of shape (None,), output of yolo_filter_boxes()
-    boxes -- tensor of shape (None, 4), output of yolo_filter_boxes() that have been scaled to the image size (see later)
-    classes -- tensor of shape (None,), output of yolo_filter_boxes()
-    max_boxes -- integer, maximum number of predicted boxes you'd like
-    iou_threshold -- real value, "intersection over union" threshold used for NMS filtering
-    
-    Returns:
-    scores -- tensor of shape (, None), predicted score for each box
-    boxes -- tensor of shape (4, None), predicted box coordinates
-    classes -- tensor of shape (, None), predicted class for each box
-    
-    Note: The "None" dimension of the output tensors has obviously to be less than max_boxes. Note also that this
-    function will transpose the shapes of scores, boxes, classes. This is made for convenience.
-    """
-    
-    max_boxes_tensor = K.variable(max_boxes, dtype='int32')     # tensor to be used in tf.image.non_max_suppression()
-    K.get_session().run(tf.variables_initializer([max_boxes_tensor])) # initialize variable max_boxes_tensor
+	"""
+	Applies Non-max suppression (NMS) to set of boxes
+	
+	Arguments:
+	scores -- tensor of shape (None,), output of yolo_filter_boxes()
+	boxes -- tensor of shape (None, 4), output of yolo_filter_boxes() that have been scaled to the image size (see later)
+	classes -- tensor of shape (None,), output of yolo_filter_boxes()
+	max_boxes -- integer, maximum number of predicted boxes you'd like
+	iou_threshold -- real value, "intersection over union" threshold used for NMS filtering
+	
+	Returns:
+	scores -- tensor of shape (, None), predicted score for each box
+	boxes -- tensor of shape (4, None), predicted box coordinates
+	classes -- tensor of shape (, None), predicted class for each box
+	
+	Note: The "None" dimension of the output tensors has obviously to be less than max_boxes. Note also that this
+	function will transpose the shapes of scores, boxes, classes. This is made for convenience.
+	"""
+	
+	max_boxes_tensor = K.variable(max_boxes, dtype='int32')     # tensor to be used in tf.image.non_max_suppression()
+	K.get_session().run(tf.variables_initializer([max_boxes_tensor])) # initialize variable max_boxes_tensor
 
-    nms_indices = tf.image.non_max_suppression(boxes, scores, max_boxes, iou_threshold)
-    
-    scores = K.gather(scores, nms_indices)
-    boxes = K.gather(boxes, nms_indices)
-    classes = K.gather(classes, nms_indices)
-    
-    return scores, boxes, classes
+	nms_indices = tf.image.non_max_suppression(boxes, scores, max_boxes, iou_threshold)
+	
+	scores = K.gather(scores, nms_indices)
+	boxes = K.gather(boxes, nms_indices)
+	classes = K.gather(classes, nms_indices)
+	
+	return scores, boxes, classes
 def yolo_eval(yolo_outputs, image_shape = (720., 1280.), max_boxes=10, score_threshold=.6, iou_threshold=.5):
-    """
-    Converts the output of YOLO encoding (a lot of boxes) to your predicted boxes along with their scores, box coordinates and classes.
-    
-    Arguments:
-    yolo_outputs -- output of the encoding model (for image_shape of (608, 608, 3)), contains 4 tensors:
-                    box_confidence: tensor of shape (None, 19, 19, 5, 1)
-                    box_xy: tensor of shape (None, 19, 19, 5, 2)
-                    box_wh: tensor of shape (None, 19, 19, 5, 2)
-                    box_class_probs: tensor of shape (None, 19, 19, 5, 80)
-    image_shape -- tensor of shape (2,) containing the input shape, in this notebook we use (608., 608.) (has to be float32 dtype)
-    max_boxes -- integer, maximum number of predicted boxes you'd like
-    score_threshold -- real value, if [ highest class probability score < threshold], then get rid of the corresponding box
-    iou_threshold -- real value, "intersection over union" threshold used for NMS filtering
-    
-    Returns:
-    scores -- tensor of shape (None, ), predicted score for each box
-    boxes -- tensor of shape (None, 4), predicted box coordinates
-    classes -- tensor of shape (None,), predicted class for each box
-    """
-    # Retrieve outputs of the YOLO model
-    box_confidence, box_xy, box_wh, box_class_probs = yolo_outputs
+	"""
+	Converts the output of YOLO encoding (a lot of boxes) to your predicted boxes along with their scores, box coordinates and classes.
+	
+	Arguments:
+	yolo_outputs -- output of the encoding model (for image_shape of (608, 608, 3)), contains 4 tensors:
+					box_confidence: tensor of shape (None, 19, 19, 5, 1)
+					box_xy: tensor of shape (None, 19, 19, 5, 2)
+					box_wh: tensor of shape (None, 19, 19, 5, 2)
+					box_class_probs: tensor of shape (None, 19, 19, 5, 80)
+	image_shape -- tensor of shape (2,) containing the input shape, in this notebook we use (608., 608.) (has to be float32 dtype)
+	max_boxes -- integer, maximum number of predicted boxes you'd like
+	score_threshold -- real value, if [ highest class probability score < threshold], then get rid of the corresponding box
+	iou_threshold -- real value, "intersection over union" threshold used for NMS filtering
+	
+	Returns:
+	scores -- tensor of shape (None, ), predicted score for each box
+	boxes -- tensor of shape (None, 4), predicted box coordinates
+	classes -- tensor of shape (None,), predicted class for each box
+	"""
+	# Retrieve outputs of the YOLO model
+	box_confidence, box_xy, box_wh, box_class_probs = yolo_outputs
 
-    # Convert boxes to be ready for filtering functions (convert boxes box_xy and box_wh to corner coordinates)
-    boxes = yolo_boxes_to_corners(box_xy, box_wh)
+	# Convert boxes to be ready for filtering functions (convert boxes box_xy and box_wh to corner coordinates)
+	boxes = yolo_boxes_to_corners(box_xy, box_wh)
 
-    scores, boxes, classes = yolo_filter_boxes(box_confidence, boxes, box_class_probs, threshold = score_threshold)
-    
-    # Scale boxes back to original image shape.
-    boxes = scale_boxes(boxes, image_shape)
+	scores, boxes, classes = yolo_filter_boxes(box_confidence, boxes, box_class_probs, threshold = score_threshold)
+	
+	# Scale boxes back to original image shape.
+	boxes = scale_boxes(boxes, image_shape)
 
-    scores, boxes, classes = yolo_non_max_suppression(scores, boxes, classes, max_boxes = max_boxes, iou_threshold = iou_threshold)
-    
-    return scores, boxes, classes
+	scores, boxes, classes = yolo_non_max_suppression(scores, boxes, classes, max_boxes = max_boxes, iou_threshold = iou_threshold)
+	
+	return scores, boxes, classes
+#########
+# RNN (Recurrent Nueral Networks)
+#########
+def rnn_cell_forward(xt, a_prev, parameters):
+	"""
+	Implements a single forward step of the RNN-cell as described in Figure (2)
+
+	Arguments:
+	xt -- your input data at timestep "t", numpy array of shape (n_x, m).
+	a_prev -- Hidden state at timestep "t-1", numpy array of shape (n_a, m)
+	parameters -- python dictionary containing:
+						Wax -- Weight matrix multiplying the input, numpy array of shape (n_a, n_x)
+						Waa -- Weight matrix multiplying the hidden state, numpy array of shape (n_a, n_a)
+						Wya -- Weight matrix relating the hidden-state to the output, numpy array of shape (n_y, n_a)
+						ba --  Bias, numpy array of shape (n_a, 1)
+						by -- Bias relating the hidden-state to the output, numpy array of shape (n_y, 1)
+	Returns:
+	a_next -- next hidden state, of shape (n_a, m)
+	yt_pred -- prediction at timestep "t", numpy array of shape (n_y, m)
+	cache -- tuple of values needed for the backward pass, contains (a_next, a_prev, xt, parameters)
+	"""
+	Wax = parameters["Wax"]
+	Waa = parameters["Waa"]
+	Wya = parameters["Wya"]
+	ba = parameters["ba"]
+	by = parameters["by"]
+
+	a_next = np.tanh(np.dot(Waa, a_prev)+np.dot(Wax, xt)+ba)
+	yt_pred = softmax(np.dot(Wya, a_next)+by)
+	
+	cache = (a_next, a_prev, xt, parameters)
+	
+	return a_next, yt_pred, cache
+def rnn_forward(x, a0, parameters):
+	"""
+	Implement the forward propagation of the recurrent neural network described in Figure (3).
+
+	Arguments:
+	x -- Input data for every time-step, of shape (n_x, m, T_x).
+	a0 -- Initial hidden state, of shape (n_a, m)
+	parameters -- python dictionary containing:
+						Waa -- Weight matrix multiplying the hidden state, numpy array of shape (n_a, n_a)
+						Wax -- Weight matrix multiplying the input, numpy array of shape (n_a, n_x)
+						Wya -- Weight matrix relating the hidden-state to the output, numpy array of shape (n_y, n_a)
+						ba --  Bias numpy array of shape (n_a, 1)
+						by -- Bias relating the hidden-state to the output, numpy array of shape (n_y, 1)
+
+	Returns:
+	a -- Hidden states for every time-step, numpy array of shape (n_a, m, T_x)
+	y_pred -- Predictions for every time-step, numpy array of shape (n_y, m, T_x)
+	caches -- tuple of values needed for the backward pass, contains (list of caches, x)
+	"""
+	caches = []
+	
+	n_x, m, T_x = x.shape
+	n_y, n_a = parameters["Wya"].shape
+	
+	a = np.zeros((n_a, m, T_x))
+	y_pred = np.zeros((n_y, m, T_x))
+	a_next = a0
+	
+	# loop over all time-steps of the input 'x'
+	for t in range(T_x):
+		xt = x[:,:,t]
+		a_next, yt_pred, cache = rnn_cell_forward(xt, a_next, parameters)
+		a[:,:,t] = a_next
+		y_pred[:,:,t] = yt_pred
+		caches.append(cache)
+	
+	# store values needed for backward propagation in cache
+	caches = (caches, x)
+	
+	return a, y_pred, caches
 #########
 # Deep learning with Pytorch (extracted from the Udacity Secure and Private AI course)
 #########
@@ -2777,16 +2850,16 @@ import torch
 torch.__version__
 
 def sigmoid_activation(x):
-    """ Sigmoid activation function #https://upload.wikimedia.org/wikipedia/commons/8/88/Logistic-curve.svg
-    
-        Arguments
-        ---------
-        x: torch.Tensor
-    """
-    return 1/(1+torch.exp(-x))
+	""" Sigmoid activation function #https://upload.wikimedia.org/wikipedia/commons/8/88/Logistic-curve.svg
+	
+		Arguments
+		---------
+		x: torch.Tensor
+	"""
+	return 1/(1+torch.exp(-x))
 
 def softmax_activation(x):
-    return torch.exp(x)/torch.sum(torch.exp(x), dim=1).view(-1, 1)
+	return torch.exp(x)/torch.sum(torch.exp(x), dim=1).view(-1, 1)
 
 ### Generate some data
 torch.manual_seed(7) # Set the random seed so things are predictable
@@ -2860,20 +2933,20 @@ model = Network()
 import torch.nn.functional as F
 
 class Network(nn.Module):
-    def __init__(self):
-        super().__init__()
-        # Inputs to hidden layer linear transformation
-        self.hidden = nn.Linear(784, 256)
-        # Output layer, 10 units - one for each digit
-        self.output = nn.Linear(256, 10)
-        
-    def forward(self, x):
-        # Hidden layer with sigmoid activation
-        x = F.sigmoid(self.hidden(x))
-        # Output layer with softmax activation
-        x = F.softmax(self.output(x), dim=1)
-        
-        return x
+	def __init__(self):
+		super().__init__()
+		# Inputs to hidden layer linear transformation
+		self.hidden = nn.Linear(784, 256)
+		# Output layer, 10 units - one for each digit
+		self.output = nn.Linear(256, 10)
+		
+	def forward(self, x):
+		# Hidden layer with sigmoid activation
+		x = F.sigmoid(self.hidden(x))
+		# Output layer with softmax activation
+		x = F.softmax(self.output(x), dim=1)
+		
+		return x
 
 #Initializing weights and biases
 model.hidden.bias.data.fill_(0)
@@ -2903,11 +2976,11 @@ output_size = 10
 
 # Build a feed-forward network
 model = nn.Sequential(nn.Linear(input_size, hidden_sizes[0]),
-                      nn.ReLU(),
-                      nn.Linear(hidden_sizes[0], hidden_sizes[1]),
-                      nn.ReLU(),
-                      nn.Linear(hidden_sizes[1], output_size),
-                      nn.Softmax(dim=1))
+					  nn.ReLU(),
+					  nn.Linear(hidden_sizes[0], hidden_sizes[1]),
+					  nn.ReLU(),
+					  nn.Linear(hidden_sizes[1], output_size),
+					  nn.Softmax(dim=1))
 print(model)
 
 # Forward pass through the network and display output
@@ -2932,33 +3005,33 @@ print(loss)
 # Train a model
 #########
 model = nn.Sequential(nn.Linear(784, 128),
-                      nn.ReLU(),
-                      nn.Linear(128, 64),
-                      nn.ReLU(),
-                      nn.Linear(64, 10),
-                      nn.LogSoftmax(dim=1))
+					  nn.ReLU(),
+					  nn.Linear(128, 64),
+					  nn.ReLU(),
+					  nn.Linear(64, 10),
+					  nn.LogSoftmax(dim=1))
 
 criterion = nn.NLLLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.003)
 
 epochs = 5
 for e in range(epochs):
-    running_loss = 0
-    for images, labels in trainloader:
-        # Flatten MNIST images into a 784 long vector
-        images = images.view(images.shape[0], -1)
-    
-        # TODO: Training pass
-        optimizer.zero_grad()
-        
-        output = model(images)
-        loss = criterion(output, labels)
-        loss.backward()
-        optimizer.step()
-        
-        running_loss += loss.item()
-    else:
-        print(f"Training loss: {running_loss/len(trainloader)}")
+	running_loss = 0
+	for images, labels in trainloader:
+		# Flatten MNIST images into a 784 long vector
+		images = images.view(images.shape[0], -1)
+	
+		# TODO: Training pass
+		optimizer.zero_grad()
+		
+		output = model(images)
+		loss = criterion(output, labels)
+		loss.backward()
+		optimizer.step()
+		
+		running_loss += loss.item()
+	else:
+		print(f"Training loss: {running_loss/len(trainloader)}")
 
 #########
 # Validation Loop
@@ -2972,71 +3045,71 @@ steps = 0
 
 train_losses, test_losses = [], []
 for e in range(epochs):
-    running_loss = 0
-    for images, labels in trainloader:
-        
-        optimizer.zero_grad()
-        
-        log_ps = model(images)
-        loss = criterion(log_ps, labels)
-        loss.backward()
-        optimizer.step()
-        
-        running_loss += loss.item()
-        
-    else:
-        ## TODO: Implement the validation pass and print out the validation accuracy
-        print(f'Accuracy: {accuracy.item()*100}%')
-        
-        test_loss = 0
-        accuracy = 0
-        
-        # Turn off gradients for validation, saves memory and computations
-        with torch.no_grad():
-            for images, labels in testloader:
-                log_ps = model(images)
-                test_loss += criterion(log_ps, labels)
-                
-                ps = torch.exp(log_ps)
-                top_p, top_class = ps.topk(1, dim=1)
-                equals = top_class == labels.view(*top_class.shape)
-                accuracy += torch.mean(equals.type(torch.FloatTensor))
-                
-        train_losses.append(running_loss/len(trainloader))
-        test_losses.append(test_loss/len(testloader))
+	running_loss = 0
+	for images, labels in trainloader:
+		
+		optimizer.zero_grad()
+		
+		log_ps = model(images)
+		loss = criterion(log_ps, labels)
+		loss.backward()
+		optimizer.step()
+		
+		running_loss += loss.item()
+		
+	else:
+		## TODO: Implement the validation pass and print out the validation accuracy
+		print(f'Accuracy: {accuracy.item()*100}%')
+		
+		test_loss = 0
+		accuracy = 0
+		
+		# Turn off gradients for validation, saves memory and computations
+		with torch.no_grad():
+			for images, labels in testloader:
+				log_ps = model(images)
+				test_loss += criterion(log_ps, labels)
+				
+				ps = torch.exp(log_ps)
+				top_p, top_class = ps.topk(1, dim=1)
+				equals = top_class == labels.view(*top_class.shape)
+				accuracy += torch.mean(equals.type(torch.FloatTensor))
+				
+		train_losses.append(running_loss/len(trainloader))
+		test_losses.append(test_loss/len(testloader))
 
-        print("Epoch: {}/{}.. ".format(e+1, epochs),
-              "Training Loss: {:.3f}.. ".format(running_loss/len(trainloader)),
-              "Test Loss: {:.3f}.. ".format(test_loss/len(testloader)),
-              "Test Accuracy: {:.3f}".format(accuracy/len(testloader)))
+		print("Epoch: {}/{}.. ".format(e+1, epochs),
+			  "Training Loss: {:.3f}.. ".format(running_loss/len(trainloader)),
+			  "Test Loss: {:.3f}.. ".format(test_loss/len(testloader)),
+			  "Test Accuracy: {:.3f}".format(accuracy/len(testloader)))
 
 #########
 # Dropout for avoiding overfitting
 #########
 class Classifier(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.fc1 = nn.Linear(784, 256)
-        self.fc2 = nn.Linear(256, 128)
-        self.fc3 = nn.Linear(128, 64)
-        self.fc4 = nn.Linear(64, 10)
+	def __init__(self):
+		super().__init__()
+		self.fc1 = nn.Linear(784, 256)
+		self.fc2 = nn.Linear(256, 128)
+		self.fc3 = nn.Linear(128, 64)
+		self.fc4 = nn.Linear(64, 10)
 
-        # Dropout module with 0.2 drop probability
-        self.dropout = nn.Dropout(p=0.2)
+		# Dropout module with 0.2 drop probability
+		self.dropout = nn.Dropout(p=0.2)
 
-    def forward(self, x):
-        # make sure input tensor is flattened
-        x = x.view(x.shape[0], -1)
+	def forward(self, x):
+		# make sure input tensor is flattened
+		x = x.view(x.shape[0], -1)
 
-        # Now with dropout
-        x = self.dropout(F.relu(self.fc1(x)))
-        x = self.dropout(F.relu(self.fc2(x)))
-        x = self.dropout(F.relu(self.fc3(x)))
+		# Now with dropout
+		x = self.dropout(F.relu(self.fc1(x)))
+		x = self.dropout(F.relu(self.fc2(x)))
+		x = self.dropout(F.relu(self.fc3(x)))
 
-        # output so no dropout here
-        x = F.log_softmax(self.fc4(x), dim=1)
+		# output so no dropout here
+		x = F.log_softmax(self.fc4(x), dim=1)
 
-        return x
+		return x
 
 model = Classifier()
 criterion = nn.NLLLoss()
@@ -3047,43 +3120,43 @@ steps = 0
 
 train_losses, test_losses = [], []
 for e in range(epochs):
-    running_loss = 0
-    for images, labels in trainloader:
-        
-        optimizer.zero_grad()
-        
-        log_ps = model(images)
-        loss = criterion(log_ps, labels)
-        loss.backward()
-        optimizer.step()
-        
-        running_loss += loss.item()
-        
-    else:
-        test_loss = 0
-        accuracy = 0
-        
-        # Turn off gradients for validation, saves memory and computations
-        with torch.no_grad():
-            model.eval()
-            for images, labels in testloader:
-                log_ps = model(images)
-                test_loss += criterion(log_ps, labels)
-                
-                ps = torch.exp(log_ps)
-                top_p, top_class = ps.topk(1, dim=1)
-                equals = top_class == labels.view(*top_class.shape)
-                accuracy += torch.mean(equals.type(torch.FloatTensor))
-        
-        model.train()
-        
-        train_losses.append(running_loss/len(trainloader))
-        test_losses.append(test_loss/len(testloader))
+	running_loss = 0
+	for images, labels in trainloader:
+		
+		optimizer.zero_grad()
+		
+		log_ps = model(images)
+		loss = criterion(log_ps, labels)
+		loss.backward()
+		optimizer.step()
+		
+		running_loss += loss.item()
+		
+	else:
+		test_loss = 0
+		accuracy = 0
+		
+		# Turn off gradients for validation, saves memory and computations
+		with torch.no_grad():
+			model.eval()
+			for images, labels in testloader:
+				log_ps = model(images)
+				test_loss += criterion(log_ps, labels)
+				
+				ps = torch.exp(log_ps)
+				top_p, top_class = ps.topk(1, dim=1)
+				equals = top_class == labels.view(*top_class.shape)
+				accuracy += torch.mean(equals.type(torch.FloatTensor))
+		
+		model.train()
+		
+		train_losses.append(running_loss/len(trainloader))
+		test_losses.append(test_loss/len(testloader))
 
-        print("Epoch: {}/{}.. ".format(e+1, epochs),
-              "Training Loss: {:.3f}.. ".format(train_losses[-1]),
-              "Test Loss: {:.3f}.. ".format(test_losses[-1]),
-              "Test Accuracy: {:.3f}".format(accuracy/len(testloader)))
+		print("Epoch: {}/{}.. ".format(e+1, epochs),
+			  "Training Loss: {:.3f}.. ".format(train_losses[-1]),
+			  "Test Loss: {:.3f}.. ".format(test_losses[-1]),
+			  "Test Accuracy: {:.3f}".format(accuracy/len(testloader)))
 
 plt.plot(train_losses, label='Training loss')
 plt.plot(test_losses, label='Validation loss')
@@ -3106,8 +3179,8 @@ import helper
 data_dir = 'Cat_Dog_data/train'
 
 transform = transforms.Compose([transforms.Resize(255),
-                                transforms.CenterCrop(224),
-                                transforms.ToTensor()])
+								transforms.CenterCrop(224),
+								transforms.ToTensor()])
 dataset = datasets.ImageFolder(data_dir, transform=transform)
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
 
@@ -3118,13 +3191,13 @@ helper.imshow(images[0], normalize=False)
 data_dir = 'Cat_Dog_data'
 # Define transforms for the training data and testing data
 train_transforms = transforms.Compose([transforms.RandomRotation(30),
-                                       transforms.RandomResizedCrop(224),
-                                       transforms.RandomHorizontalFlip(),
-                                       transforms.ToTensor()]) 
+									   transforms.RandomResizedCrop(224),
+									   transforms.RandomHorizontalFlip(),
+									   transforms.ToTensor()]) 
 
 test_transforms = transforms.Compose([transforms.Resize(255),
-                                      transforms.CenterCrop(224),
-                                      transforms.ToTensor()])
+									  transforms.CenterCrop(224),
+									  transforms.ToTensor()])
 
 
 # Pass transforms in here, then run the next cell to see how the transforms look
@@ -3140,8 +3213,8 @@ data_iter = iter(testloader)
 images, labels = next(data_iter)
 fig, axes = plt.subplots(figsize=(10,4), ncols=4)
 for ii in range(4):
-    ax = axes[ii]
-    helper.imshow(images[ii], ax=ax, normalize=False)
+	ax = axes[ii]
+	helper.imshow(images[ii], ax=ax, normalize=False)
 
 #########
 # Transfer learning with Pytorch
@@ -3156,17 +3229,17 @@ data_dir = 'Cat_Dog_data'
 
 #Define transforms for the training data and testing data
 train_transforms = transforms.Compose([transforms.RandomRotation(30),
-                                       transforms.RandomResizedCrop(224),
-                                       transforms.RandomHorizontalFlip(),
-                                       transforms.ToTensor(),
-                                       transforms.Normalize([0.485, 0.456, 0.406],
-                                                            [0.229, 0.224, 0.225])])
+									   transforms.RandomResizedCrop(224),
+									   transforms.RandomHorizontalFlip(),
+									   transforms.ToTensor(),
+									   transforms.Normalize([0.485, 0.456, 0.406],
+															[0.229, 0.224, 0.225])])
 
 test_transforms = transforms.Compose([transforms.Resize(255),
-                                      transforms.CenterCrop(224),
-                                      transforms.ToTensor(),
-                                      transforms.Normalize([0.485, 0.456, 0.406],
-                                                           [0.229, 0.224, 0.225])])
+									  transforms.CenterCrop(224),
+									  transforms.ToTensor(),
+									  transforms.Normalize([0.485, 0.456, 0.406],
+														   [0.229, 0.224, 0.225])])
 
 # Pass transforms in here, then run the next cell to see how the transforms look
 train_data = datasets.ImageFolder(data_dir + '/train', transform=train_transforms)
@@ -3180,16 +3253,16 @@ model = models.densenet121(pretrained=True)
 
 # Freeze parameters so we don't backprop through them
 for param in model.parameters():
-    param.requires_grad = False
+	param.requires_grad = False
 
 from collections import OrderedDict
 classifier = nn.Sequential(OrderedDict([
-                          ('fc1', nn.Linear(1024, 500)),
-                          ('relu', nn.ReLU()),
-                          ('fc2', nn.Linear(500, 2)),
-                          ('output', nn.LogSoftmax(dim=1))
-                          ]))
-    
+						  ('fc1', nn.Linear(1024, 500)),
+						  ('relu', nn.ReLU()),
+						  ('fc2', nn.Linear(500, 2)),
+						  ('output', nn.LogSoftmax(dim=1))
+						  ]))
+	
 model.classifier = classifier
 
 epochs = 1
@@ -3197,44 +3270,44 @@ steps = 0
 running_loss = 0
 print_every = 5
 for epoch in range(epochs):
-    for inputs, labels in trainloader:
-        steps += 1
-        # Move input and label tensors to the default device
-        inputs, labels = inputs.to(device), labels.to(device)
-        
-        optimizer.zero_grad()
-        
-        logps = model.forward(inputs)
-        loss = criterion(logps, labels)
-        loss.backward()
-        optimizer.step()
+	for inputs, labels in trainloader:
+		steps += 1
+		# Move input and label tensors to the default device
+		inputs, labels = inputs.to(device), labels.to(device)
+		
+		optimizer.zero_grad()
+		
+		logps = model.forward(inputs)
+		loss = criterion(logps, labels)
+		loss.backward()
+		optimizer.step()
 
-        running_loss += loss.item()
-        
-        if steps % print_every == 0:
-            test_loss = 0
-            accuracy = 0
-            model.eval()
-            with torch.no_grad():
-                for inputs, labels in testloader:
-                    inputs, labels = inputs.to(device), labels.to(device)
-                    logps = model.forward(inputs)
-                    batch_loss = criterion(logps, labels)
-                    
-                    test_loss += batch_loss.item()
-                    
-                    # Calculate accuracy
-                    ps = torch.exp(logps)
-                    top_p, top_class = ps.topk(1, dim=1)
-                    equals = top_class == labels.view(*top_class.shape)
-                    accuracy += torch.mean(equals.type(torch.FloatTensor)).item()
-                    
-            print(f"Epoch {epoch+1}/{epochs}.. "
-                  f"Train loss: {running_loss/print_every:.3f}.. "
-                  f"Test loss: {test_loss/len(testloader):.3f}.. "
-                  f"Test accuracy: {accuracy/len(testloader):.3f}")
-            running_loss = 0
-            model.train()
+		running_loss += loss.item()
+		
+		if steps % print_every == 0:
+			test_loss = 0
+			accuracy = 0
+			model.eval()
+			with torch.no_grad():
+				for inputs, labels in testloader:
+					inputs, labels = inputs.to(device), labels.to(device)
+					logps = model.forward(inputs)
+					batch_loss = criterion(logps, labels)
+					
+					test_loss += batch_loss.item()
+					
+					# Calculate accuracy
+					ps = torch.exp(logps)
+					top_p, top_class = ps.topk(1, dim=1)
+					equals = top_class == labels.view(*top_class.shape)
+					accuracy += torch.mean(equals.type(torch.FloatTensor)).item()
+					
+			print(f"Epoch {epoch+1}/{epochs}.. "
+				  f"Train loss: {running_loss/print_every:.3f}.. "
+				  f"Test loss: {test_loss/len(testloader):.3f}.. "
+				  f"Test accuracy: {accuracy/len(testloader):.3f}")
+			running_loss = 0
+			model.train()
 
 #GeoPandas
 import geopandas as gpd
@@ -3272,9 +3345,9 @@ from folium.plugins import HeatMap, MarkerCluster
 
 #function for dsiplaying maps in all browsers
 def embed_map(m, file_name):
-    from IPython.display import IFrame
-    m.save(file_name)
-    return IFrame(file_name, width='100%', height='500px')
+	from IPython.display import IFrame
+	m.save(file_name)
+	return IFrame(file_name, width='100%', height='500px')
 
 #Create a map
 m_1 = folium.Map(location=[42.32,-71.0589], tiles='openstreetmap', zoom_start=10)
@@ -3285,7 +3358,7 @@ embed_map(m_1, 'm_1.html')
 m_2 = folium.Map(location=[42.32,-71.0589], tiles='cartodbpositron', zoom_start=13)
 #Add points to the map
 for idx, row in df.iterrows():
-    Marker([row['Lat'], row['Long']]).add_to(m_2)
+	Marker([row['Lat'], row['Long']]).add_to(m_2)
 #Display the map
 embed_map(m_2, 'm_2.html')
 
@@ -3294,8 +3367,8 @@ m_3 = folium.Map(location=[42.32,-71.0589], tiles='cartodbpositron', zoom_start=
 #Add points to the map
 mc = MarkerCluster()
 for idx, row in df.iterrows():
-    if not math.isnan(row['Long']) and not math.isnan(row['Lat']):
-        mc.add_child(Marker([row['Lat'], row['Long']]))
+	if not math.isnan(row['Long']) and not math.isnan(row['Lat']):
+		mc.add_child(Marker([row['Lat'], row['Long']]))
 m_3.add_child(mc)
 #Display the map
 embed_map(m_3, 'm_3.html')
@@ -3304,16 +3377,16 @@ embed_map(m_3, 'm_3.html')
 m_4 = folium.Map(location=[42.32,-71.0589], tiles='cartodbpositron', zoom_start=13)
 #Decide colour according to the value of a variable
 def color_producer(val):
-    if val <= 12:
-        return 'forestgreen'
-    else:
-        return 'darkred'
+	if val <= 12:
+		return 'forestgreen'
+	else:
+		return 'darkred'
 #Add a bubble map to the base map
 for i in range(0,len(df)):
-    Circle(
-        location=[df.iloc[i]['Lat'], df.iloc[i]['Long']],
-        radius=20,
-        color=color_producer(df.iloc[i]['HOUR'])).add_to(m_4)
+	Circle(
+		location=[df.iloc[i]['Lat'], df.iloc[i]['Long']],
+		radius=20,
+		color=color_producer(df.iloc[i]['HOUR'])).add_to(m_4)
 #Display the map
 embed_map(m_4, 'm_4.html')
 
@@ -3331,15 +3404,15 @@ latitude = result['geometry'].iloc[0].y
 longitude = result['geometry'].iloc[0].x
 #Geocode every row in a DataFrame
 def my_geocoder(row):
-    try:
-        point = geocode(row, provider='nominatim')['geometry'].iloc[0]
-        return pd.Series({'Latitude': point.y, 'Longitude': point.x, 'geometry': point})
-    except:
-        return None
+	try:
+		point = geocode(row, provider='nominatim')['geometry'].iloc[0]
+		return pd.Series({'Latitude': point.y, 'Longitude': point.x, 'geometry': point})
+	except:
+		return None
 
 df[['Latitude', 'Longitude', 'geometry']] = df.apply(lambda x: my_geocoder(x['Name']), axis=1)
 print("{}% of addresses were geocoded!".format(
-    (1 - sum(np.isnan(df["Latitude"])) / len(df)) * 100))
+	(1 - sum(np.isnan(df["Latitude"])) / len(df)) * 100))
 #Drop universities that were not successfully geocoded
 df = df.loc[~np.isnan(df["Latitude"])]
 df = gpd.GeoDataFrame(df, geometry=df['geometry'])
