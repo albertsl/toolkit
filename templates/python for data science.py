@@ -2845,115 +2845,147 @@ def rnn_forward(x, a0, parameters):
 	return a, y_pred, caches
 #LSTM
 def lstm_cell_forward(xt, a_prev, c_prev, parameters):
-    """
-    Implement a single forward step of the LSTM-cell as described in Figure (4)
+	"""
+	Implement a single forward step of the LSTM-cell as described in Figure (4)
 
-    Arguments:
-    xt -- your input data at timestep "t", numpy array of shape (n_x, m).
-    a_prev -- Hidden state at timestep "t-1", numpy array of shape (n_a, m)
-    c_prev -- Memory state at timestep "t-1", numpy array of shape (n_a, m)
-    parameters -- python dictionary containing:
-                        Wf -- Weight matrix of the forget gate, numpy array of shape (n_a, n_a + n_x)
-                        bf -- Bias of the forget gate, numpy array of shape (n_a, 1)
-                        Wi -- Weight matrix of the update gate, numpy array of shape (n_a, n_a + n_x)
-                        bi -- Bias of the update gate, numpy array of shape (n_a, 1)
-                        Wc -- Weight matrix of the first "tanh", numpy array of shape (n_a, n_a + n_x)
-                        bc --  Bias of the first "tanh", numpy array of shape (n_a, 1)
-                        Wo -- Weight matrix of the output gate, numpy array of shape (n_a, n_a + n_x)
-                        bo --  Bias of the output gate, numpy array of shape (n_a, 1)
-                        Wy -- Weight matrix relating the hidden-state to the output, numpy array of shape (n_y, n_a)
-                        by -- Bias relating the hidden-state to the output, numpy array of shape (n_y, 1)
-                        
-    Returns:
-    a_next -- next hidden state, of shape (n_a, m)
-    c_next -- next memory state, of shape (n_a, m)
-    yt_pred -- prediction at timestep "t", numpy array of shape (n_y, m)
-    cache -- tuple of values needed for the backward pass, contains (a_next, c_next, a_prev, c_prev, xt, parameters)
-    
-    Note: ft/it/ot stand for the forget/update/output gates, cct stands for the candidate value (c tilde),
-          c stands for the cell state (memory)
-    """
-    Wf = parameters["Wf"] # forget gate weight
-    bf = parameters["bf"]
-    Wi = parameters["Wi"] # update gate weight (notice the variable name)
-    bi = parameters["bi"] # (notice the variable name)
-    Wc = parameters["Wc"] # candidate value weight
-    bc = parameters["bc"]
-    Wo = parameters["Wo"] # output gate weight
-    bo = parameters["bo"]
-    Wy = parameters["Wy"] # prediction weight
-    by = parameters["by"]
-    
-    # Retrieve dimensions from shapes of xt and Wy
-    n_x, m = xt.shape
-    n_y, n_a = Wy.shape
+	Arguments:
+	xt -- your input data at timestep "t", numpy array of shape (n_x, m).
+	a_prev -- Hidden state at timestep "t-1", numpy array of shape (n_a, m)
+	c_prev -- Memory state at timestep "t-1", numpy array of shape (n_a, m)
+	parameters -- python dictionary containing:
+						Wf -- Weight matrix of the forget gate, numpy array of shape (n_a, n_a + n_x)
+						bf -- Bias of the forget gate, numpy array of shape (n_a, 1)
+						Wi -- Weight matrix of the update gate, numpy array of shape (n_a, n_a + n_x)
+						bi -- Bias of the update gate, numpy array of shape (n_a, 1)
+						Wc -- Weight matrix of the first "tanh", numpy array of shape (n_a, n_a + n_x)
+						bc --  Bias of the first "tanh", numpy array of shape (n_a, 1)
+						Wo -- Weight matrix of the output gate, numpy array of shape (n_a, n_a + n_x)
+						bo --  Bias of the output gate, numpy array of shape (n_a, 1)
+						Wy -- Weight matrix relating the hidden-state to the output, numpy array of shape (n_y, n_a)
+						by -- Bias relating the hidden-state to the output, numpy array of shape (n_y, 1)
+						
+	Returns:
+	a_next -- next hidden state, of shape (n_a, m)
+	c_next -- next memory state, of shape (n_a, m)
+	yt_pred -- prediction at timestep "t", numpy array of shape (n_y, m)
+	cache -- tuple of values needed for the backward pass, contains (a_next, c_next, a_prev, c_prev, xt, parameters)
+	
+	Note: ft/it/ot stand for the forget/update/output gates, cct stands for the candidate value (c tilde),
+		  c stands for the cell state (memory)
+	"""
+	Wf = parameters["Wf"] # forget gate weight
+	bf = parameters["bf"]
+	Wi = parameters["Wi"] # update gate weight (notice the variable name)
+	bi = parameters["bi"] # (notice the variable name)
+	Wc = parameters["Wc"] # candidate value weight
+	bc = parameters["bc"]
+	Wo = parameters["Wo"] # output gate weight
+	bo = parameters["bo"]
+	Wy = parameters["Wy"] # prediction weight
+	by = parameters["by"]
+	
+	# Retrieve dimensions from shapes of xt and Wy
+	n_x, m = xt.shape
+	n_y, n_a = Wy.shape
 
-    concat = np.concatenate((a_prev, xt), axis=0)
+	concat = np.concatenate((a_prev, xt), axis=0)
 
-    ft = sigmoid(np.dot(Wf, concat) + bf)		# forget gate
-    it = sigmoid(np.dot(Wi, concat) + bi)		# update gate
-    cct = np.tanh(np.dot(Wc, concat) + bc)		# candidate value
-    c_next = ft * c_prev + it * cct				# cell state
-    ot = sigmoid(np.dot(Wo, concat) + bo)		# output gate
-    a_next = ot * np.tanh(c_next)				# hidden state
-    
-    yt_pred = softmax(np.dot(Wy, a_next) + by)
+	ft = sigmoid(np.dot(Wf, concat) + bf)		# forget gate
+	it = sigmoid(np.dot(Wi, concat) + bi)		# update gate
+	cct = np.tanh(np.dot(Wc, concat) + bc)		# candidate value
+	c_next = ft * c_prev + it * cct				# cell state
+	ot = sigmoid(np.dot(Wo, concat) + bo)		# output gate
+	a_next = ot * np.tanh(c_next)				# hidden state
+	
+	yt_pred = softmax(np.dot(Wy, a_next) + by)
 
-    # store values needed for backward propagation in cache
-    cache = (a_next, c_next, a_prev, c_prev, ft, it, cct, ot, xt, parameters)
+	# store values needed for backward propagation in cache
+	cache = (a_next, c_next, a_prev, c_prev, ft, it, cct, ot, xt, parameters)
 
-    return a_next, c_next, yt_pred, cache
+	return a_next, c_next, yt_pred, cache
 def lstm_forward(x, a0, parameters):
-    """
-    Implement the forward propagation of the recurrent neural network using an LSTM-cell described in Figure (4).
+	"""
+	Implement the forward propagation of the recurrent neural network using an LSTM-cell described in Figure (4).
 
-    Arguments:
-    x -- Input data for every time-step, of shape (n_x, m, T_x).
-    a0 -- Initial hidden state, of shape (n_a, m)
-    parameters -- python dictionary containing:
-                        Wf -- Weight matrix of the forget gate, numpy array of shape (n_a, n_a + n_x)
-                        bf -- Bias of the forget gate, numpy array of shape (n_a, 1)
-                        Wi -- Weight matrix of the update gate, numpy array of shape (n_a, n_a + n_x)
-                        bi -- Bias of the update gate, numpy array of shape (n_a, 1)
-                        Wc -- Weight matrix of the first "tanh", numpy array of shape (n_a, n_a + n_x)
-                        bc -- Bias of the first "tanh", numpy array of shape (n_a, 1)
-                        Wo -- Weight matrix of the output gate, numpy array of shape (n_a, n_a + n_x)
-                        bo -- Bias of the output gate, numpy array of shape (n_a, 1)
-                        Wy -- Weight matrix relating the hidden-state to the output, numpy array of shape (n_y, n_a)
-                        by -- Bias relating the hidden-state to the output, numpy array of shape (n_y, 1)
-                        
-    Returns:
-    a -- Hidden states for every time-step, numpy array of shape (n_a, m, T_x)
-    y -- Predictions for every time-step, numpy array of shape (n_y, m, T_x)
-    c -- The value of the cell state, numpy array of shape (n_a, m, T_x)
-    caches -- tuple of values needed for the backward pass, contains (list of all the caches, x)
-    """
-    caches = []
-    
-    Wy = parameters['Wy']
-    
-    n_x, m, T_x = x.shape
-    n_y, n_a = Wy.shape
-    
-    a = np.zeros((n_a, m, T_x))
-    c = np.zeros((n_a, m, T_x))
-    y = np.zeros((n_y, m, T_x))
-    
-    a_next = a0
-    c_next = np.zeros(a_next.shape)
-    
-    for t in range(T_x):
-        xt = x[:,:,t]
-        a_next, c_next, yt, cache = lstm_cell_forward(xt, a_next, c_next, parameters)
-        a[:,:,t] = a_next
-        c[:,:,t]  = yt
-        y[:,:,t] = c_next
-        caches.append(cache)
-        
-    # store values needed for backward propagation in cache
-    caches = (caches, x)
+	Arguments:
+	x -- Input data for every time-step, of shape (n_x, m, T_x).
+	a0 -- Initial hidden state, of shape (n_a, m)
+	parameters -- python dictionary containing:
+						Wf -- Weight matrix of the forget gate, numpy array of shape (n_a, n_a + n_x)
+						bf -- Bias of the forget gate, numpy array of shape (n_a, 1)
+						Wi -- Weight matrix of the update gate, numpy array of shape (n_a, n_a + n_x)
+						bi -- Bias of the update gate, numpy array of shape (n_a, 1)
+						Wc -- Weight matrix of the first "tanh", numpy array of shape (n_a, n_a + n_x)
+						bc -- Bias of the first "tanh", numpy array of shape (n_a, 1)
+						Wo -- Weight matrix of the output gate, numpy array of shape (n_a, n_a + n_x)
+						bo -- Bias of the output gate, numpy array of shape (n_a, 1)
+						Wy -- Weight matrix relating the hidden-state to the output, numpy array of shape (n_y, n_a)
+						by -- Bias relating the hidden-state to the output, numpy array of shape (n_y, 1)
+						
+	Returns:
+	a -- Hidden states for every time-step, numpy array of shape (n_a, m, T_x)
+	y -- Predictions for every time-step, numpy array of shape (n_y, m, T_x)
+	c -- The value of the cell state, numpy array of shape (n_a, m, T_x)
+	caches -- tuple of values needed for the backward pass, contains (list of all the caches, x)
+	"""
+	caches = []
+	
+	Wy = parameters['Wy']
+	
+	n_x, m, T_x = x.shape
+	n_y, n_a = Wy.shape
+	
+	a = np.zeros((n_a, m, T_x))
+	c = np.zeros((n_a, m, T_x))
+	y = np.zeros((n_y, m, T_x))
+	
+	a_next = a0
+	c_next = np.zeros(a_next.shape)
+	
+	for t in range(T_x):
+		xt = x[:,:,t]
+		a_next, c_next, yt, cache = lstm_cell_forward(xt, a_next, c_next, parameters)
+		a[:,:,t] = a_next
+		c[:,:,t]  = yt
+		y[:,:,t] = c_next
+		caches.append(cache)
+		
+	# store values needed for backward propagation in cache
+	caches = (caches, x)
 
-    return a, y, c, caches
+	return a, y, c, caches
+#Gradient Clipping
+def clip(gradients, maxValue):
+	'''
+	Clips the gradients' values between minimum and maximum.
+	
+	Arguments:
+	gradients -- a dictionary containing the gradients "dWaa", "dWax", "dWya", "db", "dby"
+	maxValue -- everything above this number is set to this number, and everything less than -maxValue is set to -maxValue
+	
+	Returns: 
+	gradients -- a dictionary with the clipped gradients.
+	'''
+	for gradient in gradients:
+		np.clip(gradient, -maxValue, maxValue, out=gradient)
+		
+	return gradients
+#########
+# Deep learning with Tensorflow.keras
+#########
+import tensorflow as tf
+#Callback to stop training once a certain loss has been reached
+class stopCallback(tf.keras.callbacks.Callback):
+	def on_epoch_end(self, epoch, logs={}):
+		if(logs.get('acc')>0.99):
+			print(r"Reached 99% accuracy. Cancel training.")
+			self.model.stop_training = True
+#Define model
+model = tf.keras.models.Sequential([tf.keras.layers.Flatten(input_shape=(28, 28)),
+									tf.keras.layers.Dense(512, activation=tf.nn.relu),
+									tf.keras.layers.Dense(10, activation=tf.nn.softmax)])
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.fit(X_train, Y_train, epochs=100, callbacks=[stopCallback()])
 #########
 # Deep learning with Pytorch (extracted from the Udacity Secure and Private AI course)
 #########
