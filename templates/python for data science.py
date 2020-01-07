@@ -915,8 +915,9 @@ kmeans.labels_
 # DBSCAN
 #########
 from sklearn.cluster import DBSCAN
-dbscan = DBSCAN()
+dbscan = DBSCAN(eps=0.05, min_samples=5)
 clusters = dbscan.fit_predict(X)
+dbscan.labels_ #samples with label -1 are considered anomalies
 
 #Measure and compare their performance
 #Big thank you to Uxue Lazcano (https://github.com/uxuelazkano) for code on model comparison
