@@ -895,7 +895,13 @@ for k in range(1,10):
 	SSE.append(kmeans.inertia_)
 
 plt.plot(list(range(1,10)), SSE)
-
+#Find parameter k: Silhouette score
+from sklearn.metrics import silhouette_score
+ss=[]
+for k in range(1,10):
+	kmeans = KMeans(n_clusters=k)
+	ss.append(silhouette_score(df, kmeans.labels_))
+plt.plot(list(range(1,10)), ss) #select k where silhouette score is max
 #Train model
 from sklearn.cluster import KMeans
 kmeans = KMeans(n_clusters=K) #Choose K
