@@ -2486,7 +2486,7 @@ def model(input_shape):
 	return model
 nn = model(X_train.shape[1:])
 nn.compile('adam', 'binary_crossentropy', metrics=['accuracy'])
-nn.fit(X_train, Y_train, epochs=40, batch_size=50)
+nn.fit(X_train, y_train, epochs=40, batch_size=50)
 preds = nn.evaluate(X_test, Y_test, batch_size=32, verbose=1, sample_weight=None)
 print ("Loss = " + str(preds[0]))
 print ("Test Accuracy = " + str(preds[1]))
@@ -2634,7 +2634,7 @@ def ResNet50(input_shape = (64, 64, 3), classes = 6):
 	return model
 model = ResNet50(input_shape = (64, 64, 3), classes = 6)
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-model.fit(X_train, Y_train, epochs = 2, batch_size = 32)
+model.fit(X_train, y_train, epochs = 2, batch_size = 32)
 preds = model.evaluate(X_test, Y_test)
 print ("Loss = " + str(preds[0]))
 print ("Test Accuracy = " + str(preds[1]))
@@ -2992,7 +2992,7 @@ model = tf.keras.models.Sequential([tf.keras.layers.Flatten(input_shape=(28, 28)
 									tf.keras.layers.Dense(512, activation=tf.nn.relu),
 									tf.keras.layers.Dense(10, activation=tf.nn.softmax)])
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(X_train, Y_train, epochs=100, callbacks=[stopCallback()])
+model.fit(X_train, y_train, epochs=100, callbacks=[stopCallback()])
 #Convolutional Model
 model = tf.keras.models.Sequential([tf.keras.layers.Conv2D(32, (3,3), activation='relu', input_shape=(28, 28, 1)),
 									tf.keras.layers.MaxPooling2D(2, 2),
@@ -3000,10 +3000,13 @@ model = tf.keras.models.Sequential([tf.keras.layers.Conv2D(32, (3,3), activation
 									tf.keras.layers.Dense(128, activation='relu'),
 									tf.keras.layers.Dense(10, activation='softmax')])
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(X_train, Y_train, epochs=10, callbacks=[stopCallback()])
+model.fit(X_train, y_train, epochs=10, callbacks=[stopCallback()])
 #Save and load models
 model.save('keras_model.h5')
 model = tf.keras.models.load_model('keras_model.h5')
+#Callback for saving the model
+checkpoint_cb = tf.keras.callbacks.ModelCheckpoint('keras_model.h5', save_best_only=True)
+history = model.fit(X_train, y_train, epochs=10, callbacks=[checkpoint_cb])
 #########
 # Deep learning with Pytorch (extracted from the Udacity Secure and Private AI course)
 #########
