@@ -3001,6 +3001,9 @@ model = tf.keras.models.Sequential([tf.keras.layers.Conv2D(32, (3,3), activation
 									tf.keras.layers.Dense(10, activation='softmax')])
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 model.fit(X_train, Y_train, epochs=10, callbacks=[stopCallback()])
+#Save and load models
+model.save('keras_model.h5')
+model = tf.keras.models.load_model('keras_model.h5')
 #########
 # Deep learning with Pytorch (extracted from the Udacity Secure and Private AI course)
 #########
