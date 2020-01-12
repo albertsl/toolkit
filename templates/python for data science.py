@@ -1008,6 +1008,10 @@ pd.DataFrame({'trees': trl, 'score':scl}).sort_values('score')
 plt.plot(trl, scl)
 
 #Confidence intervals
+from scipy import stats
+confidence = 0.95
+squared_errors = np.square(y_pred - y_val)
+np.sqrt(stats.t.interval(confidence, len(squared_errors)-1, loc=squared_erros.mean(), scale=stats.sem(squared_errors)))
 from sklearn.utils import resample
 n_bootstraps = 1000
 bootstrap_X = []
