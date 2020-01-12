@@ -1,6 +1,6 @@
 #Albert Sanchez Lafuente 2/4/2019, Pineda de Mar, Spain
 #https://github.com/albertsl/
-#Structure of the template mostly based on the Appendix B of the book Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron (https://amzn.to/2WIfsmk)
+#Structure of the template mostly based on the Appendix B of the book Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron
 #Load packages
 import numpy as np
 import pandas as pd
@@ -1277,6 +1277,32 @@ targetc = KFoldTargetEncoderTrain('column','target',n_fold=5)
 new_df = targetc.fit_transform(df)
 
 new_df[['column_Kfold_Target_Enc','column']]
+
+
+#########
+# Start of Deep Learning part
+#########
+# Default configuration for a DNN according to Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron 2nd edition
+# Kernel Initialization: He Initialization
+# Activation function: ELU
+# Normalization: None if shallow; Batch Normalization if deep
+# Regularization: Early stopping (+l2 if needed)
+# Optimizer: Momentum Optimization (or RMSProp or Nadam)
+# Learning rate scheduler: 1cycle
+# 
+# If the network is a simple stack of dense layers, then it can self-normalize, and you should use this configuration:
+# Kernel Initialization: LeCun Initialization
+# Activation function: SELU
+# Normalization: None (self-normalization)
+# Regularization: Alpha dropout if needed
+# Optimizer: Momentum Optimization (or RMSProp or Nadam)
+# Learning rate scheduler: 1cycle
+# Don't forget to normalize the input features
+#
+# If you need a sparse model, you can use l1 regularization (and optionally zero out the tiny weights after training). If you need an even sparser model, you can use the TensorFlow Model Optimization Toolkit. This will break self-normalization, so you should use the default configuration in this case.
+# If you need a low-latency model, you may need to use fewer layers, fold the Batch Normalization layers into the previous layers, and possibly use a faster activation function such as leaky ReLU or just ReLU. Having a sparse model will also help. Finally, you may want to reduce the float precision from 32 bits to 16 or even 8 bits. Chcek out TensorFlow Model Optimization Toolkit.
+# If you are building a risk-sensitive application, or inference latency is not very important in your application, you can use Monte Carlo Dropout to boost performance and get more reliable probability estimates, along with uncertainty estimates.
+
 
 #########
 # Deep Learning (Coursera Specialization)
