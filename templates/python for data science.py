@@ -471,6 +471,12 @@ X_train_selected = selected.transform(X_train)
 #Feature engineering. Create new features by transforming the data
 #Discretize continuous features
 #Decompose features (categorical, date/time, etc.)
+df['day'] = df['timestamp'].dt.day.astype('uint8')
+df['hour'] = df['timestamp'].dt.hour.astype('uint8')
+df['minute'] = df['timestamp'].dt.minute.astype('uint8')
+df['second'] = df['timestamp'].dt.second.astype('uint8')
+df['month'] = df['timestamp'].dt.month.astype('uint8')
+df['year'] = df['timestamp'].dt.year.astype('uint8')
 #Add promising transformations of features (e.g., log(x), sqrt(x), x^2, etc.)
 #Aggregate features into promising new features (x*y)
 #For speed/movement data, add vectorial features. Try many different combinations
