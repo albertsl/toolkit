@@ -438,6 +438,21 @@ from category_encoders.hashing import HashingEncoder
 he = HashingEncoder(cols = ['var'])
 df = he.fit_transform(df)
 
+#CountEncoding. Counts the number of times a category appears and assigns it as the value for the category
+from category_encoders import CountEncoder
+ce = CountEncoder()
+df['col_CE'] = ce.fit_transform(df['col'])
+
+#TargetEncoding. calculate the average outcome for all the rows with the same category and assigns it as the value for the category
+from category_encoders import TargetEncoder
+te = TargetEncoder(cols=['col1', 'col2', 'col3'])
+te.fit(df[['col1', 'col2', 'col3']], df['target'])
+
+#CatBoostEncoding. This is similar to target encoding in that it's based on the target probablity for a given value. However with CatBoost, for each row, the target probability is calculated only from the rows before it.
+from category_encoders import CatBoostEncoder
+cbe = CatBoostEncoder(cols=['col1', 'col2', 'col3'])
+cbe.fit(df[['col1', 'col2', 'col3']], df['target'])
+
 #Resampling Methods for Unbalanced Datasets https://towardsdatascience.com/https-towardsdatascience-com-resampling-methods-for-unbalanced-datasets-5b565d0a247d
 #Undersampling the majority class is taking random draws of the dominating class out of the dataset to match the amount of non-dominating class. As a general rule, this is usually the least desirable approach as it causes us to lose some valuable data by throwing it away, but when you have a large dataset, it might prove to be computationally better to undersample.
 #Oversampling the minority class is the opposite. Instead of the previous approach, we take random draws of the non-dominating class and create “fake” copies to match the amount of cases in the dominating class. In this case, we are in essence creating duplicates of the data and training our model on such. This may not be an ideal approach when our non-dominating class is not scattered across the dataset. Duplication will effectively only recreate similar instances without a “synthetic” variety.
