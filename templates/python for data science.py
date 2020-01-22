@@ -856,12 +856,12 @@ y_pred = xgbst.predict(xgtest)
 
 #Simplified code
 model = xgb.XGBClassifier(random_state=1, n_estimators=1000, learning_rate=0.01) #for the best model, high number of estimators, low learning rate
-model.fit(x_train, y_train)
-model.score(x_test,y_test)
+model.fit(X_train, y_train)
+model.score(X_val,y_val)
 #Regression
 model=xgb.XGBRegressor(random_state=1, n_estimators=1000, learning_rate=0.01) #for the best model, high number of estimators, low learning rate
-model.fit(x_train, y_train)
-model.score(x_test,y_test)
+model.fit(X_train, y_train)
+model.score(X_val,y_val)
 
 #########
 # AdaBoost
