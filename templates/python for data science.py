@@ -132,6 +132,14 @@ cudf_df = cudf.DataFrame.from_pandas(df)
 cudf_df['col1'].mean()
 cudf_df.merge(cudf_df2, on='b')
 
+#Error management:
+try:
+    x*3
+except Exception as e:
+    print(type(e))
+    print(e.args)
+    print(e)
+
 #Styling pandas DataFrame visualization https://pbpython.com/styling-pandas.html
 #https://pandas.pydata.org/pandas-docs/stable/user_guide/style.html
 # more info on string formatting: https://mkaz.blog/code/python-string-format-cookbook/
@@ -494,6 +502,8 @@ df['month'] = df['timestamp'].dt.month.astype('uint8')
 df['year'] = df['timestamp'].dt.year.astype('uint8')
 #Add promising transformations of features (e.g., log(x), sqrt(x), x^2, etc.)
 #Aggregate features into promising new features (x*y)
+#Combine categorical variables
+df['col1_col2'] = df['col1'] + '_' + df['col2']
 #For speed/movement data, add vectorial features. Try many different combinations
 df['position_norm'] = df['position_X'] ** 2 + df['position_Y'] ** 2 + df['position_Z'] ** 2
 df['position_module'] = df['position_norm'] ** 0.5
