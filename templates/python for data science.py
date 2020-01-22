@@ -494,6 +494,8 @@ df['month'] = df['timestamp'].dt.month.astype('uint8')
 df['year'] = df['timestamp'].dt.year.astype('uint8')
 #Add promising transformations of features (e.g., log(x), sqrt(x), x^2, etc.)
 #Aggregate features into promising new features (x*y)
+#Combine categorical variables
+df['col1_col2'] = df['col1'] + '_' + df['col2']
 #For speed/movement data, add vectorial features. Try many different combinations
 df['position_norm'] = df['position_X'] ** 2 + df['position_Y'] ** 2 + df['position_Z'] ** 2
 df['position_module'] = df['position_norm'] ** 0.5
