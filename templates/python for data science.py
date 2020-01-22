@@ -438,7 +438,7 @@ from category_encoders.hashing import HashingEncoder
 he = HashingEncoder(cols = ['var'])
 df = he.fit_transform(df)
 
-#CountEncoding. Counts the number of times a category appears and assigns it as the value for the category
+#CountEncoding. Counts the number of times a category appears and assigns it as the value for the category. It works because rare values tend to have similar counts (with values like 1 or 2), so you can classify rare values together at prediction time. Common values with large counts are unlikely to have the same exact count as other values. So, the common/important values get their own grouping.
 from category_encoders import CountEncoder
 ce = CountEncoder()
 df['col_CE'] = ce.fit_transform(df['col'])
