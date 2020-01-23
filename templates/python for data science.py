@@ -105,7 +105,7 @@ df_test.describe().loc['max']
 df_test.describe().loc['min']
 
 #Save dataframe as csv
-df.to_csv('data.csv')
+df.to_csv('data.csv', index=False)
 
 #Save dataframe as h5
 df.to_hdf('df.h5', key='df', mode='w')
