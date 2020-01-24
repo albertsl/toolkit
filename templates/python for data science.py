@@ -997,7 +997,7 @@ MLPc.predict(X_val)
 #ROC AUC for classification tasks
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve
-roc_auc = roc_auc_score(y_val, model.predict(X_val))
+roc_auc = roc_auc_score(y_val, model.predict_proba(X_val)[:,1])
 fpr, tpr, thresholds = roc_curve(y_val, model.predict_proba(X_val)[:,1])
 plt.figure()
 plt.plot(fpr, tpr, label='Model (area = %0.2f)' % roc_auc)
