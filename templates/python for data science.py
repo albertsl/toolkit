@@ -166,6 +166,9 @@ df['categorical_var'].value_counts()
 from pandas_profiling import ProfileReport
 prof = ProfileReport(df)
 prof.to_file(output_file='output.html')
+#For a big dataset that takes too long to create the report, use minimal. It will generate a simplified report.
+profile = ProfileReport(df, minimal=True)
+profile.to_file(output_file="output_min.html")
 
 #Add rows from Series to a DataFrame
 s = pd.Series([data], index=df.columns)
