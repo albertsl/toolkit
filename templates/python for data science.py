@@ -224,7 +224,7 @@ missing_data = pd.concat([total_null, percent], axis=1, keys=['Total', 'Percent'
 #Generate new features with missing data
 nanf = ['feature1', 'feature2', 'feature3']
 for feature in nanf:
-	df[feature + '_nan'] = df[nanf].isna()
+	df[feature + '_nan'] = df[feature].isna()
 #Also look for infinite data, recommended to check it also after feature engineering
 df.replace(np.inf,0,inplace=True)
 df.replace(-np.inf,0,inplace=True)
