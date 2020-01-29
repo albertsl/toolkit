@@ -244,6 +244,10 @@ imputed_X_val = pd.DataFrame(si.transform(X_val))
 for i in df.iterrows():
 	if np.isnan(i[1][col]):
 		df[col].loc[i[0]] = i*3
+#Fill NaNs generating predictions with KNN
+from sklearn.impute import KNNImputer
+imputer = KNNImputer(n_neighbors=5)
+imputer.fit_transform(X_train)
 
 #Drop columns/rows
 df.drop('column_full_of_nans')
