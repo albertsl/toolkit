@@ -923,6 +923,30 @@ y_pred = model.predict(X_val)
 acc_svm = round(model.score(X_val, y_val) * 100, 2)
 
 #########
+# Multi-layer Perceptron Regressor (Neural Network)
+#########
+from sklearn.neural_network import MLPRegressor
+
+lr = 0.01 #Learning rate
+nn = [2, 16, 8, 1] #Neurons by layer
+
+MLPr = MLPRegressor(solver='sgd', learning_rate_init=lr, hidden_layer_sizes=tuple(nn[1:]), verbose=True, n_iter_no_change=1000, batch_size = 64)
+MLPr.fit(X_train, y_train)
+MLPr.predict(X_val)
+
+#########
+# Multi-layer Perceptron Classifier (Neural Network)
+#########
+from sklearn.neural_network import MLPClassifier
+
+lr = 0.01 #Learning rate
+nn = [2, 16, 8, 1] #Neurons by layer
+
+MLPc = MLPClassifier(solver='sgd', learning_rate_init=lr, hidden_layer_sizes=tuple(nn[1:]), verbose=True, n_iter_no_change=1000, batch_size = 64)
+MLPc.fit(X_train, y_train)
+MLPc.predict(X_val)
+
+#########
 # K-Means Clustering
 #########
 #Find parameter k: Elbow method
@@ -970,29 +994,11 @@ models.sort_values(by='Score', ascending=False)
 plt.scatter(y_val, y_pred) #should have the shape of a line for good predictions
 sns.distplot(y_val - y_pred) #should be a normal distribution centered at 0
 
-#########
-# Multi-layer Perceptron Regressor (Neural Network)
-#########
-from sklearn.neural_network import MLPRegressor
-
-lr = 0.01 #Learning rate
-nn = [2, 16, 8, 1] #Neurons by layer
-
-MLPr = MLPRegressor(solver='sgd', learning_rate_init=lr, hidden_layer_sizes=tuple(nn[1:]), verbose=True, n_iter_no_change=1000, batch_size = 64)
-MLPr.fit(X_train, y_train)
-MLPr.predict(X_val)
-
-#########
-# Multi-layer Perceptron Classifier (Neural Network)
-#########
-from sklearn.neural_network import MLPClassifier
-
-lr = 0.01 #Learning rate
-nn = [2, 16, 8, 1] #Neurons by layer
-
-MLPc = MLPClassifier(solver='sgd', learning_rate_init=lr, hidden_layer_sizes=tuple(nn[1:]), verbose=True, n_iter_no_change=1000, batch_size = 64)
-MLPc.fit(X_train, y_train)
-MLPc.predict(X_val)
+#Save model
+import pickle
+pickle.dump(model, open("model.pkl", "wb"))
+#Load model
+model = pickle.load(open("model.pkl", "rb"))
 
 #Analyze the most significant variables for each algorithm.
 #Analyze the types of errors the models make.
