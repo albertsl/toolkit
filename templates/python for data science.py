@@ -897,13 +897,13 @@ model.score(X_val, y_val)
 # CatBoost
 #########
 #CatBoost algorithm works great for data with lots of categorical variables. You should not perform one-hot encoding for categorical variables before applying this model.
-from catboost import CatBoostRegressor
 from catboost import CatBoostClassifier
 model = CatBoostClassifier()
 categorical_features_indices = np.where(df.dtypes != np.float)[0]
 model.fit(X_train, y_train, cat_features=categorical_features_indices, eval_set=(X_val, y_val))
 model.score(X_val, y_val)
 #Regression
+from catboost import CatBoostRegressor
 model = CatBoostRegressor()
 categorical_features_indices = np.where(df.dtypes != np.float)[0]
 model.fit(X_train, y_train,cat_features=categorical_features_indices,eval_set=(X_val, y_val))
