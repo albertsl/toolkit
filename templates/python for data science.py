@@ -947,6 +947,25 @@ MLPc.fit(X_train, y_train)
 MLPc.predict(X_val)
 
 #########
+# AutoML
+#########
+import h2o
+print(h2o.__version__)
+from h2o.automl import H2OAutoML
+h2o.init()
+
+train = h2o.import_file('train.csv')
+test = h2o.import_file('test.csv')
+
+aml = H2OAutoML(max_models=50, seed=47, max_runtime_secs=30000)
+aml.train(x=train.columns, y='target', training_frame=train, fold_column='fold_column')
+
+lb = aml.leaderboard
+lb.head(rows=lb.nrows)
+
+y_pred = aml.predict(test)
+
+#########
 # K-Means Clustering
 #########
 #Find parameter k: Elbow method
