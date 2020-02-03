@@ -957,8 +957,8 @@ h2o.init()
 train = h2o.import_file('train.csv')
 test = h2o.import_file('test.csv')
 
-aml = H2OAutoML(max_models=50, seed=47, max_runtime_secs=30000)
-aml.train(x=train.columns, y='target', training_frame=train, fold_column='fold_column')
+aml = H2OAutoML(max_models=50, max_runtime_secs=30000)
+aml.train(x=train.columns, y='target', training_frame=train)
 
 lb = aml.leaderboard
 lb.head(rows=lb.nrows)
