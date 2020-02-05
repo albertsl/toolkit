@@ -202,6 +202,12 @@ X_train, X_val, y_train, y_val = train_test_split(X, y, test_size = 0.4, stratif
 #Cross validation
 from sklearn.model_selection import cross_val_score
 cross_val_score(model, X, y, cv=5)
+#KFold
+from sklearn.model_selection import KFold
+kf = KFold(n_splits=5, random_state=101)
+for train_index, val_index in kf.split(X, y):
+	X_train, X_val = X[train_index], X[val_index]
+	y_train, y_val = y[train_index], y[val_index]
 #StratifiedKFold
 from sklearn.model_selection import StratifiedKFold
 skf = StratifiedKFold(n_splits=5, random_state=101)
