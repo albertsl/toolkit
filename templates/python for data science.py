@@ -2612,6 +2612,52 @@ print ("Loss = " + str(preds[0]))
 print ("Test Accuracy = " + str(preds[1]))
 nn.summary()
 plot_model(nn, to_file='nn.png')
+#DNN for tabular data
+def tabular_dnn(numeric_variables, categorical_variables, categorical_counts,
+                feature_selection_dropout=0.2, categorical_dropout=0.1,
+                first_dense = 256, second_dense = 256, dense_dropout = 0.2, 
+                activation_type=gelu):
+    
+    numerical_inputs = Input(shape=(len(numeric_variables),))
+    numerical_normalization = BatchNormalization()(numerical_inputs)
+    numerical_feature_selection = Dropout(feature_selection_dropout)(numerical_normalization)
+
+    categorical_inputs = []
+    categorical_embeddings = []
+    for category in  categorical_variables:
+        categorical_inputs.append(Input(shape=[1], name=category))
+        category_counts = categorical_counts[category]
+        categorical_embeddings.append(
+            Embedding(category_counts+1, 
+                      int(np.log1p(category_counts)+1), 
+                      name = category + "_embed")(categorical_inputs[-1]))
+
+    categorical_logits = Concatenate(name = "categorical_conc")([Flatten()(SpatialDropout1D(categorical_dropout)(cat_emb)) 
+                                                                 for cat_emb in categorical_embeddings])
+
+    x = concatenate([numerical_feature_selection, categorical_logits])
+    x = Dense(first_dense, activation=activation_type)(x)
+    x = Dropout(dense_dropout)(x)  
+    x = Dense(second_dense, activation=activation_type)(x)
+    x = Dropout(dense_dropout)(x)
+    output = Dense(1, activation="sigmoid")(x)
+    model = Model([numerical_inputs] + categorical_inputs, output)
+    
+    return model
+def compile_model(model, loss, metrics, optimizer):
+    model.compile(loss=loss, metrics=metrics, optimizer=optimizer)
+    return model
+
+model = tabular_dnn(numeric_variables, categorical_variables,
+                        categorical_levels, 
+                        feature_selection_dropout=0.1,
+                        categorical_dropout=0.1,
+                        first_dense = 256,
+                        second_dense = 256,
+                        dense_dropout = 0.1,
+                        activation_type=gelu)
+    
+model = compile_model(model, binary_crossentropy, [AUC(name='auc')], Adam(learning_rate=0.0001))
 #ResNet
 def identity_block(X, f, filters, stage, block):
 	"""
