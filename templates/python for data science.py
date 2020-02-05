@@ -515,6 +515,10 @@ df['dayofyear'] = df['timestamp'].dt.dayofyear.astype('uint8')
 df['weekofyear'] = df['timestamp'].dt.weekofyear.astype('uint8')
 df['month'] = df['timestamp'].dt.month.astype('uint8')
 df['year'] = df['timestamp'].dt.year.astype('uint8')
+#Create periodic features from date with sine and cosine
+cycle = 7
+df['dayofweek_sin'] = np.sin(2 * np.pi * df['dayofweek'] / cycle)
+df['dayofweek_cos'] = np.cos(2 * np.pi * df['dayofweek'] / cycle)
 #Add promising transformations of features (e.g., log(x), sqrt(x), x^2, etc.)
 #Aggregate features into promising new features (x*y)
 #Combine categorical variables
