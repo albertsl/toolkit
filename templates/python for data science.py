@@ -687,6 +687,10 @@ df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
 from sklearn.preprocessing import PowerTransformer
 pt = PowerTransformer(method='yeo-johnson', standardize=True)
 X_train = pt.fit_transform(X_train)
+#QuantileTransformer: spread the most frequent values and reduce impact of outliers
+from sklearn.preprocessing import QuantileTransformer
+qt = QuantileTransformer()
+X_train = qt.fit_transform(X_train)
 
 #Apply all the same transformations to the test set
 
