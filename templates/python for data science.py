@@ -685,10 +685,12 @@ from spacy.matcher import PhraseMatcher
 matcher = PhraseMatcher(nlp.vocab, attr='LOWER')
 terms = ['Galaxy Note', 'iPhone 11', 'iPhone XS', 'Google Pixel']
 patterns = [nlp(text) for text in terms]
-matcher.add("TerminologyList", None, *patterns)
+matcher.add("TerminologyList", None, *patterns) #Name for the rules, Action to take on matched words, token list where the matches appear
 text_doc = nlp('Long text where the previous terms appear sometime like Galaxy Note here.')
 matches = matcher(text_doc)
 print(matches) #List of tuples of length 3. First element: match id, Second element: position of start, Third element: position of end.
+for match in matches:
+	print(f"Token number {match[1]}: {review_doc[match[1]:match[2]]}")
 
 #Scaling features
 #Standard Scaler: The StandardScaler assumes your data is normally distributed within each feature and will scale them such that the distribution is now centred around 0, with a standard deviation of 1.
