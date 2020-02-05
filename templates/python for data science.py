@@ -671,6 +671,24 @@ from sklearn.decomposition import LatentDirichletAllocation
 lda = LatentDirichletAllocation(n_topics=5)
 doc_topics = lda.fit_transform(X_train)
 lda.components_
+#Using Spacy
+import spacy
+nlp = spacy.load('en')
+doc = nlp('This sentence belongs to the document')
+#Tokenizetion:
+for token in doc:
+	print(token)
+	print(token.lemma_) #The lemma is the base where the word comes from. Example: "walking" comes from "walk"
+	print(token.is_stop) #True/False telling if it's a stopword (very frequent words that don't contain much information, example: "the", "is", "and")
+#Find exact matches
+from spacy.matcher import PhraseMatcher
+matcher = PhraseMatcher(nlp.vocab, attr='LOWER')
+terms = ['Galaxy Note', 'iPhone 11', 'iPhone XS', 'Google Pixel']
+patterns = [nlp(text) for text in terms]
+matcher.add("TerminologyList", None, *patterns)
+text_doc = nlp('Long text where the previous terms appear sometime like Galaxy Note here.')
+matches = matcher(text_doc)
+print(matches) #List of tuples of length 3. First element: match id, Second element: position of start, Third element: position of end.
 
 #Scaling features
 #Standard Scaler: The StandardScaler assumes your data is normally distributed within each feature and will scale them such that the distribution is now centred around 0, with a standard deviation of 1.
