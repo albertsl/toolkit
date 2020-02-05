@@ -683,6 +683,10 @@ from sklearn.preprocessing import Normalizer
 scaler = Normalizer()
 scaler.fit(df)
 df_norm = pd.DataFrame(scaler.transform(df), columns=df.columns)
+#PowerTransformer: make data more Gaussian-like
+from sklearn.preprocessing import PowerTransformer
+pt = PowerTransformer(method='yeo-johnson', standardize=True)
+X_train = pt.fit_transform(X_train)
 
 #Apply all the same transformations to the test set
 
