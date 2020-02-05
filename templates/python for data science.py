@@ -497,6 +497,10 @@ from sklearn.feature_selection import SelectPercentile
 bestfeatures = SelectPercentile(percentile=50)
 selected = bestfeatures.fit(X_train, y_train)
 X_train_selected = selected.transform(X_train)
+#Remove low-variance features
+from sklearn.feature_selection import VarianceThreshold
+selector = VarianceThreshold(threshold=0.0)
+X_train_selected = selector.fit_transform(X_train)
 
 #Feature engineering. Create new features by transforming the data
 #Discretize continuous features
