@@ -718,6 +718,16 @@ scores, _ = textcat.predict(docs)
 print(scores)
 predicted_labels = scores.argmax(axis=1)
 print([textcat.labels[label] for label in predicted_labels])
+#Word Embeddings from Word2Vec
+nlp = spacy.load('en_core_web_lg')
+with nlp.disable_pipes(): #Disables all other pipes we don't need to speed things up
+    vectors = np.array([token.vector for token in nlp(text)])
+with nlp.disable_pipes(): #Compute vector for the whole document
+    doc_vectors = np.array([nlp(text).vector for text in spam.text])
+#Document similarity with cosine similarity
+from sklearn.metrics.pairwise import cosine_similarity
+cosine_similarity(X, Y) #X and Y are the two vector embeddings we are looking how similar they are.
+
 
 
 #Scaling features
