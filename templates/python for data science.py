@@ -691,6 +691,34 @@ matches = matcher(text_doc)
 print(matches) #List of tuples of length 3. First element: match id, Second element: position of start, Third element: position of end.
 for match in matches:
 	print(f"Token number {match[1]}: {review_doc[match[1]:match[2]]}")
+#Categorize text. Create a pipe with Sapcy
+nlp = spacy.load('en')
+textcat = nlp.create_pipe('textcat', config={'exclussive_classes': True, 'architecture':'bow'})
+nlp.add_pipe(textcat)
+textcat.add_label('label_1')
+textcat.add_label('label_2')
+train_texts = df['text'].values
+train_labels = [{'cats': {'label_1': label == 'label_1', 'label_2': label == 'label_2'}} for label in df['label']]
+train_data = list(zip(train_texts, train_labels))
+from spacy.util import minibatch
+import random
+optimizer = nlp.begin_training()
+losses = {}
+epochs = 10
+for epoch in range(epochs):
+	random.shuffle(train_data)
+	batches = minibatch(train_data, size=8)
+	for batch in batches:
+		texts, labels = zip(*batch)
+		nlp.update(texts, labels, sgd=optimizer, losses=losses)
+	print(losses)
+docs = [nlp.tokenizer(text) for text in X_val['text'].values]
+textcat = nlp.get_pipe('textcat')
+scores, _ = textcat.predict(docs)
+print(scores)
+predicted_labels = scores.argmax(axis=1)
+print([textcat.labels[label] for label in predicted_labels])
+
 
 #Scaling features
 #Standard Scaler: The StandardScaler assumes your data is normally distributed within each feature and will scale them such that the distribution is now centred around 0, with a standard deviation of 1.
