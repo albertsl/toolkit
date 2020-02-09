@@ -35,6 +35,15 @@ pipenv run xxxxx
 #Install dependencies in another computer
 pipenv install --ignore-pipfile
 
+#Logging: create a log file and write all messages there. Old messages are not deleted so log file may get very big. Interesting to add timedata to the beginning of each message.
+import logging
+logging.basicConfig(filename='log_file.log', level=logging.INFO) #Will show all logging with same or more importance as INFO
+logging.debug('message')
+logging.info('message')
+logging.warning('message')
+logging.error('message')
+logging.critical('message')
+
 #Load data
 df = pd.read_csv('file.csv', sep=',', skiprows=0)
 df = pd.read_excel('file.xlsx')
