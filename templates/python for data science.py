@@ -26,10 +26,10 @@ print("Numba version:", numba.__version__)
 
 #Manage dependencies with pipenv
 #install pip env with: pip install --user pipenv 	Follow the online documentation for installing if there's any error, specially with Windows.
-pipenv install package
-pipenv lock
 #Activate virtual environment
 pipenv shell
+pipenv install package
+pipenv lock
 #Run a command inside the virtual environment
 pipenv run xxxxx
 #Install dependencies in another computer
