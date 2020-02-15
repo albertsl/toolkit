@@ -1366,6 +1366,7 @@ U, S, V = np.linalg.svd(df, full_matrices=False)
 importance = S/S.sum()
 varinace_explained = importance.cumsum()*100
 #PCA: Decompose the data in a defined number of variables keeping the most variance possible.
+#Important to standarize the data, we're looking to find the variables that maximize the variance within the data.
 from sklearn.decomposition import PCA
 pca = PCA(n_components=2, svd_solver='full') #Choose number of components so that 99% of the variance is retained
 X_train_PCA = pca.fit_transform(X_train)
