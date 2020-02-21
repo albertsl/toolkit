@@ -1,4 +1,4 @@
-#Albert Sanchez Lafuente 2/4/2019, Pineda de Mar, Spain
+#Albert Sanchez Lafuente
 #https://github.com/albertsl/
 #Structure of the template mostly based on the Appendix B of the book Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron
 #Load packages
