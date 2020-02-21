@@ -306,7 +306,7 @@ for feature in skewed_features:
 				print(f'big change with feature {feature}, change: {original_skewness-log_transform}, new skewness: {log_transform}')
 
 #Exploratory Data Analysis (EDA)
-sns.pairplot(df)
+sns.pairplot(df, hue='categorical_var')
 sns.distplot(df['column'])
 sns.countplot(df['column'])
 
