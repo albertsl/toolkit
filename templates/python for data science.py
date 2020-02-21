@@ -26,10 +26,10 @@ print("Numba version:", numba.__version__)
 
 #Manage dependencies with pipenv
 #install pip env with: pip install --user pipenv 	Follow the online documentation for installing if there's any error, specially with Windows.
-pipenv install package
-pipenv lock
 #Activate virtual environment
 pipenv shell
+pipenv install package
+pipenv lock
 #Run a command inside the virtual environment
 pipenv run xxxxx
 #Install dependencies in another computer
@@ -306,7 +306,7 @@ for feature in skewed_features:
 				print(f'big change with feature {feature}, change: {original_skewness-log_transform}, new skewness: {log_transform}')
 
 #Exploratory Data Analysis (EDA)
-sns.pairplot(df)
+sns.pairplot(df, hue='categorical_var')
 sns.distplot(df['column'])
 sns.countplot(df['column'])
 
@@ -1366,6 +1366,7 @@ U, S, V = np.linalg.svd(df, full_matrices=False)
 importance = S/S.sum()
 varinace_explained = importance.cumsum()*100
 #PCA: Decompose the data in a defined number of variables keeping the most variance possible.
+#Important to standarize the data, we're looking to find the variables that maximize the variance within the data.
 from sklearn.decomposition import PCA
 pca = PCA(n_components=2, svd_solver='full') #Choose number of components so that 99% of the variance is retained
 X_train_PCA = pca.fit_transform(X_train)
