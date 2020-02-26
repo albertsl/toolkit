@@ -655,91 +655,6 @@ df['EI'] = pd.Series(lEI)
 #Create new column, dividing the dataset in groups of the same number of events
 df['group'] = pd.cut(df['Age'], 3, labels=['kids', 'adults', 'senior'])
 
-#NLP
-#Bag-of-words
-from sklearn.feature_extraction.text import CountVectorizer
-vect = CountVectorizer(min_df=3, ngram_range=(1,3))#min_df: delete words that don't appear in at least min_df documents. ngram_range: Use n-grams instead of single words, (min length, max length of ngram).
-vect.fit(train_data) #train_data should be a list of sentences, paragraphs or texts
-vect.vocabulary_
-bag_of_words = vect.transform(train_data)
-#Stop-words: Delete very frequent words, two ways of doing it:
-#1 Use a language-specific list of words
-from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
-vect = CountVectorizer(min_df=3, stop_words='english')
-#2 Delete words that appear very frequently.
-vect = CountVectorizer(max_df=100)
-#TF-IDF (term frequency - inverse document frequency): Give high weight to a word that appears frequently in a specific document but not in many documents
-from sklearn.feature_extraction.text import TfidfVectorizer
-vect = TfidfVectorizer(min_df=3) #Important to apply the same transformation to train and test set.
-#Lemmatization: Join words with similar meanings coming from the same words. Example: plurals (car / cars), verbs (do / done / did)
-import spacy
-import nltk
-en_nlp = spacy.load('en')
-stemmer = nltk.stem.PorterStemmer()
-#Topic Modeling and Document Clustering: LDA (Latent Dirichlet Allocation)
-from sklearn.decomposition import LatentDirichletAllocation
-lda = LatentDirichletAllocation(n_topics=5)
-doc_topics = lda.fit_transform(X_train)
-lda.components_
-#Using Spacy
-import spacy
-nlp = spacy.load('en')
-doc = nlp('This sentence belongs to the document')
-#Tokenizetion:
-for token in doc:
-	print(token)
-	print(token.lemma_) #The lemma is the base where the word comes from. Example: "walking" comes from "walk"
-	print(token.is_stop) #True/False telling if it's a stopword (very frequent words that don't contain much information, example: "the", "is", "and")
-#Find exact matches
-from spacy.matcher import PhraseMatcher
-matcher = PhraseMatcher(nlp.vocab, attr='LOWER')
-terms = ['Galaxy Note', 'iPhone 11', 'iPhone XS', 'Google Pixel']
-patterns = [nlp(text) for text in terms]
-matcher.add("TerminologyList", None, *patterns) #Name for the rules, Action to take on matched words, token list where the matches appear
-text_doc = nlp('Long text where the previous terms appear sometime like Galaxy Note here.')
-matches = matcher(text_doc)
-print(matches) #List of tuples of length 3. First element: match id, Second element: position of start, Third element: position of end.
-for match in matches:
-	print(f"Token number {match[1]}: {review_doc[match[1]:match[2]]}")
-#Categorize text. Create a pipe with Sapcy
-nlp = spacy.load('en')
-textcat = nlp.create_pipe('textcat', config={'exclussive_classes': True, 'architecture':'bow'})
-nlp.add_pipe(textcat)
-textcat.add_label('label_1')
-textcat.add_label('label_2')
-train_texts = df['text'].values
-train_labels = [{'cats': {'label_1': label == 'label_1', 'label_2': label == 'label_2'}} for label in df['label']]
-train_data = list(zip(train_texts, train_labels))
-from spacy.util import minibatch
-import random
-optimizer = nlp.begin_training()
-losses = {}
-epochs = 10
-for epoch in range(epochs):
-	random.shuffle(train_data)
-	batches = minibatch(train_data, size=8)
-	for batch in batches:
-		texts, labels = zip(*batch)
-		nlp.update(texts, labels, sgd=optimizer, losses=losses)
-	print(losses)
-docs = [nlp.tokenizer(text) for text in X_val['text'].values]
-textcat = nlp.get_pipe('textcat')
-scores, _ = textcat.predict(docs)
-print(scores)
-predicted_labels = scores.argmax(axis=1)
-print([textcat.labels[label] for label in predicted_labels])
-#Word Embeddings from Word2Vec
-nlp = spacy.load('en_core_web_lg')
-with nlp.disable_pipes(): #Disables all other pipes we don't need to speed things up
-    vectors = np.array([token.vector for token in nlp(text)])
-with nlp.disable_pipes(): #Compute vector for the whole document
-    doc_vectors = np.array([nlp(text).vector for text in spam.text])
-#Document similarity with cosine similarity
-from sklearn.metrics.pairwise import cosine_similarity
-cosine_similarity(X, Y) #X and Y are the two vector embeddings we are looking how similar they are.
-
-
-
 #Scaling features
 #Standard Scaler: The StandardScaler assumes your data is normally distributed within each feature and will scale them such that the distribution is now centred around 0, with a standard deviation of 1.
 #If data is not normally distributed, this is not the best scaler to use.
@@ -3707,6 +3622,90 @@ for epoch in range(epochs):
 				  f"Test accuracy: {accuracy/len(testloader):.3f}")
 			running_loss = 0
 			model.train()
+
+#NLP
+#Bag-of-words
+from sklearn.feature_extraction.text import CountVectorizer
+vect = CountVectorizer(min_df=3, ngram_range=(1,3))#min_df: delete words that don't appear in at least min_df documents. ngram_range: Use n-grams instead of single words, (min length, max length of ngram).
+vect.fit(train_data) #train_data should be a list of sentences, paragraphs or texts
+vect.vocabulary_
+bag_of_words = vect.transform(train_data)
+#Stop-words: Delete very frequent words, two ways of doing it:
+#1 Use a language-specific list of words
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+vect = CountVectorizer(min_df=3, stop_words='english')
+#2 Delete words that appear very frequently.
+vect = CountVectorizer(max_df=100)
+#TF-IDF (term frequency - inverse document frequency): Give high weight to a word that appears frequently in a specific document but not in many documents
+from sklearn.feature_extraction.text import TfidfVectorizer
+vect = TfidfVectorizer(min_df=3) #Important to apply the same transformation to train and test set.
+#Lemmatization: Join words with similar meanings coming from the same words. Example: plurals (car / cars), verbs (do / done / did)
+import spacy
+import nltk
+en_nlp = spacy.load('en')
+stemmer = nltk.stem.PorterStemmer()
+#Topic Modeling and Document Clustering: LDA (Latent Dirichlet Allocation)
+from sklearn.decomposition import LatentDirichletAllocation
+lda = LatentDirichletAllocation(n_topics=5)
+doc_topics = lda.fit_transform(X_train)
+lda.components_
+#Using Spacy
+import spacy
+nlp = spacy.load('en')
+doc = nlp('This sentence belongs to the document')
+#Tokenizetion:
+for token in doc:
+	print(token)
+	print(token.lemma_) #The lemma is the base where the word comes from. Example: "walking" comes from "walk"
+	print(token.is_stop) #True/False telling if it's a stopword (very frequent words that don't contain much information, example: "the", "is", "and")
+#Find exact matches
+from spacy.matcher import PhraseMatcher
+matcher = PhraseMatcher(nlp.vocab, attr='LOWER')
+terms = ['Galaxy Note', 'iPhone 11', 'iPhone XS', 'Google Pixel']
+patterns = [nlp(text) for text in terms]
+matcher.add("TerminologyList", None, *patterns) #Name for the rules, Action to take on matched words, token list where the matches appear
+text_doc = nlp('Long text where the previous terms appear sometime like Galaxy Note here.')
+matches = matcher(text_doc)
+print(matches) #List of tuples of length 3. First element: match id, Second element: position of start, Third element: position of end.
+for match in matches:
+	print(f"Token number {match[1]}: {review_doc[match[1]:match[2]]}")
+#Categorize text. Create a pipe with Sapcy
+nlp = spacy.load('en')
+textcat = nlp.create_pipe('textcat', config={'exclussive_classes': True, 'architecture':'bow'})
+nlp.add_pipe(textcat)
+textcat.add_label('label_1')
+textcat.add_label('label_2')
+train_texts = df['text'].values
+train_labels = [{'cats': {'label_1': label == 'label_1', 'label_2': label == 'label_2'}} for label in df['label']]
+train_data = list(zip(train_texts, train_labels))
+from spacy.util import minibatch
+import random
+optimizer = nlp.begin_training()
+losses = {}
+epochs = 10
+for epoch in range(epochs):
+	random.shuffle(train_data)
+	batches = minibatch(train_data, size=8)
+	for batch in batches:
+		texts, labels = zip(*batch)
+		nlp.update(texts, labels, sgd=optimizer, losses=losses)
+	print(losses)
+docs = [nlp.tokenizer(text) for text in X_val['text'].values]
+textcat = nlp.get_pipe('textcat')
+scores, _ = textcat.predict(docs)
+print(scores)
+predicted_labels = scores.argmax(axis=1)
+print([textcat.labels[label] for label in predicted_labels])
+#Word Embeddings from Word2Vec
+nlp = spacy.load('en_core_web_lg')
+with nlp.disable_pipes(): #Disables all other pipes we don't need to speed things up
+    vectors = np.array([token.vector for token in nlp(text)])
+with nlp.disable_pipes(): #Compute vector for the whole document
+    doc_vectors = np.array([nlp(text).vector for text in spam.text])
+#Document similarity with cosine similarity
+from sklearn.metrics.pairwise import cosine_similarity
+cosine_similarity(X, Y) #X and Y are the two vector embeddings we are looking how similar they are.
+
 
 #GeoPandas
 import geopandas as gpd
