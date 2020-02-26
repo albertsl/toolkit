@@ -1,5 +1,6 @@
-#Albert Sanchez Lafuente
+#Albert Sanchez Lafuente - TodoIA
 #https://github.com/albertsl/
+#https://todoia.es/
 #Structure of the template mostly based on the Appendix B of the book Hands-on Machine Learning with Scikit-Learn and TensorFlow by Aurelien Geron
 #Load packages
 import numpy as np
