@@ -14,6 +14,7 @@ from tqdm import tqdm
 #from tqdm import tqdm_notebook as tqdm
 sns.set()
 import numba
+np.random.seed(101)
 
 #Check versions
 import platform
