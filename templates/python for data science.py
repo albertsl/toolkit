@@ -11,7 +11,7 @@ pd.set_option('display.width', 1000)
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
-#from tqdm import tqdm_notebook as tqdm
+#from tqdm.notebook import tqdm
 sns.set()
 import numba
 np.random.seed(101)
