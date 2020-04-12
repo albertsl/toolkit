@@ -207,6 +207,15 @@ gs.fit(X_train, y_train)
 gs.best_score_
 gs.score(X_val, y_val)
 gs.best_params_
+#Applying different transformations to different columns
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.compose import make_column_transformer
+ohe = OneHotEncoder()
+si = SimpleImputer()
+ct = make_column_transformer((ohe, ['cat1', 'cat2']), (si, ['ord1', 'ord2']), remainder='passthrough')
+ct.fit_transform(df_train)
+
 
 #Define Validation method
 #Train and validation set split
