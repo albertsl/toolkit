@@ -25,6 +25,14 @@ print("Numpy version:", np.version.version)
 print("Pandas version:", pd.__version__)
 print("Seaborn version:", sns.__version__)
 print("Numba version:", numba.__version__)
+# Only Python 3.8:
+from importlib import metadata
+print('f{metadata.version("pandas")=}')
+print('f{metadata.version("numpy")=}')
+print('f{metadata.version("sklearn")=}')
+print('f{metadata.version("matplotlib")=}')
+print('f{metadata.version("seaborn")=}')
+print('f{metadata.version("numba")=}')
 
 #Manage dependencies with pipenv
 #install pip env with: pip install --user pipenv 	Follow the online documentation for installing if there's any error, specially with Windows.
