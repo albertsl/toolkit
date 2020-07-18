@@ -34,6 +34,10 @@ print('f{metadata.version("matplotlib")=}')
 print('f{metadata.version("seaborn")=}')
 print('f{metadata.version("numba")=}')
 
+#Only Jupyter notebook:
+%matplotlib inline
+%config InlineBackend.figure_format = 'svg' #or 'retina'. Makes the images more clear
+
 #Manage dependencies with pipenv
 #install pip env with: pip install --user pipenv 	Follow the online documentation for installing if there's any error, specially with Windows.
 #Activate virtual environment
