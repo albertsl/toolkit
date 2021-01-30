@@ -680,6 +680,8 @@ for i, row in df.iterrows():
 df['EI'] = pd.Series(lEI)
 #Create new column, dividing the dataset in groups of the same number of events
 df['group'] = pd.cut(df['Age'], 3, labels=['kids', 'adults', 'senior'])
+#Filter dataframe. Only values in a list
+df[df['column'].isin(values_list)]
 #Tabular data Feature engineering with Deltapy
 from deltapy import transform, interact, mapper, extract
 #Transformation
