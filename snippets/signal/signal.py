@@ -26,3 +26,28 @@ if __name__ == '__main__':
          if sum(i) > 3 and wait_time > 5:
               print("a spike has happened")
               wait_time = 0
+
+
+
+
+
+
+def freq_analysis(time_data, fs):
+    """Calculates using FFT, the values to plot in the frequency domain.
+
+    Args:
+        time_data (list): List with he time series data
+        fs (float): Sampling frequency in Hz=samples/second. fs=1/Ts. Ts = sampling rate, how many seconds per sample. 
+
+    Returns:
+        positive_freqs (np.ndarray): X axis for the plot
+        positive_yf (np.ndarray): Y axis for the plot
+    """
+    yf = fft(time_data)
+    freqs = fftfreq(len(time_data), 1/fs)
+
+    # Only return positive freqs
+    positive_freqs = freqs[np.where(freqs >= 0)]
+    positive_yf = yf[np.where(freqs >= 0)]
+
+    return positive_freqs, positive_yf
