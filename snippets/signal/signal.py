@@ -51,3 +51,28 @@ def freq_analysis(time_data, fs):
     positive_yf = yf[np.where(freqs >= 0)]
 
     return positive_freqs, positive_yf
+
+def plot_timeseries_freq(xts, yts, xf, yf):
+    """Generates a plot showing both the time domain and the frequency domain.
+
+    Args:
+        xts (list): Time domain X axis
+        yts (list): Time domain Y axis
+        xf (np.ndarray): Frequency domain X axis
+        yf (np.ndarray): Frequency domain Y axis
+    """
+    # ax1 for time domain, ax2 for frequency domain
+    fig, (ax1, ax2) = plt.subplots(2,1, constrained_layout=True)
+
+    # Time domain in colour red
+    ax1.plot(xts, yts, color="red")
+    ax1.set_xlabel('X')
+    ax1.set_ylabel('Y')
+
+    # Frequency domain in colour blue (default color)
+    ax2.plot(freqs, np.abs(yf))
+    ax2.set_xlabel('Frequency (Hz)')
+    ax2.set_ylabel('Amplitude')
+    ax2.axis(xmin=0, xmax=0.0001, ymin=0, ymax=0.2*1e8) # A zoom is defined to show relevant frequencies.
+
+    plt.show()
