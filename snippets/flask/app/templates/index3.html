@@ -1,0 +1,18 @@
+{% extends './layout.html' %}
+
+{% block title %}
+{{ data.title }}
+{% endblock %}
+
+{% block body %}
+<h1>{{ data.content }}</h1>
+{% if data.cable_count > 0 %}
+<ul>
+    {% for cable in data.cable_list %}
+    <li>{{ cable }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<h2>No cables exist</h2>
+{% endif %}
+{% endblock %}
