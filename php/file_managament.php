@@ -6,7 +6,7 @@
  * 
  * @return void
  */
-function deleteFolderContents($folder) {
+function deleteFolderContents(string $folder) {
     if (!is_dir($folder)) return;
     $files = scandir($folder);
     foreach ($files as $file) {
@@ -30,7 +30,7 @@ function deleteFolderContents($folder) {
  * 
  * @return void
  */
-function copyRecursive($source, $destination) {
+function copyRecursive(string $source, string $destination) {
     if (!is_dir($source)) return;
     @mkdir($destination);
     $files = scandir($source);
